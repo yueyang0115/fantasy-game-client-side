@@ -1,40 +1,46 @@
 package com.example.fantasyclient;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.TestLooperManager;
+import android.os.IBinder;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
-import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.view.View;
-import android.view.View.OnClickListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.ServiceConnection;
+
+import java.io.IOException;
 
 import im.delight.android.location.SimpleLocation;
 
 public class MainActivity extends Activity {
 
-    private static final int PERMISSIONS_REQUEST_LOCATION = 1;
-    private SimpleLocation location;
-    private TextView textLocation;
+    static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    SimpleLocation location;
+    TextView textLocation, textVLocation;
+    SocketService socketService;
+    boolean mIsBound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textLocation = (TextView) findViewById(R.id.textview1);
+        startService(new Intent(MainActivity.this, SocketService.class));
+        doBindService();
+
+        textLocation = (TextView) findViewById(R.id.position);
+        textVLocation = (TextView) findViewById(R.id.v_position);
         Button btnTest = (Button) findViewById(R.id.button1);
         // ...
 
@@ -53,12 +59,36 @@ public class MainActivity extends Activity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                //updateLocation();
+                // TODO
+                // updateLocation();
                 location.beginUpdates();
                 final double latitude = location.getLatitude();
                 final double longitude = location.getLongitude();
                 textLocation.setText("X:" + latitude + " Y:" + longitude);
-                // TODO
+
+            }
+
+        });
+
+        location.setListener(new SimpleLocation.Listener() {
+
+            public void onPositionChanged() {
+                // new location data has been received and can be accessed
+                JSONObject jsonPoint = new JSONObject();
+                try {
+                    jsonPoint.put("x", location.getLatitude());
+                    jsonPoint.put("y", location.getLongitude());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                JSONObject jsonLocation = new JSONObject();
+                try{
+                    jsonLocation.put("position", jsonPoint);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                new updateTask().execute(jsonLocation.toString());
             }
 
         });
@@ -83,6 +113,43 @@ public class MainActivity extends Activity {
         // ...
 
         super.onPause();
+    }
+
+    /**
+     * this AsyncTask runs in background when someone lose or win
+     * it will receive msg from server and update UI
+     * if game is over, a button to start a new game will appear
+     */
+    @SuppressLint("StaticFieldLeak")
+    class updateTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String v_position = "";
+            try {
+                socketService.send_msg(params[0]);
+                v_position = socketService.recv_msg();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return v_position;
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            Log.e("v_position", result); // this is expecting a response code to be sent from your server upon receiving the POST data
+
+            try {
+                JSONObject jsonVLocation = new JSONObject(result);
+                JSONObject jsonVPoint = jsonVLocation.getJSONObject("v_position");
+                final double latitude = jsonVPoint.getDouble("x");
+                final double longitude = jsonVPoint.getDouble("y");
+                textVLocation.setText("X:" + latitude + " Y:" + longitude);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /*protected void updateLocation(){
@@ -135,4 +202,48 @@ public class MainActivity extends Activity {
             // permissions this app might request.
         }
     }*/
+
+    /**
+     * these methods are for service
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+        //EDITED PART
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // TODO Auto-generated method stub
+            socketService = ((SocketService.LocalBinder) service).getService();
+            System.out.println("try to bind");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // TODO Auto-generated method stub
+            socketService = null;
+        }
+
+    };
+
+    private void doBindService() {
+        if (bindService(new Intent(MainActivity.this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE)) {
+            System.out.println("bind success");
+        }
+        mIsBound = true;
+        if (socketService != null) {
+            socketService.IsBoundable();
+        }
+    }
+
+    private void doUnbindService() {
+        if (mIsBound) {
+            // Detach our existing connection.
+            unbindService(mConnection);
+            mIsBound = false;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        doUnbindService();
+    }
 }
