@@ -125,7 +125,7 @@ public class SocketService extends Service {
         public void run() {
             try {
                 System.out.println("connecting socket");
-                Socket socket = new Socket("vcm-13510.vm.duke.edu", 12345);
+                Socket socket = new Socket("vcm-14299.vm.duke.edu", 1234);
                 comm = new communicator(socket);
                 latch.countDown();
             } catch (IOException e) {

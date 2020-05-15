@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Button;
@@ -36,9 +37,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startService(new Intent(MainActivity.this, SocketService.class));
-        doBindService();
-
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
         Button btnTest = (Button) findViewById(R.id.button1);
@@ -61,6 +59,9 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 // TODO
                 // updateLocation();
+                startService(new Intent(MainActivity.this, SocketService.class));
+                doBindService();
+
                 location.beginUpdates();
                 final double latitude = location.getLatitude();
                 final double longitude = location.getLongitude();
@@ -74,13 +75,32 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
 
-                JSONObject jsonLocation = new JSONObject();
+                final JSONObject jsonLocation = new JSONObject();
                 try{
                     jsonLocation.put("position", jsonPoint);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                new updateTask().execute(jsonLocation.toString());
+
+                new CountDownTimer(1000, 100) {
+                    public void onTick(long millisUntilFinished) {}
+                    public void onFinish() {
+                        try {
+                            socketService.send_msg(jsonLocation.toString()+"\n");
+                            String v_position = socketService.recv_msg();
+
+                            JSONObject jsonVLocation = new JSONObject(v_position);
+                            JSONObject jsonVPoint = jsonVLocation.getJSONObject("v_position");
+                            final double latitude = jsonVPoint.getDouble("x");
+                            final double longitude = jsonVPoint.getDouble("y");
+                            textVLocation.setText("X:" + latitude + " Y:" + longitude);
+                        }
+                        catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
+                //new updateTask().execute(jsonLocation.toString());
 
             }
 
@@ -142,7 +162,7 @@ public class MainActivity extends Activity {
         protected String doInBackground(String... params) {
             String v_position = "";
             try {
-                socketService.send_msg(params[0]);
+                socketService.send_msg(params[0]+"/n");
                 v_position = socketService.recv_msg();
             } catch (IOException e) {
                 e.printStackTrace();
