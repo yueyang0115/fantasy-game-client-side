@@ -66,6 +66,22 @@ public class MainActivity extends Activity {
                 final double longitude = location.getLongitude();
                 textLocation.setText("X:" + latitude + " Y:" + longitude);
 
+                /*JSONObject jsonPoint = new JSONObject();
+                try {
+                    jsonPoint.put("x", latitude);
+                    jsonPoint.put("y", longitude);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                JSONObject jsonLocation = new JSONObject();
+                try{
+                    jsonLocation.put("position", jsonPoint);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                new updateTask().execute(jsonLocation.toString());*/
+
             }
 
         });
