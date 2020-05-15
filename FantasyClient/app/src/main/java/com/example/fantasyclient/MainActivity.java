@@ -39,7 +39,8 @@ public class MainActivity extends Activity {
         // ...
 
         // construct a new instance of SimpleLocation
-        location = new SimpleLocation(this);
+        location = new SimpleLocation(this, true, false, 5 * 1000, true);
+        //location = new SimpleLocation(this);
 
         // if we can't access the location yet
         if (!location.hasLocationEnabled()) {
@@ -52,6 +53,8 @@ public class MainActivity extends Activity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
+                //updateLocation();
+                location.beginUpdates();
                 final double latitude = location.getLatitude();
                 final double longitude = location.getLongitude();
                 textLocation.setText("X:" + latitude + " Y:" + longitude);
@@ -66,8 +69,8 @@ public class MainActivity extends Activity {
         super.onResume();
 
         // make the device update its location
-        //location.beginUpdates();
-        updateLocation();
+        location.beginUpdates();
+        //updateLocation();
 
         // ...
     }
@@ -82,7 +85,7 @@ public class MainActivity extends Activity {
         super.onPause();
     }
 
-    protected void updateLocation(){
+    /*protected void updateLocation(){
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -131,5 +134,5 @@ public class MainActivity extends Activity {
             // other 'case' lines to check for other
             // permissions this app might request.
         }
-    }
+    }*/
 }
