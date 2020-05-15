@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
                 final double longitude = location.getLongitude();
                 textLocation.setText("X:" + latitude + " Y:" + longitude);
 
-                /*JSONObject jsonPoint = new JSONObject();
+                JSONObject jsonPoint = new JSONObject();
                 try {
                     jsonPoint.put("x", latitude);
                     jsonPoint.put("y", longitude);
@@ -80,13 +80,13 @@ public class MainActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                new updateTask().execute(jsonLocation.toString());*/
+                new updateTask().execute(jsonLocation.toString());
 
             }
 
         });
 
-        location.setListener(new SimpleLocation.Listener() {
+        /*location.setListener(new SimpleLocation.Listener() {
 
             public void onPositionChanged() {
                 // new location data has been received and can be accessed
@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
                 new updateTask().execute(jsonLocation.toString());
             }
 
-        });
+        });*/
     }
 
     @Override
