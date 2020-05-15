@@ -135,7 +135,7 @@ public class MainActivity extends Activity {
         super.onResume();
 
         // make the device update its location
-        location.beginUpdates();
+        //location.beginUpdates();
         //updateLocation();
 
         // ...
@@ -144,7 +144,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         // stop location updates (saves battery)
-        location.endUpdates();
+        //location.endUpdates();
 
         // ...
 
