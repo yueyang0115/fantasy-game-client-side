@@ -1,8 +1,10 @@
 package com.example.fantasyclient;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -19,6 +21,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ServiceConnection;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 
@@ -58,11 +63,10 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 // TODO
-                // updateLocation();
                 startService(new Intent(MainActivity.this, SocketService.class));
                 doBindService();
-
-                location.beginUpdates();
+                updateLocation();
+                //location.beginUpdates();
                 final double latitude = location.getLatitude();
                 final double longitude = location.getLongitude();
                 textLocation.setText("X:" + latitude + " Y:" + longitude);
@@ -136,7 +140,7 @@ public class MainActivity extends Activity {
 
         // make the device update its location
         //location.beginUpdates();
-        //updateLocation();
+        updateLocation();
 
         // ...
     }
@@ -144,7 +148,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         // stop location updates (saves battery)
-        //location.endUpdates();
+        location.endUpdates();
 
         // ...
 
@@ -188,7 +192,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    /*protected void updateLocation(){
+    protected void updateLocation(){
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -237,7 +241,7 @@ public class MainActivity extends Activity {
             // other 'case' lines to check for other
             // permissions this app might request.
         }
-    }*/
+    }
 
     /**
      * these methods are for service
