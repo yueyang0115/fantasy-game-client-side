@@ -45,7 +45,7 @@ public class SocketService extends Service {
         Toast.makeText(this, "I bind like butter", Toast.LENGTH_LONG).show();
     }
 
-    public void errorAlert(String msg){
+    public void errorAlert(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
@@ -54,10 +54,9 @@ public class SocketService extends Service {
         CountDownLatch sendLatch = new CountDownLatch(1);
         SendThread sendThread = new SendThread(sendLatch, comm, message);
         sendThread.start();
-        try{
+        try {
             sendLatch.await();
-        }
-        catch (InterruptedException ine){
+        } catch (InterruptedException ine) {
             System.out.println("Latch Interrupted!");
         }
         System.out.println(message);
@@ -70,10 +69,9 @@ public class SocketService extends Service {
         CountDownLatch recvLatch = new CountDownLatch(1);
         RecvThread recvThread = new RecvThread(recvLatch, comm, sb);
         recvThread.start();
-        try{
+        try {
             recvLatch.await();
-        }
-        catch (InterruptedException ine){
+        } catch (InterruptedException ine) {
             System.out.println("Latch Interrupted!");
         }
         System.out.println("\nReceive succeed!\n");
@@ -89,10 +87,9 @@ public class SocketService extends Service {
         CountDownLatch connectLatch = new CountDownLatch(1);
         ConnectThread connectThread = new ConnectThread(connectLatch);
         connectThread.start();
-        try{
+        try {
             connectLatch.await();
-        }
-        catch (InterruptedException ine){
+        } catch (InterruptedException ine) {
             System.out.println("Latch Interrupted!");
         }
         System.out.println("\nConnection succeed!\n");
@@ -133,9 +130,9 @@ public class SocketService extends Service {
             }
         }
 
-        public void start () {
+        public void start() {
             if (thisThread == null) {
-                thisThread = new Thread (this);
+                thisThread = new Thread(this);
                 thisThread.start();
             }
         }
@@ -156,18 +153,16 @@ public class SocketService extends Service {
 
         @Override
         public void run() {
-            try {
-                String msg = comms.recv_msg();
-                stringBuilder.append(msg);
-                latch.countDown();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            String msg = comms.recv_msg();
+            stringBuilder.append(msg);
+            latch.countDown();
+
         }
 
-        public void start () {
+        public void start() {
             if (thisThread == null) {
-                thisThread = new Thread (this);
+                thisThread = new Thread(this);
                 thisThread.start();
             }
         }
@@ -188,17 +183,14 @@ public class SocketService extends Service {
 
         @Override
         public void run() {
-            try {
-                comms.send_msg(msg);
-                latch.countDown();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            comms.send_msg(msg);
+            latch.countDown();
+
         }
 
-        public void start () {
+        public void start() {
             if (thisThread == null) {
-                thisThread = new Thread (this);
+                thisThread = new Thread(this);
                 thisThread.start();
             }
         }
