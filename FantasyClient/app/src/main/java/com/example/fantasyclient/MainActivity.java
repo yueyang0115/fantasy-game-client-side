@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
     TextView textLocation, textVLocation;
+    Button btnTest;
     SocketService socketService;
     boolean mIsBound;
 
@@ -43,7 +44,7 @@ public class MainActivity extends Activity {
 
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        Button btnTest = (Button) findViewById(R.id.button1);
+        btnTest = (Button) findViewById(R.id.button1);
         // ...
 
         // construct a new instance of SimpleLocation
@@ -238,7 +239,7 @@ public class MainActivity extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             // TODO Auto-generated method stub
             socketService = ((SocketService.LocalBinder) service).getService();
-            System.out.println("try to bind");
+            Log.d("Service","Try to bind");
         }
 
         @Override
@@ -251,7 +252,7 @@ public class MainActivity extends Activity {
 
     private void doBindService() {
         if (bindService(new Intent(MainActivity.this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE)) {
-            System.out.println("bind success");
+            Log.d("Service","Bind succeed");
         }
         mIsBound = true;
         if (socketService != null) {

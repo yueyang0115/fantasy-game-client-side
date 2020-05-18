@@ -19,7 +19,7 @@ public class TcpRecvThread extends SocketThread {
     public void run() {
         String msg = comms.recv_msg();
         stringBuilder.append(msg);
-        Log.e("Tcp receive finished:", msg);
+        Log.d("Tcp receive finished", msg);
         super.run();
     }
 }

@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.net.DatagramSocket;
@@ -18,8 +19,8 @@ import java.util.concurrent.CountDownLatch;
 public class SocketService extends Service {
     Socket socket;
     Communicator communicator;
-    //    static final String SERVER_IP = "vcm-13666.vm.duke.edu";
-    static final String SERVER_IP = "vcm-14299.vm.duke.edu";
+    static final String SERVER_IP = "vcm-13666.vm.duke.edu";
+    //static final String SERVER_IP = "vcm-14299.vm.duke.edu";
     DatagramSocket udpSocket;
     static final int TCP_PORT = 1234;
     static final int UDP_PORT = 5678;
@@ -27,7 +28,7 @@ public class SocketService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO Auto-generated method stub
-        System.out.println("I am in Ibinder onBind method");
+        Log.d("Service", "OnBind");
         return myBinder;
     }
 
@@ -35,7 +36,7 @@ public class SocketService extends Service {
 
     public class LocalBinder extends Binder {
         public SocketService getService() {
-            System.out.println("I am in Localbinder ");
+            Log.d("Service", "LocalBinder");
             return SocketService.this;
         }
     }
@@ -43,7 +44,7 @@ public class SocketService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        System.out.println("I am in on create");
+        Log.d("Service", "Create");
     }
 
     public void IsBoundable() {
@@ -57,55 +58,40 @@ public class SocketService extends Service {
     //send message to server
     public void sendTcpMsg(String message) {
         CountDownLatch sendLatch = new CountDownLatch(1);
-        TcpSendThread tcpSendThread = new TcpSendThread(sendLatch, communicator, message);
-        tcpSendThread.start();
-        try {
-            sendLatch.await();
-        } catch (InterruptedException ine) {
-            System.out.println("Latch Interrupted!");
-        }
+        (new TcpSendThread(sendLatch, communicator, message)).start();
+        latchAwait(sendLatch);
     }
 
     public void sendUdpMsg(String message) {
         CountDownLatch sendLatch = new CountDownLatch(1);
-        UdpSendThread udpSendThread = new UdpSendThread(sendLatch, udpSocket,message);
-        udpSendThread.start();
-        try {
-            sendLatch.await();
-        } catch (InterruptedException ine) {
-            System.out.println("Latch Interrupted!");
-        }
+        (new UdpSendThread(sendLatch, udpSocket,message)).start();
+        latchAwait(sendLatch);
     }
 
     //receive message from server
     public String recvTcpMsg() {
         StringBuilder sb = new StringBuilder();
         CountDownLatch recvLatch = new CountDownLatch(1);
-        TcpRecvThread tcpRecvThread = new TcpRecvThread(recvLatch, communicator, sb);
-        tcpRecvThread.start();
-        try {
-            recvLatch.await();
-        } catch (InterruptedException ine) {
-            System.out.println("Latch Interrupted!");
-        }
-        System.out.println("\nReceive succeed!\n");
-        System.out.println(sb.toString());
+        (new TcpRecvThread(recvLatch, communicator, sb)).start();
+        latchAwait(recvLatch);
         return sb.toString();
+    }
+
+    private void latchAwait(CountDownLatch latch){
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Log.e("Latch", "Error", e);
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("I am in on start");
+        Log.d("Service", "Start command");
         super.onStartCommand(intent, flags, startId);
-        //  Toast.makeText(this,"Service created ...", Toast.LENGTH_LONG).show();
         CountDownLatch connectLatch = new CountDownLatch(1);
-        ConnectThread connectThread = new ConnectThread(this, connectLatch);
-        connectThread.start();
-        try {
-            connectLatch.await();
-        } catch (InterruptedException ine) {
-            System.out.println("Latch Interrupted!");
-        }
+        (new ConnectThread(this, connectLatch)).start();
+        latchAwait(connectLatch);
         return START_STICKY;
     }
 
@@ -116,7 +102,7 @@ public class SocketService extends Service {
             socket.close();
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.e("Service destroy", "Error", e);
         }
         socket = null;
     }

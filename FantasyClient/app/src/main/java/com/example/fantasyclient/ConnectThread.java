@@ -24,9 +24,9 @@ public class ConnectThread extends SocketThread {
             DatagramSocket udpSocket = new DatagramSocket(SocketService.UDP_PORT);
             socketService.communicator = new Communicator(socket);
             socketService.udpSocket = udpSocket;
-            Log.e("Connection:", "Succeed");
+            Log.d("Connection", "Succeed");
         } catch (IOException e) {
-            Log.e("Connection:", "Error", e);
+            Log.d("Connection", "Error", e);
         }
         super.run();
     }
