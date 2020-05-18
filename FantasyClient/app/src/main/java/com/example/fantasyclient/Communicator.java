@@ -11,13 +11,13 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-public class communicator {
+public class Communicator {
     private Socket socket;
     private BufferedWriter bw;
     private BufferedReader br;
     private static final String TAG = "communicator";
 
-    public communicator(Socket in) {
+    public Communicator(Socket in) {
         socket = in;
         try{
             bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));

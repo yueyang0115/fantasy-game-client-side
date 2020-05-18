@@ -30,6 +30,6 @@ public class UdpSendThread extends SocketThread {
         } catch (IOException e) {
             Log.e("Udp Send:", "IO Error:", e);
         }
-        latch.countDown();
+        super.run();
     }
 }

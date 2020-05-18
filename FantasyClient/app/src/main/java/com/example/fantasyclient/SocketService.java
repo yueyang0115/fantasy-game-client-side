@@ -6,7 +6,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
 
@@ -17,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SocketService extends Service {
     Socket socket;
-    communicator comm;
+    Communicator communicator;
     static final String SERVER_IP = "vcm-14299.vm.duke.edu";
     static final int TCP_PORT = 1234;
     static final int UDP_PORT = 5678;
@@ -55,7 +54,7 @@ public class SocketService extends Service {
     //send message to server
     public void sendTcpMsg(String message) {
         CountDownLatch sendLatch = new CountDownLatch(1);
-        TcpSendThread tcpSendThread = new TcpSendThread(sendLatch, comm, message);
+        TcpSendThread tcpSendThread = new TcpSendThread(sendLatch, communicator, message);
         tcpSendThread.start();
         try {
             sendLatch.await();
@@ -83,7 +82,7 @@ public class SocketService extends Service {
     public String recvTcpMsg() {
         StringBuilder sb = new StringBuilder();
         CountDownLatch recvLatch = new CountDownLatch(1);
-        TcpRecvThread tcpRecvThread = new TcpRecvThread(recvLatch, comm, sb);
+        TcpRecvThread tcpRecvThread = new TcpRecvThread(recvLatch, communicator, sb);
         tcpRecvThread.start();
         try {
             recvLatch.await();

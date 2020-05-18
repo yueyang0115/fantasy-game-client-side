@@ -19,7 +19,7 @@ public class ServerMock {
 
     private void acceptPlayer() throws IOException {
         Socket sockToClient = listenSocket.accept();
-        communicator newCommunicator = new communicator(sockToClient); // create a new communicator
+        Communicator newCommunicator = new Communicator(sockToClient); // create a new communicator
         System.out.println("Accepted Host!");
         System.out.println("Handshake Host!");
         String msg = newCommunicator.recv_msg();

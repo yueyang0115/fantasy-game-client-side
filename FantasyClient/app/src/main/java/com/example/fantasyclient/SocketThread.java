@@ -19,5 +19,6 @@ public class SocketThread  implements Runnable {
 
     @Override
     public void run() {
+        latch.countDown();
     }
 }

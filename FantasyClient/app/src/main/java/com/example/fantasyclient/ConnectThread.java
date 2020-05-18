@@ -18,10 +18,10 @@ public class ConnectThread extends SocketThread {
         try {
             System.out.println("connecting socket");
             Socket socket = new Socket(SocketService.SERVER_IP, SocketService.TCP_PORT);
-            socketService.comm = new communicator(socket);
-            latch.countDown();
+            socketService.communicator = new Communicator(socket);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        super.run();
     }
 }

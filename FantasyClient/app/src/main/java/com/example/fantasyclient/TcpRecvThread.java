@@ -4,10 +4,10 @@ import java.util.concurrent.CountDownLatch;
 
 //thread to receive message
 public class TcpRecvThread extends SocketThread {
-    private final communicator comms;
+    private final Communicator comms;
     private StringBuilder stringBuilder;
 
-    public TcpRecvThread(CountDownLatch latch, final communicator comms, StringBuilder stringBuilder) {
+    public TcpRecvThread(CountDownLatch latch, final Communicator comms, StringBuilder stringBuilder) {
         super(latch);
         this.comms = comms;
         this.stringBuilder = stringBuilder;
@@ -17,6 +17,6 @@ public class TcpRecvThread extends SocketThread {
     public void run() {
         String msg = comms.recv_msg();
         stringBuilder.append(msg);
-        latch.countDown();
+        super.run();
     }
 }
