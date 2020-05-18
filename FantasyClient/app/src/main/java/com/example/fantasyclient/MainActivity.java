@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
-import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Button;
@@ -88,8 +87,11 @@ public class MainActivity extends Activity {
 
 
                 try {
-                    socketService.send_msg(jsonLocation.toString()+"\n");
-                    String v_position = socketService.recv_msg();
+                    socketService.sendTcpMsg(jsonLocation.toString()+"\n");
+                    String v_position = socketService.recvTcpMsg();
+
+                    //for testing
+                    socketService.sendUdpMsg(jsonLocation.toString()+"\n");
 
                     JSONObject jsonVLocation = new JSONObject(v_position);
                     JSONObject jsonVPoint = jsonVLocation.getJSONObject("v_position");
@@ -97,7 +99,7 @@ public class MainActivity extends Activity {
                     double v_longitude = jsonVPoint.getDouble("y");
                     textVLocation.setText("X:" + v_latitude + " Y:" + v_longitude);
                 }
-                catch (IOException | JSONException e) {
+                catch (JSONException e) {
                     e.printStackTrace();
                 }
 
@@ -151,21 +153,15 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * this AsyncTask runs in background when someone lose or win
-     * it will receive msg from server and update UI
-     * if game is over, a button to start a new game will appear
+     * this AsyncTask runs in background
      */
     @SuppressLint("StaticFieldLeak")
     class updateTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
             String v_position = "";
-            try {
-                socketService.send_msg(params[0]+"/n");
-                v_position = socketService.recv_msg();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            socketService.sendTcpMsg(params[0]+"/n");
+            v_position = socketService.recvTcpMsg();
             return v_position;
         }
 

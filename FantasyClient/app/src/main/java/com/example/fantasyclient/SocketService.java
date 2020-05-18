@@ -18,6 +18,9 @@ import java.util.concurrent.CountDownLatch;
 public class SocketService extends Service {
     Socket socket;
     communicator comm;
+    static final String SERVER_IP = "vcm-14299.vm.duke.edu";
+    static final int TCP_PORT = 1234;
+    static final int UDP_PORT = 5678;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -50,10 +53,23 @@ public class SocketService extends Service {
     }
 
     //send message to server
-    public void send_msg(String message) throws IOException {
+    public void sendTcpMsg(String message) {
         CountDownLatch sendLatch = new CountDownLatch(1);
-        SendThread sendThread = new SendThread(sendLatch, comm, message);
-        sendThread.start();
+        TcpSendThread tcpSendThread = new TcpSendThread(sendLatch, comm, message);
+        tcpSendThread.start();
+        try {
+            sendLatch.await();
+        } catch (InterruptedException ine) {
+            System.out.println("Latch Interrupted!");
+        }
+        System.out.println(message);
+        System.out.println("\nSend succeed!\n");
+    }
+
+    public void sendUdpMsg(String message) {
+        CountDownLatch sendLatch = new CountDownLatch(1);
+        UdpSendThread udpSendThread = new UdpSendThread(sendLatch, message);
+        udpSendThread.start();
         try {
             sendLatch.await();
         } catch (InterruptedException ine) {
@@ -64,11 +80,11 @@ public class SocketService extends Service {
     }
 
     //receive message from server
-    public String recv_msg() throws IOException {
+    public String recvTcpMsg() {
         StringBuilder sb = new StringBuilder();
         CountDownLatch recvLatch = new CountDownLatch(1);
-        RecvThread recvThread = new RecvThread(recvLatch, comm, sb);
-        recvThread.start();
+        TcpRecvThread tcpRecvThread = new TcpRecvThread(recvLatch, comm, sb);
+        tcpRecvThread.start();
         try {
             recvLatch.await();
         } catch (InterruptedException ine) {
@@ -85,7 +101,7 @@ public class SocketService extends Service {
         super.onStartCommand(intent, flags, startId);
         //  Toast.makeText(this,"Service created ...", Toast.LENGTH_LONG).show();
         CountDownLatch connectLatch = new CountDownLatch(1);
-        ConnectThread connectThread = new ConnectThread(connectLatch);
+        ConnectThread connectThread = new ConnectThread(this, connectLatch);
         connectThread.start();
         try {
             connectLatch.await();
@@ -107,93 +123,6 @@ public class SocketService extends Service {
             e.printStackTrace();
         }
         socket = null;
-    }
-
-    //thread to connect server
-    public class ConnectThread implements Runnable {
-        private CountDownLatch latch;
-        private Thread thisThread;
-
-        public ConnectThread(CountDownLatch latch) {
-            this.latch = latch;
-        }
-
-        @Override
-        public void run() {
-            try {
-                System.out.println("connecting socket");
-                Socket socket = new Socket("vcm-14299.vm.duke.edu", 1234);
-                comm = new communicator(socket);
-                latch.countDown();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void start() {
-            if (thisThread == null) {
-                thisThread = new Thread(this);
-                thisThread.start();
-            }
-        }
-    }
-
-    //thread to receive message
-    public class RecvThread implements Runnable {
-        private CountDownLatch latch;
-        private final communicator comms;
-        private StringBuilder stringBuilder;
-        private Thread thisThread;
-
-        public RecvThread(CountDownLatch latch, final communicator comms, StringBuilder stringBuilder) {
-            this.latch = latch;
-            this.comms = comms;
-            this.stringBuilder = stringBuilder;
-        }
-
-        @Override
-        public void run() {
-
-            String msg = comms.recv_msg();
-            stringBuilder.append(msg);
-            latch.countDown();
-
-        }
-
-        public void start() {
-            if (thisThread == null) {
-                thisThread = new Thread(this);
-                thisThread.start();
-            }
-        }
-    }
-
-    //thread to send message
-    public class SendThread implements Runnable {
-        private CountDownLatch latch;
-        private final communicator comms;
-        private final String msg;
-        private Thread thisThread;
-
-        public SendThread(CountDownLatch latch, final communicator comms, final String msg) {
-            this.latch = latch;
-            this.comms = comms;
-            this.msg = msg;
-        }
-
-        @Override
-        public void run() {
-            comms.send_msg(msg);
-            latch.countDown();
-
-        }
-
-        public void start() {
-            if (thisThread == null) {
-                thisThread = new Thread(this);
-                thisThread.start();
-            }
-        }
     }
 }
 
