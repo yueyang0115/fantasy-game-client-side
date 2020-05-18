@@ -25,6 +25,7 @@ public class UdpSendThread extends SocketThread {
             byte[] buf = msg.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, buf.length,serverAddr, SocketService.UDP_PORT);
             udpSocket.send(packet);
+            Log.e("Udp send succeed:", msg);
         } catch (SocketException e) {
             Log.e("Udp:", "Socket Error:", e);
         } catch (IOException e) {

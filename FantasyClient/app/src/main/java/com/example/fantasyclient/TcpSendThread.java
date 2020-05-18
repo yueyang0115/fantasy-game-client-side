@@ -1,5 +1,7 @@
 package com.example.fantasyclient;
 
+import android.util.Log;
+
 import java.util.concurrent.CountDownLatch;
 
 //thread to send message
@@ -16,6 +18,7 @@ public class TcpSendThread extends SocketThread {
     @Override
     public void run() {
         comms.send_msg(msg);
+        Log.e("Tcp send finished:", msg);
         super.run();
     }
 }

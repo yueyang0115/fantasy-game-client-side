@@ -1,5 +1,7 @@
 package com.example.fantasyclient;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
@@ -19,8 +21,9 @@ public class ConnectThread extends SocketThread {
             System.out.println("connecting socket");
             Socket socket = new Socket(SocketService.SERVER_IP, SocketService.TCP_PORT);
             socketService.communicator = new Communicator(socket);
+            Log.e("Connection:", "Succeed");
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("Connection:", "Error", e);
         }
         super.run();
     }

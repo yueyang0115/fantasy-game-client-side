@@ -1,5 +1,7 @@
 package com.example.fantasyclient;
 
+import android.util.Log;
+
 import java.util.concurrent.CountDownLatch;
 
 //thread to receive message
@@ -17,6 +19,7 @@ public class TcpRecvThread extends SocketThread {
     public void run() {
         String msg = comms.recv_msg();
         stringBuilder.append(msg);
+        Log.e("Tcp receive finished:", msg);
         super.run();
     }
 }

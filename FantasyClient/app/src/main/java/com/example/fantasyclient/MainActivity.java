@@ -86,22 +86,17 @@ public class MainActivity extends Activity {
                 }
 
 
-                try {
-                    socketService.sendTcpMsg(jsonLocation.toString()+"\n");
-                    String v_position = socketService.recvTcpMsg();
+                //socketService.sendTcpMsg(jsonLocation.toString()+"\n");
+                //String v_position = socketService.recvTcpMsg();
 
-                    //for testing
-                    socketService.sendUdpMsg(jsonLocation.toString()+"\n");
+                //for testing
+                socketService.sendUdpMsg(jsonLocation.toString()+"\n");
 
-                    JSONObject jsonVLocation = new JSONObject(v_position);
+                    /*JSONObject jsonVLocation = new JSONObject(v_position);
                     JSONObject jsonVPoint = jsonVLocation.getJSONObject("v_position");
                     double v_latitude = jsonVPoint.getDouble("x");
                     double v_longitude = jsonVPoint.getDouble("y");
-                    textVLocation.setText("X:" + v_latitude + " Y:" + v_longitude);
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    textVLocation.setText("X:" + v_latitude + " Y:" + v_longitude);*/
 
             }
 
