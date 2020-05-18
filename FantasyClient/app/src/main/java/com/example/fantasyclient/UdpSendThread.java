@@ -11,16 +11,18 @@ import java.util.concurrent.CountDownLatch;
 
 public class UdpSendThread extends SocketThread {
     private final String msg;
+    private final DatagramSocket udpSocket;
 
-    public UdpSendThread(CountDownLatch latch, final String msg) {
+
+    public UdpSendThread(CountDownLatch latch, DatagramSocket udpSocket,final String msg) {
         super(latch);
         this.msg = msg;
+        this.udpSocket = udpSocket;
     }
 
     @Override
     public void run() {
         try {
-            DatagramSocket udpSocket = new DatagramSocket(SocketService.UDP_PORT);
             InetAddress serverAddr = InetAddress.getByName(SocketService.SERVER_IP);
             byte[] buf = msg.getBytes();
             DatagramPacket packet = new DatagramPacket(buf, buf.length,serverAddr, SocketService.UDP_PORT);

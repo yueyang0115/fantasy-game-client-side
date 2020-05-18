@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
 
+import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
 
@@ -17,7 +18,9 @@ import java.util.concurrent.CountDownLatch;
 public class SocketService extends Service {
     Socket socket;
     Communicator communicator;
-    static final String SERVER_IP = "vcm-13666.vm.duke.edu";
+    //    static final String SERVER_IP = "vcm-13666.vm.duke.edu";
+    static final String SERVER_IP = "vcm-14299.vm.duke.edu";
+    DatagramSocket udpSocket;
     static final int TCP_PORT = 1234;
     static final int UDP_PORT = 5678;
 
@@ -65,7 +68,7 @@ public class SocketService extends Service {
 
     public void sendUdpMsg(String message) {
         CountDownLatch sendLatch = new CountDownLatch(1);
-        UdpSendThread udpSendThread = new UdpSendThread(sendLatch, message);
+        UdpSendThread udpSendThread = new UdpSendThread(sendLatch, udpSocket,message);
         udpSendThread.start();
         try {
             sendLatch.await();
