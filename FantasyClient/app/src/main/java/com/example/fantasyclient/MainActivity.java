@@ -9,7 +9,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,7 +26,8 @@ import android.content.ServiceConnection;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -65,40 +68,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 // TODO
-                updateLocation();
-                //location.beginUpdates();
-                final double latitude = location.getLatitude();
-                final double longitude = location.getLongitude();
-                textLocation.setText("X:" + latitude + " Y:" + longitude);
-
-                JSONObject jsonPoint = new JSONObject();
-                try {
-                    jsonPoint.put("x", latitude);
-                    jsonPoint.put("y", longitude);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                final JSONObject jsonLocation = new JSONObject();
-                try{
-                    jsonLocation.put("position", jsonPoint);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                //socketService.sendTcpMsg(jsonLocation.toString()+"\n");
-                //String v_position = socketService.recvTcpMsg();
-
-                //for testing
-                socketService.sendUdpMsg(jsonLocation.toString()+"\n");
-
-                    /*JSONObject jsonVLocation = new JSONObject(v_position);
-                    JSONObject jsonVPoint = jsonVLocation.getJSONObject("v_position");
-                    double v_latitude = jsonVPoint.getDouble("x");
-                    double v_longitude = jsonVPoint.getDouble("y");
-                    textVLocation.setText("X:" + v_latitude + " Y:" + v_longitude);*/
-
+                startSendLocation();
             }
 
         });
@@ -151,17 +121,54 @@ public class MainActivity extends Activity {
     /**
      * this AsyncTask runs in background
      */
+    public void startSendLocation() {
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask doAsyncTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            updateLocation();
+                            final double latitude = location.getLatitude();
+                            final double longitude = location.getLongitude();
+                            //textLocation.setText("X:" + latitude + " Y:" + longitude);
+                            JSONObject jsonPoint = new JSONObject();
+                            try {
+                                jsonPoint.put("x", latitude);
+                                jsonPoint.put("y", longitude);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            final JSONObject jsonLocation = new JSONObject();
+                            try{
+                                jsonLocation.put("position", jsonPoint);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            sendLocationTask sendLocTask = new sendLocationTask();
+                            sendLocTask.execute(jsonLocation.toString());
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
+    }
+
     @SuppressLint("StaticFieldLeak")
-    class updateTask extends AsyncTask<String, Void, String> {
+    class sendLocationTask extends AsyncTask<String, Void, Void> {
+        @SuppressLint("SetTextI18n")
         @Override
-        protected String doInBackground(String... params) {
-            String v_position = "";
-            socketService.sendTcpMsg(params[0]+"/n");
-            v_position = socketService.recvTcpMsg();
-            return v_position;
+        protected Void doInBackground(String... msg) {
+            socketService.sendUdpMsg(msg[0]);
+            return null;
         }
 
-        @SuppressLint("SetTextI18n")
+        /*@SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
@@ -176,9 +183,12 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
+    /**
+     * these two methods ask for location permission
+     */
     protected void updateLocation(){
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
