@@ -7,15 +7,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.concurrent.CountDownLatch;
 
 public class UdpSendThread extends SocketThread {
     private final String msg;
     private final DatagramSocket udpSocket;
 
 
-    public UdpSendThread(CountDownLatch latch, DatagramSocket udpSocket,final String msg) {
-        super(latch);
+    public UdpSendThread(DatagramSocket udpSocket,final String msg) {
         this.msg = msg;
         this.udpSocket = udpSocket;
     }
@@ -33,6 +31,5 @@ public class UdpSendThread extends SocketThread {
         } catch (IOException e) {
             Log.e("Udp Send", "IO Error:", e);
         }
-        super.run();
     }
 }

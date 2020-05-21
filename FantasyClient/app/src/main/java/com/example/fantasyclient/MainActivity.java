@@ -2,16 +2,10 @@ package com.example.fantasyclient;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,8 +15,6 @@ import android.view.View;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.ServiceConnection;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -31,14 +23,12 @@ import java.util.TimerTask;
 
 import im.delight.android.location.SimpleLocation;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
     TextView textLocation, textVLocation;
     Button btnTest;
-    SocketService socketService;
-    boolean mIsBound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +37,7 @@ public class MainActivity extends Activity {
 
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        btnTest = (Button) findViewById(R.id.button1);
+        btnTest = (Button) findViewById(R.id.btn_start);
         // ...
 
         // construct a new instance of SimpleLocation
@@ -60,7 +50,7 @@ public class MainActivity extends Activity {
             SimpleLocation.openSettings(this);
         }
 
-        startService(new Intent(MainActivity.this, SocketService.class));
+        //startService(new Intent(MainActivity.this, SocketService.class));
         doBindService();
 
         btnTest.setOnClickListener(new View.OnClickListener() {
@@ -68,33 +58,29 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 // TODO
-                startSendLocation();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                startSendLocation();
+                            }
+                        });
+                    }
+                }.start();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                startRecvTerr();
+                            }
+                        });
+                    }
+                }.start();
             }
 
         });
-
-        /*location.setListener(new SimpleLocation.Listener() {
-
-            public void onPositionChanged() {
-                // new location data has been received and can be accessed
-                JSONObject jsonPoint = new JSONObject();
-                try {
-                    jsonPoint.put("x", location.getLatitude());
-                    jsonPoint.put("y", location.getLongitude());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                JSONObject jsonLocation = new JSONObject();
-                try{
-                    jsonLocation.put("position", jsonPoint);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                new updateTask().execute(jsonLocation.toString());
-            }
-
-        });*/
     }
 
     @Override
@@ -131,24 +117,8 @@ public class MainActivity extends Activity {
                     public void run() {
                         try {
                             updateLocation();
-                            final double latitude = location.getLatitude();
-                            final double longitude = location.getLongitude();
-                            //textLocation.setText("X:" + latitude + " Y:" + longitude);
-                            JSONObject jsonPoint = new JSONObject();
-                            try {
-                                jsonPoint.put("x", latitude);
-                                jsonPoint.put("y", longitude);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            final JSONObject jsonLocation = new JSONObject();
-                            try{
-                                jsonLocation.put("position", jsonPoint);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            sendLocationTask sendLocTask = new sendLocationTask();
-                            sendLocTask.execute(jsonLocation.toString());
+                            String msg = JsonHandler.serialLocation(location.getLatitude(),location.getLongitude());
+                            (new sendLocationTask()).execute(msg);
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                         }
@@ -161,29 +131,59 @@ public class MainActivity extends Activity {
 
     @SuppressLint("StaticFieldLeak")
     class sendLocationTask extends AsyncTask<String, Void, Void> {
-        @SuppressLint("SetTextI18n")
         @Override
         protected Void doInBackground(String... msg) {
             socketService.sendUdpMsg(msg[0]);
             return null;
         }
+    }
 
-        /*@SuppressLint("SetTextI18n")
+    public void startRecvTerr() {
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask doAsyncTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            new recvTerrTask().execute();
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class recvTerrTask extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... voids) {
+            return socketService.recvTcpMsg();
+        }
+
+        @SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            Log.e("v_position", result); // this is expecting a response code to be sent from your server upon receiving the POST data
-
-            try {
-                JSONObject jsonVLocation = new JSONObject(result);
-                JSONObject jsonVPoint = jsonVLocation.getJSONObject("v_position");
-                final double latitude = jsonVPoint.getDouble("x");
-                final double longitude = jsonVPoint.getDouble("y");
-                textVLocation.setText("X:" + latitude + " Y:" + longitude);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(result!="") {
+                try {
+                    JSONObject jsonVPosition = new JSONObject(result);
+                    JSONObject jsonVPoint = jsonVPosition.getJSONObject("v_position");
+                    final double latitude = jsonVPoint.getDouble("x");
+                    final double longitude = jsonVPoint.getDouble("y");
+                    textVLocation.setText("X:" + latitude + " Y:" + longitude);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        }*/
+            else{
+                Log.e("Receive", "empty");
+            }
+        }
     }
 
     /**
@@ -234,53 +234,8 @@ public class MainActivity extends Activity {
                 }
                 return;
             }
-
             // other 'case' lines to check for other
             // permissions this app might request.
         }
-    }
-
-    /**
-     * these methods are for service
-     */
-    private ServiceConnection mConnection = new ServiceConnection() {
-        //EDITED PART
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            // TODO Auto-generated method stub
-            socketService = ((SocketService.LocalBinder) service).getService();
-            Log.d("Service","Try to bind");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            // TODO Auto-generated method stub
-            socketService = null;
-        }
-
-    };
-
-    private void doBindService() {
-        if (bindService(new Intent(MainActivity.this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE)) {
-            Log.d("Service","Bind succeed");
-        }
-        mIsBound = true;
-        if (socketService != null) {
-            socketService.IsBoundable();
-        }
-    }
-
-    private void doUnbindService() {
-        if (mIsBound) {
-            // Detach our existing connection.
-            unbindService(mConnection);
-            mIsBound = false;
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        doUnbindService();
     }
 }

@@ -57,41 +57,25 @@ public class SocketService extends Service {
 
     //send message to server
     public void sendTcpMsg(String message) {
-        CountDownLatch sendLatch = new CountDownLatch(1);
-        (new TcpSendThread(sendLatch, communicator, message)).start();
-        latchAwait(sendLatch);
+        (new TcpSendThread(communicator, message)).start();
     }
 
     public void sendUdpMsg(String message) {
-        CountDownLatch sendLatch = new CountDownLatch(1);
-        (new UdpSendThread(sendLatch, udpSocket,message)).start();
-        latchAwait(sendLatch);
+        (new UdpSendThread(udpSocket,message)).start();
     }
 
     //receive message from server
     public String recvTcpMsg() {
         StringBuilder sb = new StringBuilder();
-        CountDownLatch recvLatch = new CountDownLatch(1);
-        (new TcpRecvThread(recvLatch, communicator, sb)).start();
-        latchAwait(recvLatch);
+        (new TcpRecvThread(communicator, sb)).start();
         return sb.toString();
-    }
-
-    private void latchAwait(CountDownLatch latch){
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Log.e("Latch", "Error", e);
-        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("Service", "Start command");
         super.onStartCommand(intent, flags, startId);
-        CountDownLatch connectLatch = new CountDownLatch(1);
-        (new ConnectThread(this, connectLatch)).start();
-        latchAwait(connectLatch);
+        (new ConnectThread(this)).start();
         return START_STICKY;
     }
 

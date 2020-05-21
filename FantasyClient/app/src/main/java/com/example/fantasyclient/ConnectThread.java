@@ -5,14 +5,12 @@ import android.util.Log;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.Socket;
-import java.util.concurrent.CountDownLatch;
 
 //thread to connect server
 public class ConnectThread extends SocketThread {
     private SocketService socketService;
 
-    public ConnectThread(SocketService socketService, CountDownLatch latch) {
-        super(latch);
+    public ConnectThread(SocketService socketService) {
         this.socketService = socketService;
     }
 
@@ -28,6 +26,5 @@ public class ConnectThread extends SocketThread {
         } catch (IOException e) {
             Log.d("Connection", "Error", e);
         }
-        super.run();
     }
 }
