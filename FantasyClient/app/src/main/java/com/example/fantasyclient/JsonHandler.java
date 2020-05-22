@@ -21,8 +21,8 @@ public class JsonHandler {
         JSONObject jsonLocation = new JSONObject();
         try {
             jsonLocation.put("type", "position");
-            jsonLocation.put("x", (float)x);
-            jsonLocation.put("y", (float)y);
+            jsonLocation.put("x", x);
+            jsonLocation.put("y", y);
         } catch (JSONException e) {
             e.printStackTrace();
         }

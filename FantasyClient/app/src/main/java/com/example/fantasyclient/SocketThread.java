@@ -1,7 +1,7 @@
 package com.example.fantasyclient;
 
 public class SocketThread  implements Runnable {
-    private Thread thisThread;
+    protected Thread thisThread;
 
     public void start() {
         if (thisThread == null) {

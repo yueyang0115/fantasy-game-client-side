@@ -29,8 +29,10 @@ public class UserSignUpActivity extends UserBaseActivity{
                     String msg = JsonHandler.serialUserInfo(textUsername.getText().toString(),
                             textPassword.getText().toString(),"signup");
                     socketService.sendTcpMsg(msg);
+                    String result = socketService.recvTcpMsg();
+                    Log.d("Result", result);
                     try {
-                        JSONObject jsonResult = new JSONObject(socketService.recvTcpMsg());
+                        JSONObject jsonResult = new JSONObject(result);
                         if(jsonResult.getString("status").equals("success")){
                             launchLogin();
                         } else{

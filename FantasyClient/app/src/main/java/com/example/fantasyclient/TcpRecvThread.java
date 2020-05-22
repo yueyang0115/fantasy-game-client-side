@@ -18,4 +18,12 @@ public class TcpRecvThread extends SocketThread {
         stringBuilder.append(msg);
         Log.d("Tcp receive finished", msg);
     }
+
+    @Override
+    public void start () {
+        if (thisThread == null) {
+            thisThread = new Thread (this);
+            thisThread.start();
+        }
+    }
 }

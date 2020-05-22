@@ -41,6 +41,8 @@ public class Communicator {
     public String recv_msg()  {
         String msg="";
         try{
+            while(!br.ready()){
+            }
             msg=br.readLine();
         } catch(IOException e){
             Log.e(TAG,"Failed to receive data!");
