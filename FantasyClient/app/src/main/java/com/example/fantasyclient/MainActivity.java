@@ -18,6 +18,9 @@ import org.json.JSONObject;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.fantasyclient.json.JsonHandler;
+import com.example.fantasyclient.json.PositionSend;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -117,7 +120,9 @@ public class MainActivity extends BaseActivity {
                     public void run() {
                         try {
                             updateLocation();
-                            String msg = JsonHandler.serialLocation(location.getLatitude(),location.getLongitude());
+                            PositionSend p = new PositionSend(
+                                    "position", location.getLatitude(),location.getLongitude());
+                            String msg = (new JsonHandler(p)).serialize();
                             (new sendLocationTask()).execute(msg);
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
@@ -133,7 +138,7 @@ public class MainActivity extends BaseActivity {
     class sendLocationTask extends AsyncTask<String, Void, Void> {
         @Override
         protected Void doInBackground(String... msg) {
-            socketService.sendUdpMsg(msg[0]);
+            socketService.sendTcpMsg(msg[0]);
             return null;
         }
     }

@@ -1,5 +1,7 @@
 package com.example.fantasyclient;
 
+import com.example.fantasyclient.thread.Communicator;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

@@ -1,6 +1,8 @@
-package com.example.fantasyclient;
+package com.example.fantasyclient.thread;
 
 import android.util.Log;
+
+import com.example.fantasyclient.SocketService;
 
 import java.io.IOException;
 import java.net.DatagramSocket;

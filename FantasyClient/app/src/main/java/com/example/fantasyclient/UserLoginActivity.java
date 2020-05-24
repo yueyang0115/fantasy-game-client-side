@@ -1,18 +1,19 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.fantasyclient.json.JsonHandler;
+import com.example.fantasyclient.json.LoginRecv;
+import com.example.fantasyclient.json.LoginSend;
 
-
+/**
+ * This is login activity
+ */
 @SuppressLint("Registered")
 public class UserLoginActivity extends UserBaseActivity{
     Button signUp;
@@ -21,32 +22,36 @@ public class UserLoginActivity extends UserBaseActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        textUsername = findViewById(R.id.username);
-        textPassword = findViewById(R.id.password);
-        submit = findViewById(R.id.submit);
-        signUp = findViewById(R.id.sign_up);
-        //startService(new Intent(UserLoginActivity.this, SocketService.class));
+        findView();
+
+        //bind socket service
         doBindService();
 
         submit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                //ensure all required data has been entered
                 if(checkDataEntered()){
-                    String msg = JsonHandler.serialUserInfo(textUsername.getText().toString(),
-                            textPassword.getText().toString(),"login");
-                    socketService.sendTcpMsg(msg);
-                    String result = socketService.recvTcpMsg();
-                    try {
-                        JSONObject jsonResult = new JSONObject(result);
-                        if(jsonResult.getString("status").equals("success")){
-                            launchGame();
-                        } else{
-                            String errorMsg = jsonResult.getString("error_msg");
-                            Log.e("Login",errorMsg);
-                            socketService.errorAlert(errorMsg);
-                        }
-                    } catch (JSONException e) {
-                        Log.e("Login","Invalid JSON user information");
+
+                    //serialize sign up information and send to server
+                    sendData(new LoginSend("login", textUsername.getText().toString(),
+                            textPassword.getText().toString()));
+
+                    //receive data from server
+                    String result = recvData();
+
+                    //deserialize feedback from server
+                    LoginRecv loginRecv = new LoginRecv();
+                    JsonHandler jsonHandler = new JsonHandler(loginRecv);
+                    loginRecv = (LoginRecv) jsonHandler.deserialize(loginRecv,result);
+
+                    //check login result
+                    if (loginRecv.getStatus().equals("success")) {
+                        launchGame();
+                    } else {
+                        String errorMsg = loginRecv.getError_msg();
+                        Log.e("Sign Up", errorMsg);
+                        socketService.errorAlert(errorMsg);
                     }
                 }
             }
@@ -58,5 +63,11 @@ public class UserLoginActivity extends UserBaseActivity{
                 launchSignUp();
             }
         });
+    }
+
+    @Override
+    protected void findView(){
+        super.findView();
+        signUp = findViewById(R.id.sign_up);
     }
 }

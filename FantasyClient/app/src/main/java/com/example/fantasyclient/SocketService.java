@@ -7,6 +7,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.fantasyclient.thread.Communicator;
+import com.example.fantasyclient.thread.ConnectThread;
+import com.example.fantasyclient.thread.TcpRecvThread;
+import com.example.fantasyclient.thread.TcpSendThread;
+import com.example.fantasyclient.thread.UdpSendThread;
+
 import java.net.DatagramSocket;
 import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
@@ -17,13 +23,13 @@ import java.util.concurrent.CountDownLatch;
  * then bound to each activity when needed
  */
 public class SocketService extends Service {
-    Socket socket;
-    Communicator communicator;
-    static final String SERVER_IP = "vcm-13666.vm.duke.edu";
+    public Socket socket;
+    public Communicator communicator;
+    public static final String SERVER_IP = "vcm-13666.vm.duke.edu";
     //static final String SERVER_IP = "vcm-14299.vm.duke.edu";
-    DatagramSocket udpSocket;
-    static final int TCP_PORT = 1234;
-    static final int UDP_PORT = 5678;
+    public DatagramSocket udpSocket;
+    public static final int TCP_PORT = 1234;
+    public static final int UDP_PORT = 5678;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -67,7 +73,14 @@ public class SocketService extends Service {
     //receive message from server
     public String recvTcpMsg() {
         StringBuilder sb = new StringBuilder();
-        (new TcpRecvThread(communicator, sb)).start();
+        CountDownLatch recvLatch = new CountDownLatch(1);
+        (new TcpRecvThread(recvLatch, communicator, sb)).start();
+        try{
+            recvLatch.await();
+        }
+        catch (InterruptedException ine){
+            System.out.println("Latch Interrupted!");
+        }
         return sb.toString();
     }
 

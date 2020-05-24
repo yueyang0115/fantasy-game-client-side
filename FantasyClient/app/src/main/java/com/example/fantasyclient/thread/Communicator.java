@@ -1,4 +1,4 @@
-package com.example.fantasyclient;
+package com.example.fantasyclient.thread;
 
 import android.util.Log;
 

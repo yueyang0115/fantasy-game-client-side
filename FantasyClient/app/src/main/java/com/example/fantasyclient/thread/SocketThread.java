@@ -1,7 +1,10 @@
-package com.example.fantasyclient;
+package com.example.fantasyclient.thread;
+
+import java.util.concurrent.CountDownLatch;
 
 public class SocketThread  implements Runnable {
-    protected Thread thisThread;
+    Thread thisThread;
+    CountDownLatch latch;
 
     public void start() {
         if (thisThread == null) {
