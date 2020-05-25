@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public class JsonHandler {
     private ObjectMapper objectMapper;
-    private JsonBase target;
+    private MessagesC2S target;
 
-    public JsonHandler(JsonBase target) {
+    public JsonHandler(MessagesC2S target) {
         objectMapper = new ObjectMapper();
         this.target = target;
     }
@@ -26,9 +26,9 @@ public class JsonHandler {
         return msg;
     }
 
-    public JsonBase deserialize(JsonBase targetType, String string){
+    public MessagesC2S deserialize(MessagesC2S msg, String string){
         try {
-            target = (JsonBase) objectMapper.readValue(string, targetType.getClass());
+            target = (MessagesC2S) objectMapper.readValue(string, MessagesC2S.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

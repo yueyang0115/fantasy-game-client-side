@@ -7,10 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
-
-import android.view.View;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.fantasyclient.json.JsonHandler;
-import com.example.fantasyclient.json.PositionSend;
+import com.example.fantasyclient.json.PositionUpdateMessage;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -141,7 +138,7 @@ public class MainActivity extends BaseActivity {
                     public void run() {
                         try {
                             updateLocation();
-                            PositionSend p = new PositionSend(
+                            PositionUpdateMessage p = new PositionUpdateMessage(
                                     "position", location.getLatitude(),location.getLongitude());
                             String msg = (new JsonHandler(p)).serialize();
                             (new sendLocationTask()).execute(msg);

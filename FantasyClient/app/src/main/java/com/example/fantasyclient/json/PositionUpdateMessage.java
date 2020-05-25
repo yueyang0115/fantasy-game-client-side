@@ -1,10 +1,10 @@
 package com.example.fantasyclient.json;
 
-public class PositionSend extends JsonBase{
+public class PositionUpdateMessage extends JsonBase{
     private double x;
     private double y;
 
-    public PositionSend(String type, double x, double y) {
+    public PositionUpdateMessage(String type, double x, double y) {
         super();
         this.type = type;
         this.x = x;

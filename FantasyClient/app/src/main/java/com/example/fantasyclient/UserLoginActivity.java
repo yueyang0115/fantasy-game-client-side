@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 
 import com.example.fantasyclient.json.*;
 
@@ -31,7 +30,7 @@ public class UserLoginActivity extends UserBaseActivity{
                 if(checkDataEntered()){
 
                     //serialize sign up information and send to server
-                    sendData(new LoginSend("login", textUsername.getText().toString(),
+                    sendData(new LoginInfoMessage("login", textUsername.getText().toString(),
                             textPassword.getText().toString()));
 
                     //receive data from server
