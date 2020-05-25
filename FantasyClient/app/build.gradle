@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+def getUrl() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty("server_ip");
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -12,6 +18,8 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        resValue "string", "SERVER_IP", "\""+getUrl()+"\""
     }
 
     buildTypes {

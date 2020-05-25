@@ -1,5 +1,8 @@
 package com.example.fantasyclient.thread;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 public class SocketThread  implements Runnable {

@@ -2,6 +2,7 @@ package com.example.fantasyclient;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -13,8 +14,11 @@ import com.example.fantasyclient.thread.TcpRecvThread;
 import com.example.fantasyclient.thread.TcpSendThread;
 import com.example.fantasyclient.thread.UdpSendThread;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -25,11 +29,11 @@ import java.util.concurrent.CountDownLatch;
 public class SocketService extends Service {
     public Socket socket;
     public Communicator communicator;
-    public static final String SERVER_IP = "vcm-13666.vm.duke.edu";
-    //static final String SERVER_IP = "vcm-14299.vm.duke.edu";
+    public static String SERVER_IP;
     public DatagramSocket udpSocket;
     public static final int TCP_PORT = 1234;
     public static final int UDP_PORT = 5678;
+    public Properties p = new Properties();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -51,6 +55,7 @@ public class SocketService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d("Service", "Create");
+        SERVER_IP = getString(R.string.SERVER_IP);
     }
 
     public void IsBoundable() {
