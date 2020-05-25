@@ -10,6 +10,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+/**
+ * This is base activity which contains several basic methods for all activities:
+ * 1.Bind to socket service: communicate with server
+ * 2.Redirect to other activities
+ */
 @SuppressLint("Registered")
 public class BaseActivity extends Activity {
 

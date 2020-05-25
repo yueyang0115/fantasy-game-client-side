@@ -7,16 +7,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.example.fantasyclient.json.JsonHandler;
-import com.example.fantasyclient.json.LoginRecv;
-import com.example.fantasyclient.json.LoginSend;
+import com.example.fantasyclient.json.*;
 
 /**
  * This is login activity
  */
 @SuppressLint("Registered")
 public class UserLoginActivity extends UserBaseActivity{
-    Button signUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +54,7 @@ public class UserLoginActivity extends UserBaseActivity{
             }
         });
 
-        signUp.setOnClickListener(new OnClickListener() {
+        redirect.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchSignUp();
@@ -68,6 +65,5 @@ public class UserLoginActivity extends UserBaseActivity{
     @Override
     protected void findView(){
         super.findView();
-        signUp = findViewById(R.id.sign_up);
     }
 }

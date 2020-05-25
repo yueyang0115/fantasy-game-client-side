@@ -6,9 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.example.fantasyclient.json.JsonHandler;
-import com.example.fantasyclient.json.SignUpRecv;
-import com.example.fantasyclient.json.SignUpSend;
+import com.example.fantasyclient.json.*;
 
 /**
  * This is sign up activity
@@ -53,6 +51,13 @@ public class UserSignUpActivity extends UserBaseActivity{
                         socketService.errorAlert(errorMsg);
                     }
                 }
+            }
+        });
+
+        redirect.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchLogin();
             }
         });
     }

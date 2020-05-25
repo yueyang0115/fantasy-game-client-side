@@ -31,7 +31,7 @@ public class MainActivity extends BaseActivity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
     TextView textLocation, textVLocation;
-    Button btnTest;
+    //Button btnTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity {
 
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        btnTest = (Button) findViewById(R.id.btn_start);
+        //btnTest = (Button) findViewById(R.id.btn_start);
         // ...
 
         // construct a new instance of SimpleLocation
@@ -56,7 +56,28 @@ public class MainActivity extends BaseActivity {
         //startService(new Intent(MainActivity.this, SocketService.class));
         doBindService();
 
-        btnTest.setOnClickListener(new View.OnClickListener() {
+        new Thread() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        startSendLocation();
+                    }
+                });
+            }
+        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        startRecvTerr();
+                    }
+                });
+            }
+        }.start();
+
+        /*btnTest.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
@@ -83,7 +104,7 @@ public class MainActivity extends BaseActivity {
                 }.start();
             }
 
-        });
+        });*/
     }
 
     @Override
