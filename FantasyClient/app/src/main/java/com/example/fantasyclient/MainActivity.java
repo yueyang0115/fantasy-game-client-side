@@ -7,6 +7,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -15,6 +18,7 @@ import org.json.JSONObject;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.fantasyclient.json.MessageHelper;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 
@@ -28,7 +32,7 @@ public class MainActivity extends BaseActivity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
     TextView textLocation, textVLocation;
-    //Button btnTest;
+    Button btnTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +41,7 @@ public class MainActivity extends BaseActivity {
 
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        //btnTest = (Button) findViewById(R.id.btn_start);
+        btnTest = (Button) findViewById(R.id.btn_start);
         // ...
 
         // construct a new instance of SimpleLocation
@@ -74,34 +78,16 @@ public class MainActivity extends BaseActivity {
             }
         }.start();
 
-        /*btnTest.setOnClickListener(new View.OnClickListener() {
+        btnTest.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 // TODO
-                new Thread() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                startSendLocation();
-                            }
-                        });
-                    }
-                }.start();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                startRecvTerr();
-                            }
-                        });
-                    }
-                }.start();
+                ImageView testImage = (ImageView) findViewById(R.id.imageView1);
+                testImage.setImageResource(R.drawable.desert00);
             }
 
-        });*/
+        });
     }
 
     @Override
@@ -183,27 +169,14 @@ public class MainActivity extends BaseActivity {
     class recvTerrTask extends AsyncTask<Void, Void, String> {
         @Override
         protected String doInBackground(Void... voids) {
-            return socketService.recvTcpMsg();
+            return recvData();
         }
 
         @SuppressLint("SetTextI18n")
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if(result!="") {
-                try {
-                    JSONObject jsonVPosition = new JSONObject(result);
-                    JSONObject jsonVPoint = jsonVPosition.getJSONObject("v_position");
-                    final double latitude = jsonVPoint.getDouble("x");
-                    final double longitude = jsonVPoint.getDouble("y");
-                    textVLocation.setText("X:" + latitude + " Y:" + longitude);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            else{
-                Log.e("Receive", "empty");
-            }
+            handleRecvMessage(MessageHelper.deserialize(result));
         }
     }
 
