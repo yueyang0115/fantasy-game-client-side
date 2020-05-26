@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.example.fantasyclient.json.*;
+
 /**
  * This is base activity which contains several basic methods for all activities:
  * 1.Bind to socket service: communicate with server
@@ -49,6 +51,69 @@ public class BaseActivity extends Activity {
     protected void launchLogin(){
         Intent intent = new Intent(this, UserLoginActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * serialize target class and send it to server
+     * @param m class
+     */
+    protected void sendData(MessagesC2S m){
+        socketService.sendTcpMsg(MessageHelper.serialize(m));
+    }
+
+    /**
+     * receive string from server
+     * @return string result
+     */
+    protected String recvData(){
+        String result = socketService.recvTcpMsg();
+        //ensure feedback is received
+        while(result.equals("")){
+            Log.d("Receive","Empty result, receive again");
+            result = socketService.recvTcpMsg();
+        }
+        return result;
+    }
+
+    protected void handleRecvMessage(MessagesS2C m){
+        if(m == null){
+            Log.e("Receive", "Invalid result received");
+        }
+        else {
+            if (m.getLoginResultMessage() != null) {
+                checkLoginResult(m.getLoginResultMessage());
+            }
+            if (m.getSignUpResultMessage() != null) {
+                checkSignUpResult(m.getSignUpResultMessage());
+            }
+            if (m.getPositionResultMessage() != null) {
+                checkPositionResult(m.getPositionResultMessage());
+            }
+        }
+    }
+
+    protected void checkLoginResult(LoginResultMessage m){
+        if (m.getStatus().equals("success")) {
+            launchGame();
+        } else {
+            String errorMsg = m.getError_msg();
+            Log.e("Login", errorMsg);
+            socketService.errorAlert(errorMsg);
+        }
+    }
+
+    protected void checkSignUpResult(SignUpResultMessage m){
+        if (m.getStatus().equals("success")) {
+            launchLogin();
+        } else {
+            String errorMsg = m.getError_msg();
+            Log.e("Sign Up", errorMsg);
+            socketService.errorAlert(errorMsg);
+        }
+    }
+
+    protected void checkPositionResult(PositionResultMessage m){
+
     }
 
     /**

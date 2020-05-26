@@ -15,8 +15,8 @@ import org.json.JSONObject;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.json.JsonHandler;
-import com.example.fantasyclient.json.PositionUpdateMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.PositionRequestMessage;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -138,10 +138,8 @@ public class MainActivity extends BaseActivity {
                     public void run() {
                         try {
                             updateLocation();
-                            PositionUpdateMessage p = new PositionUpdateMessage(
-                                    "position", location.getLatitude(),location.getLongitude());
-                            String msg = (new JsonHandler(p)).serialize();
-                            (new sendLocationTask()).execute(msg);
+                            PositionRequestMessage p = new PositionRequestMessage(location.getLatitude(),location.getLongitude());
+                            (new sendLocationTask()).execute(new MessagesC2S(p));
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                         }
@@ -153,10 +151,10 @@ public class MainActivity extends BaseActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    class sendLocationTask extends AsyncTask<String, Void, Void> {
+    class sendLocationTask extends AsyncTask<MessagesC2S, Void, Void> {
         @Override
-        protected Void doInBackground(String... msg) {
-            socketService.sendTcpMsg(msg[0]);
+        protected Void doInBackground(MessagesC2S... msg) {
+            sendData(msg[0]);
             return null;
         }
     }

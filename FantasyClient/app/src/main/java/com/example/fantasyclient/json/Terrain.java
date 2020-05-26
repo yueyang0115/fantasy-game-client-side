@@ -1,8 +1,31 @@
 package com.example.fantasyclient.json;
 
-public class Terrain extends ModelBase{
+public class Terrain {
+
+    private int id;
+    private String type;
+
+    public Terrain() {
+    }
 
     public Terrain(int id, String type) {
-        super(id, type);
+        this.id = id;
+        this.type = type;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

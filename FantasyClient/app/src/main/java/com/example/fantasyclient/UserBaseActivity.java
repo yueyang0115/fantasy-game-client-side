@@ -40,6 +40,18 @@ public class UserBaseActivity extends BaseActivity{
     }
 
     /**
+     * This is the unique method for account-related activities
+     */
+    public void sendAndRecv(MessagesC2S m){
+        //serialize sign up information and send to server
+        sendData(m);
+        //receive data from server
+        String result = recvData();
+        //handle result
+        handleRecvMessage(MessageHelper.deserialize(result));
+    }
+
+    /**
      * check if a blank has been entered
      * @param text to be entered
      * @return boolean
@@ -57,29 +69,6 @@ public class UserBaseActivity extends BaseActivity{
         textPassword = findViewById(R.id.password);
         submit = findViewById(R.id.submit);
         redirect = findViewById(R.id.redirect);
-    }
-
-    /**
-     * serialize target class and send it to server
-     * @param target class
-     */
-    protected void sendData(JsonBase target){
-        JsonHandler jsonHandler = new JsonHandler(target);
-        socketService.sendTcpMsg(jsonHandler.serialize());
-    }
-
-    /**
-     * receive string from server
-     * @return
-     */
-    protected String recvData(){
-        String result = socketService.recvTcpMsg();
-        //ensure feedback is received
-        while(result.equals("")){
-            Log.d("SignUp","Empty result, receive again");
-            result = socketService.recvTcpMsg();
-        }
-        return result;
     }
 
 }

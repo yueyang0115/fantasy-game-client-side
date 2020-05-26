@@ -1,11 +1,9 @@
 package com.example.fantasyclient.json;
 
-public class CheckTerrainSend extends JsonBase{
+public class CheckTerrainSend {
     private Terrain terrain;
 
-    public CheckTerrainSend(String type, String terrainType, int terrainID) {
-        super();
-        this.type = type;
+    public CheckTerrainSend(String terrainType, int terrainID) {
         terrain = new Terrain(terrainID, terrainType);
     }
 
