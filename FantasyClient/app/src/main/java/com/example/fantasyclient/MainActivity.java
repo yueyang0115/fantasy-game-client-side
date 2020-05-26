@@ -115,9 +115,9 @@ public class MainActivity extends BaseActivity {
                         });
                     }
                 }.start();
-                ImageView testImage = (ImageView) findViewById(R.id.imageView1);
+                /*ImageView testImage = (ImageView) findViewById(R.id.imageView1);
                 testImage.setImageResource(R.drawable.desert00);
-            }
+*/            }
 
         });
     }
