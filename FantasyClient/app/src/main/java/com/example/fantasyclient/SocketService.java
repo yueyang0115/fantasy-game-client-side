@@ -78,6 +78,9 @@ public class SocketService extends Service {
     //receive message from server
     public String recvTcpMsg() {
         StringBuilder sb = new StringBuilder();
+        /*String msg = communicator.recv_msg();
+        sb.append(msg);
+        Log.d("Tcp receive finished", msg);*/
         CountDownLatch recvLatch = new CountDownLatch(1);
         (new TcpRecvThread(recvLatch, communicator, sb)).start();
         try{

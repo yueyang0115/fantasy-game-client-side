@@ -157,7 +157,8 @@ public class MainActivity extends BaseActivity {
                         try {
                             updateLocation();
                             PositionRequestMessage p = new PositionRequestMessage(location.getLatitude(),location.getLongitude());
-                            (new sendLocationTask()).execute(new MessagesC2S(p));
+                            sendData(new MessagesC2S(p));
+                            //(new sendLocationTask()).execute(new MessagesC2S(p));
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                         }
@@ -186,7 +187,9 @@ public class MainActivity extends BaseActivity {
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            new recvTerrTask().execute();
+                            //new recvTerrTask().execute();
+                            String result = recvData();
+                            handleRecvMessage(MessageHelper.deserialize(result));
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                         }
