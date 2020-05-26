@@ -3,6 +3,7 @@ package com.example.fantasyclient;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +22,11 @@ import androidx.core.content.ContextCompat;
 import com.example.fantasyclient.json.MessageHelper;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
+import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.Territory;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,12 +37,19 @@ public class MainActivity extends BaseActivity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
     TextView textLocation, textVLocation;
+    ImageView imageView1, imageView2, imageView3, imageView4, imageView5, imageView6, imageView7, imageView8, imageView9;
+    HashMap<Integer, ImageView> imageMap;
+    /*imageView10,
+            imageView11, imageView12, imageView13, imageView14, imageView15, imageView16, imageView17, imageView18, imageView19, imageView20,
+            imageView21, imageView22, imageView23, imageView24, imageView25;*/
     Button btnTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findView();
 
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
@@ -231,5 +243,48 @@ public class MainActivity extends BaseActivity {
             // other 'case' lines to check for other
             // permissions this app might request.
         }
+    }
+
+    @Override
+    protected void checkPositionResult(PositionResultMessage m){
+        List<Territory> terrArray = m.getTerritoryArray();
+        ImageView targetView = null;
+        for(Territory t : terrArray){
+            targetView = imageMap.get(5+t.getX()-3*t.getY());
+            assert targetView != null;
+            switch(t.getTerrain().getType()){
+                case "grass":
+                    targetView.setImageResource(R.drawable.plains00);
+                case "mountain":
+                    targetView.setImageResource(R.drawable.mountain00);
+                case "river":
+                    targetView.setImageResource(R.drawable.ocean00);
+            }
+        }
+    }
+
+    @Override
+    protected void findView(){
+        textLocation = (TextView) findViewById(R.id.position);
+        textVLocation = (TextView) findViewById(R.id.v_position);
+        btnTest = (Button) findViewById(R.id.btn_start);
+        imageView1 = (ImageView) findViewById(R.id.imageView7);
+        imageMap.put(1,imageView1);
+        imageView2 = (ImageView) findViewById(R.id.imageView8);
+        imageMap.put(2,imageView2);
+        imageView3 = (ImageView) findViewById(R.id.imageView9);
+        imageMap.put(3,imageView3);
+        imageView4 = (ImageView) findViewById(R.id.imageView12);
+        imageMap.put(4,imageView4);
+        imageView5 = (ImageView) findViewById(R.id.imageView13);
+        imageMap.put(5,imageView5);
+        imageView6 = (ImageView) findViewById(R.id.imageView14);
+        imageMap.put(6,imageView6);
+        imageView7 = (ImageView) findViewById(R.id.imageView17);
+        imageMap.put(7,imageView7);
+        imageView8 = (ImageView) findViewById(R.id.imageView18);
+        imageMap.put(8,imageView8);
+        imageView9 = (ImageView) findViewById(R.id.imageView19);
+        imageMap.put(9,imageView9);
     }
 }

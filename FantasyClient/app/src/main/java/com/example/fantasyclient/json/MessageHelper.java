@@ -15,7 +15,7 @@ public class MessageHelper {
         try {
             msg = objectMapper.writeValueAsString(m);
         } catch (JsonProcessingException e) {
-            Log.e("JsonHandler", "ObjectMapper");
+            Log.e("MessageHandler", "Serialize");
         }
         return msg;
     }
@@ -26,7 +26,7 @@ public class MessageHelper {
         try {
             m = objectMapper.readValue(string, MessagesS2C.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e("MessageHandler", "Deserialize");
         }
         return m;
     }

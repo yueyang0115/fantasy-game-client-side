@@ -38,6 +38,12 @@ public class BaseActivity extends Activity {
         super.onPause();
     }
 
+    /**
+     * find required common views which may be overrode
+     */
+    protected void findView(){
+    }
+
     protected void launchSignUp() {
         Intent intent = new Intent(this, UserSignUpActivity.class);
         startActivity(intent);

@@ -7,15 +7,16 @@ public class Territory {
 
     private int id;
     private int wid;
-    private double x;
-    private double y;
+    private int x;
+    private int y;
     private String status;
     private List<Monster> monsters = new ArrayList<>();
+    private Terrain terrain;
 
     public Territory(){
     }
 
-    public Territory(int wid,double x,double y, String status){
+    public Territory(int wid,int x,int y, String status){
         this.wid = wid;
         this.x = x;
         this.y = y;
@@ -38,19 +39,19 @@ public class Territory {
         this.wid = wid;
     }
 
-    public double getX() {
+    public int getX() {
         return x;
     }
 
-    public void setX(double x) {
+    public void setX(int x) {
         this.x = x;
     }
 
-    public double getY() {
+    public int getY() {
         return y;
     }
 
-    public void setY(double y) {
+    public void setY(int y) {
         this.y = y;
     }
 
@@ -62,8 +63,19 @@ public class Territory {
         this.status = status;
     }
 
-    public void addMonster(Monster monster){
-        monster.setTerritory(this);
-        this.monsters.add(monster);
+    public List<Monster> getMonsters() {
+        return monsters;
+    }
+
+    public void setMonsters(List<Monster> monsters) {
+        this.monsters = monsters;
+    }
+
+    public Terrain getTerrain() {
+        return terrain;
+    }
+
+    public void setTerrain(Terrain terrain) {
+        this.terrain = terrain;
     }
 }

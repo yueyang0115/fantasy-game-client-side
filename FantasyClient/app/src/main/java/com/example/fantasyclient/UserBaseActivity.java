@@ -64,6 +64,7 @@ public class UserBaseActivity extends BaseActivity{
     /**
      * find required common views which may be overrode
      */
+    @Override
     protected void findView(){
         textUsername = findViewById(R.id.username);
         textPassword = findViewById(R.id.password);

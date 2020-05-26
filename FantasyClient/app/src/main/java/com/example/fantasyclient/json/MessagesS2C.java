@@ -5,6 +5,9 @@ public class MessagesS2C {
     private LoginResultMessage loginResultMessage;
     private SignUpResultMessage signUpResultMessage;
 
+    public MessagesS2C(){
+    }
+
     public PositionResultMessage getPositionResultMessage() {
         return positionResultMessage;
     }
