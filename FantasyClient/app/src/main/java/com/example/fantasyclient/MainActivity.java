@@ -69,7 +69,7 @@ public class MainActivity extends BaseActivity {
         //startService(new Intent(MainActivity.this, SocketService.class));
         doBindService();
 
-        new Thread() {
+/*        new Thread() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -88,13 +88,33 @@ public class MainActivity extends BaseActivity {
                     }
                 });
             }
-        }.start();
+        }.start();*/
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 // TODO
+                new Thread() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                startSendLocation();
+                            }
+                        });
+                    }
+                }.start();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                startRecvTerr();
+                            }
+                        });
+                    }
+                }.start();
                 ImageView testImage = (ImageView) findViewById(R.id.imageView1);
                 testImage.setImageResource(R.drawable.desert00);
             }
@@ -255,10 +275,13 @@ public class MainActivity extends BaseActivity {
             switch(t.getTerrain().getType()){
                 case "grass":
                     targetView.setImageResource(R.drawable.plains00);
+                    break;
                 case "mountain":
                     targetView.setImageResource(R.drawable.mountain00);
+                    break;
                 case "river":
                     targetView.setImageResource(R.drawable.ocean00);
+                    break;
             }
         }
     }
@@ -268,6 +291,7 @@ public class MainActivity extends BaseActivity {
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
         btnTest = (Button) findViewById(R.id.btn_start);
+        imageMap = new HashMap<>();
         imageView1 = (ImageView) findViewById(R.id.imageView7);
         imageMap.put(1,imageView1);
         imageView2 = (ImageView) findViewById(R.id.imageView8);
