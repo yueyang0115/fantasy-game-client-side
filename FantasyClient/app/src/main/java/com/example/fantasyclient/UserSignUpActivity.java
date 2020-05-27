@@ -27,8 +27,9 @@ public class UserSignUpActivity extends UserBaseActivity{
             public void onClick(View v) {
                 //ensure all required data has been entered
                 if(checkDataEntered()){
-                    sendAndRecv(new MessagesC2S(new SignUpRequestMessage(textUsername.getText().toString(),
+                    socketService.sendTcpMsg(new MessagesC2S(new SignUpRequestMessage(textUsername.getText().toString(),
                             textPassword.getText().toString())));
+                    handleRecvMessage(socketService.recvTcpMsg());
                 }
             }
         });

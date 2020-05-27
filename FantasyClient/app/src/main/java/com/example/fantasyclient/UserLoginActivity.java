@@ -28,8 +28,9 @@ public class UserLoginActivity extends UserBaseActivity{
                 //ensure all required data has been entered
                 if(checkDataEntered()){
                     //serialize sign up information and send to server
-                    sendAndRecv(new MessagesC2S(new LoginRequestMessage(textUsername.getText().toString(),
-                                    textPassword.getText().toString())));
+                    socketService.sendTcpMsg(new MessagesC2S(new LoginRequestMessage(textUsername.getText().toString(),
+                            textPassword.getText().toString())));
+                    handleRecvMessage(socketService.recvTcpMsg());
                 }
             }
         });

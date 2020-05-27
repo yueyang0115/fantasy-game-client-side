@@ -2,24 +2,25 @@ package com.example.fantasyclient.thread;
 
 import android.util.Log;
 
+import com.example.fantasyclient.json.MessagesS2C;
+
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 //thread to receive message
 public class TcpRecvThread extends SocketThread {
     private final Communicator comms;
-    private StringBuilder stringBuilder;
+    private List<MessagesS2C> container;
 
-    public TcpRecvThread(CountDownLatch latch, final Communicator comms, StringBuilder stringBuilder) {
+    public TcpRecvThread(CountDownLatch latch, final Communicator comms, List<MessagesS2C> container) {
         this.comms = comms;
-        this.stringBuilder = stringBuilder;
+        this.container = container;
         this.latch = latch;
     }
 
     @Override
     public void run() {
-        String msg = comms.recv_msg();
-        stringBuilder.append(msg);
-        Log.d("Tcp receive finished", msg);
+        container.add(comms.recvMsg());
         latch.countDown();
     }
 
