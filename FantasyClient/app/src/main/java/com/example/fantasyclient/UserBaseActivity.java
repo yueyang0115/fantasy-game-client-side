@@ -52,34 +52,12 @@ public class UserBaseActivity extends BaseActivity{
     /**
      * find required common views which may be overrode
      */
+    @Override
     protected void findView(){
         textUsername = findViewById(R.id.username);
         textPassword = findViewById(R.id.password);
         submit = findViewById(R.id.submit);
         redirect = findViewById(R.id.redirect);
-    }
-
-    /**
-     * serialize target class and send it to server
-     * @param target class
-     */
-    protected void sendData(JsonBase target){
-        JsonHandler jsonHandler = new JsonHandler(target);
-        socketService.sendTcpMsg(jsonHandler.serialize());
-    }
-
-    /**
-     * receive string from server
-     * @return
-     */
-    protected String recvData(){
-        String result = socketService.recvTcpMsg();
-        //ensure feedback is received
-        while(result.equals("")){
-            Log.d("SignUp","Empty result, receive again");
-            result = socketService.recvTcpMsg();
-        }
-        return result;
     }
 
 }

@@ -1,12 +1,10 @@
 package com.example.fantasyclient.json;
 
-public class LoginSend extends JsonBase{
+public class LoginRequestMessage {
     private String username;
     private String password;
 
-    public LoginSend(String type, String username, String password) {
-        super();
-        this.type = type;
+    public LoginRequestMessage(String username, String password) {
         this.username = username;
         this.password = password;
     }

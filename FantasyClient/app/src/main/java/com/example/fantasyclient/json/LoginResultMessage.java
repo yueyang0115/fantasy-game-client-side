@@ -1,13 +1,9 @@
 package com.example.fantasyclient.json;
 
-public class LoginRecv extends JsonBase{
+public class LoginResultMessage {
     private int wid;
     private String error_msg;
     private String status;
-
-    public LoginRecv() {
-        super();
-    }
 
     public int getWid() {
         return wid;

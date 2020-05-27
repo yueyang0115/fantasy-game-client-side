@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.example.fantasyclient.json.*;
+
 /**
  * This is base activity which contains several basic methods for all activities:
  * 1.Bind to socket service: communicate with server
@@ -36,6 +38,12 @@ public class BaseActivity extends Activity {
         super.onPause();
     }
 
+    /**
+     * find required common views which may be overrode
+     */
+    protected void findView(){
+    }
+
     protected void launchSignUp() {
         Intent intent = new Intent(this, UserSignUpActivity.class);
         startActivity(intent);
@@ -49,6 +57,47 @@ public class BaseActivity extends Activity {
     protected void launchLogin(){
         Intent intent = new Intent(this, UserLoginActivity.class);
         startActivity(intent);
+    }
+
+    protected void handleRecvMessage(MessagesS2C m){
+        if(m == null){
+            Log.e("Receive", "Invalid result received");
+        }
+        else {
+            if (m.getLoginResultMessage() != null) {
+                checkLoginResult(m.getLoginResultMessage());
+            }
+            if (m.getSignUpResultMessage() != null) {
+                checkSignUpResult(m.getSignUpResultMessage());
+            }
+            if (m.getPositionResultMessage() != null) {
+                checkPositionResult(m.getPositionResultMessage());
+            }
+        }
+    }
+
+    protected void checkLoginResult(LoginResultMessage m){
+        if (m.getStatus().equals("success")) {
+            launchGame();
+        } else {
+            String errorMsg = m.getError_msg();
+            Log.e("Login", errorMsg);
+            socketService.errorAlert(errorMsg);
+        }
+    }
+
+    protected void checkSignUpResult(SignUpResultMessage m){
+        if (m.getStatus().equals("success")) {
+            launchLogin();
+        } else {
+            String errorMsg = m.getError_msg();
+            Log.e("Sign Up", errorMsg);
+            socketService.errorAlert(errorMsg);
+        }
+    }
+
+    protected void checkPositionResult(PositionResultMessage m){
+
     }
 
     /**

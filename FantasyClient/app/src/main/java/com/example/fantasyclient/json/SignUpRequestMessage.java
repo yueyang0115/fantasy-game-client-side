@@ -1,12 +1,10 @@
 package com.example.fantasyclient.json;
 
-public class SignUpSend extends JsonBase{
+public class SignUpRequestMessage {
     private String username;
     private String password;
 
-    public SignUpSend(String type, String username, String password) {
-        super();
-        this.type = type;
+    public SignUpRequestMessage(String username, String password) {
         this.username = username;
         this.password = password;
     }

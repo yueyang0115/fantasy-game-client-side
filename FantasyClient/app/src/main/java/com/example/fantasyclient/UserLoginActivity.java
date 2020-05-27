@@ -2,10 +2,8 @@ package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 
 import com.example.fantasyclient.json.*;
 
@@ -29,27 +27,10 @@ public class UserLoginActivity extends UserBaseActivity{
             public void onClick(View v) {
                 //ensure all required data has been entered
                 if(checkDataEntered()){
-
                     //serialize sign up information and send to server
-                    sendData(new LoginSend("login", textUsername.getText().toString(),
-                            textPassword.getText().toString()));
-
-                    //receive data from server
-                    String result = recvData();
-
-                    //deserialize feedback from server
-                    LoginRecv loginRecv = new LoginRecv();
-                    JsonHandler jsonHandler = new JsonHandler(loginRecv);
-                    loginRecv = (LoginRecv) jsonHandler.deserialize(loginRecv,result);
-
-                    //check login result
-                    if (loginRecv.getStatus().equals("success")) {
-                        launchGame();
-                    } else {
-                        String errorMsg = loginRecv.getError_msg();
-                        Log.e("Sign Up", errorMsg);
-                        socketService.errorAlert(errorMsg);
-                    }
+                    socketService.sendTcpMsg(new MessagesC2S(new LoginRequestMessage(textUsername.getText().toString(),
+                            textPassword.getText().toString())));
+                    handleRecvMessage(socketService.recvTcpMsg());
                 }
             }
         });

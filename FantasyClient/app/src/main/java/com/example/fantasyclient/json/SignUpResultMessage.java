@@ -1,11 +1,10 @@
 package com.example.fantasyclient.json;
 
-public class SignUpRecv extends JsonBase{
+public class SignUpResultMessage {
     private String error_msg;
     private String status;
 
-    public SignUpRecv() {
-        super();
+    public SignUpResultMessage() {
     }
 
     public String getError_msg() {

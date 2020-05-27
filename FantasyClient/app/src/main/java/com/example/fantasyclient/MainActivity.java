@@ -6,21 +6,25 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
-
 import android.view.View;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.json.JsonHandler;
-import com.example.fantasyclient.json.PositionSend;
+import com.example.fantasyclient.json.MessageHelper;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
+import com.example.fantasyclient.json.PositionRequestMessage;
+import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.Territory;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,16 +35,23 @@ public class MainActivity extends BaseActivity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
     TextView textLocation, textVLocation;
-    //Button btnTest;
+    ImageView imageView1, imageView2, imageView3, imageView4, imageView5, imageView6, imageView7, imageView8, imageView9;
+    HashMap<Integer, ImageView> imageMap;
+    /*imageView10,
+            imageView11, imageView12, imageView13, imageView14, imageView15, imageView16, imageView17, imageView18, imageView19, imageView20,
+            imageView21, imageView22, imageView23, imageView24, imageView25;*/
+    Button btnTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        findView();
+
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        //btnTest = (Button) findViewById(R.id.btn_start);
+        btnTest = (Button) findViewById(R.id.btn_start);
         // ...
 
         // construct a new instance of SimpleLocation
@@ -53,31 +64,9 @@ public class MainActivity extends BaseActivity {
             SimpleLocation.openSettings(this);
         }
 
-        //startService(new Intent(MainActivity.this, SocketService.class));
         doBindService();
 
-        new Thread() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        startSendLocation();
-                    }
-                });
-            }
-        }.start();
-        new Thread() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        startRecvTerr();
-                    }
-                });
-            }
-        }.start();
-
-        /*btnTest.setOnClickListener(new View.OnClickListener() {
+        btnTest.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
@@ -85,26 +74,22 @@ public class MainActivity extends BaseActivity {
                 new Thread() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                startSendLocation();
-                            }
-                        });
+                        Looper.prepare();
+                        startSendLocation();
+                        Looper.loop();
                     }
                 }.start();
                 new Thread() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                startRecvTerr();
-                            }
-                        });
+                        Looper.prepare();
+                        startRecvTerr();
+                        Looper.loop();
                     }
                 }.start();
             }
 
-        });*/
+        });
     }
 
     @Override
@@ -141,10 +126,9 @@ public class MainActivity extends BaseActivity {
                     public void run() {
                         try {
                             updateLocation();
-                            PositionSend p = new PositionSend(
-                                    "position", location.getLatitude(),location.getLongitude());
-                            String msg = (new JsonHandler(p)).serialize();
-                            (new sendLocationTask()).execute(msg);
+                            PositionRequestMessage p = new PositionRequestMessage(location.getLatitude(),location.getLongitude());
+                            socketService.sendTcpMsg(new MessagesC2S(p));
+                            //(new sendLocationTask()).execute(new MessagesC2S(p));
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                         }
@@ -156,9 +140,9 @@ public class MainActivity extends BaseActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    class sendLocationTask extends AsyncTask<String, Void, Void> {
+    class sendLocationTask extends AsyncTask<MessagesC2S, Void, Void> {
         @Override
-        protected Void doInBackground(String... msg) {
+        protected Void doInBackground(MessagesC2S... msg) {
             socketService.sendTcpMsg(msg[0]);
             return null;
         }
@@ -173,8 +157,11 @@ public class MainActivity extends BaseActivity {
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            new recvTerrTask().execute();
+                            //new recvTerrTask().execute();
+                            handleRecvMessage(socketService.recvTcpMsg());
                         } catch (Exception e) {
+                            Log.e("MainActivity","Failed to handle position result");
+                            e.printStackTrace();
                             // TODO Auto-generated catch block
                         }
                     }
@@ -185,30 +172,17 @@ public class MainActivity extends BaseActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    class recvTerrTask extends AsyncTask<Void, Void, String> {
+    class recvTerrTask extends AsyncTask<Void, Void, MessagesS2C> {
         @Override
-        protected String doInBackground(Void... voids) {
+        protected MessagesS2C doInBackground(Void... voids) {
             return socketService.recvTcpMsg();
         }
 
         @SuppressLint("SetTextI18n")
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(MessagesS2C result) {
             super.onPostExecute(result);
-            if(result!="") {
-                try {
-                    JSONObject jsonVPosition = new JSONObject(result);
-                    JSONObject jsonVPoint = jsonVPosition.getJSONObject("v_position");
-                    final double latitude = jsonVPoint.getDouble("x");
-                    final double longitude = jsonVPoint.getDouble("y");
-                    textVLocation.setText("X:" + latitude + " Y:" + longitude);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            else{
-                Log.e("Receive", "empty");
-            }
+            handleRecvMessage(result);
         }
     }
 
@@ -263,5 +237,57 @@ public class MainActivity extends BaseActivity {
             // other 'case' lines to check for other
             // permissions this app might request.
         }
+    }
+
+    @Override
+    protected void checkPositionResult(final PositionResultMessage m){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<Territory> terrArray = m.getTerritoryArray();
+                ImageView targetView = null;
+                for(Territory t : terrArray){
+                    targetView = imageMap.get(5+t.getX()-3*t.getY());
+                    assert targetView != null;
+                    switch(t.getTerrain().getType()){
+                        case "grass":
+                            targetView.setImageResource(R.drawable.plains00);
+                            break;
+                        case "mountain":
+                            targetView.setImageResource(R.drawable.mountain00);
+                            break;
+                        case "river":
+                            targetView.setImageResource(R.drawable.ocean00);
+                            break;
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void findView(){
+        textLocation = (TextView) findViewById(R.id.position);
+        textVLocation = (TextView) findViewById(R.id.v_position);
+        btnTest = (Button) findViewById(R.id.btn_start);
+        imageMap = new HashMap<>();
+        imageView1 = (ImageView) findViewById(R.id.imageView7);
+        imageMap.put(1,imageView1);
+        imageView2 = (ImageView) findViewById(R.id.imageView8);
+        imageMap.put(2,imageView2);
+        imageView3 = (ImageView) findViewById(R.id.imageView9);
+        imageMap.put(3,imageView3);
+        imageView4 = (ImageView) findViewById(R.id.imageView12);
+        imageMap.put(4,imageView4);
+        imageView5 = (ImageView) findViewById(R.id.imageView13);
+        imageMap.put(5,imageView5);
+        imageView6 = (ImageView) findViewById(R.id.imageView14);
+        imageMap.put(6,imageView6);
+        imageView7 = (ImageView) findViewById(R.id.imageView17);
+        imageMap.put(7,imageView7);
+        imageView8 = (ImageView) findViewById(R.id.imageView18);
+        imageMap.put(8,imageView8);
+        imageView9 = (ImageView) findViewById(R.id.imageView19);
+        imageMap.put(9,imageView9);
     }
 }
