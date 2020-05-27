@@ -40,18 +40,6 @@ public class UserBaseActivity extends BaseActivity{
     }
 
     /**
-     * This is the unique method for account-related activities
-     */
-    public void sendAndRecv(MessagesC2S m){
-        //serialize sign up information and send to server
-        sendData(m);
-        //receive data from server
-        String result = recvData();
-        //handle result
-        handleRecvMessage(MessageHelper.deserialize(result));
-    }
-
-    /**
      * check if a blank has been entered
      * @param text to be entered
      * @return boolean

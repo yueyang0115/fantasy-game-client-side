@@ -3,24 +3,20 @@ package com.example.fantasyclient;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.fantasyclient.json.MessageHelper;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.Territory;
@@ -157,7 +153,7 @@ public class MainActivity extends BaseActivity {
                         try {
                             updateLocation();
                             PositionRequestMessage p = new PositionRequestMessage(location.getLatitude(),location.getLongitude());
-                            sendData(new MessagesC2S(p));
+                            socketService.sendTcpMsg(new MessagesC2S(p));
                             //(new sendLocationTask()).execute(new MessagesC2S(p));
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
@@ -173,7 +169,7 @@ public class MainActivity extends BaseActivity {
     class sendLocationTask extends AsyncTask<MessagesC2S, Void, Void> {
         @Override
         protected Void doInBackground(MessagesC2S... msg) {
-            sendData(msg[0]);
+            socketService.sendTcpMsg(msg[0]);
             return null;
         }
     }
@@ -188,8 +184,7 @@ public class MainActivity extends BaseActivity {
                     public void run() {
                         try {
                             //new recvTerrTask().execute();
-                            String result = recvData();
-                            handleRecvMessage(MessageHelper.deserialize(result));
+                            handleRecvMessage(socketService.recvTcpMsg());
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                         }
@@ -201,17 +196,17 @@ public class MainActivity extends BaseActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    class recvTerrTask extends AsyncTask<Void, Void, String> {
+    class recvTerrTask extends AsyncTask<Void, Void, MessagesS2C> {
         @Override
-        protected String doInBackground(Void... voids) {
-            return recvData();
+        protected MessagesS2C doInBackground(Void... voids) {
+            return socketService.recvTcpMsg();
         }
 
         @SuppressLint("SetTextI18n")
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(MessagesS2C result) {
             super.onPostExecute(result);
-            handleRecvMessage(MessageHelper.deserialize(result));
+            handleRecvMessage(result);
         }
     }
 

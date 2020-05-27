@@ -8,6 +8,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.thread.Communicator;
 import com.example.fantasyclient.thread.ConnectThread;
 import com.example.fantasyclient.thread.TcpRecvThread;
@@ -18,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
@@ -67,8 +71,8 @@ public class SocketService extends Service {
     }
 
     //send message to server
-    public void sendTcpMsg(String message) {
-        (new TcpSendThread(communicator, message)).start();
+    public void sendTcpMsg(MessagesC2S m) {
+        (new TcpSendThread(communicator, m)).start();
     }
 
     public void sendUdpMsg(String message) {
@@ -76,17 +80,17 @@ public class SocketService extends Service {
     }
 
     //receive message from server
-    public String recvTcpMsg() {
-        StringBuilder sb = new StringBuilder();
+    public MessagesS2C recvTcpMsg() {
+        List<MessagesS2C> container = new ArrayList<>();
         CountDownLatch recvLatch = new CountDownLatch(1);
-        (new TcpRecvThread(recvLatch, communicator, sb)).start();
+        (new TcpRecvThread(recvLatch, communicator, container)).start();
         try{
             recvLatch.await();
         }
         catch (InterruptedException ine){
             System.out.println("Latch Interrupted!");
         }
-        return sb.toString();
+        return container.get(0);
     }
 
     @Override

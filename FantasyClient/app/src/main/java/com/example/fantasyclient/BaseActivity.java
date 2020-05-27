@@ -59,28 +59,6 @@ public class BaseActivity extends Activity {
         startActivity(intent);
     }
 
-    /**
-     * serialize target class and send it to server
-     * @param m class
-     */
-    protected void sendData(MessagesC2S m){
-        socketService.sendTcpMsg(MessageHelper.serialize(m));
-    }
-
-    /**
-     * receive string from server
-     * @return string result
-     */
-    protected String recvData(){
-        String result = socketService.recvTcpMsg();
-        //ensure feedback is received
-        while(result.equals("")){
-            Log.d("Receive","Empty result, receive again");
-            result = socketService.recvTcpMsg();
-        }
-        return result;
-    }
-
     protected void handleRecvMessage(MessagesS2C m){
         if(m == null){
             Log.e("Receive", "Invalid result received");

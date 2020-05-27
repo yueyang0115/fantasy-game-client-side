@@ -6,6 +6,7 @@ import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,16 +34,19 @@ public class Communicator {
     public void sendMsg(MessagesC2S m) {
         try {
             objectMapper.writeValue(os,m);
+            Log.d(TAG, "Send:"+os.toString());
         } catch (IOException e) {
             Log.e(TAG,"Failed to send data!");
         }
     }
 
     public MessagesS2C recvMsg()  {
-        MessagesS2C m = null;
+        MessagesS2C m = new MessagesS2C();
         try {
             m = objectMapper.readValue(is, MessagesS2C.class);
+            Log.d(TAG, "Receive:"+is.toString());
         } catch (IOException e) {
+            e.printStackTrace();
             Log.e(TAG,"Failed to receive data!");
         }
         return m;
