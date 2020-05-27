@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -62,29 +64,7 @@ public class MainActivity extends BaseActivity {
             SimpleLocation.openSettings(this);
         }
 
-        //startService(new Intent(MainActivity.this, SocketService.class));
         doBindService();
-
-/*        new Thread() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        startSendLocation();
-                    }
-                });
-            }
-        }.start();
-        new Thread() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        startRecvTerr();
-                    }
-                });
-            }
-        }.start();*/
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
@@ -94,26 +74,20 @@ public class MainActivity extends BaseActivity {
                 new Thread() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                startSendLocation();
-                            }
-                        });
+                        Looper.prepare();
+                        startSendLocation();
+                        Looper.loop();
                     }
                 }.start();
                 new Thread() {
                     @Override
                     public void run() {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                startRecvTerr();
-                            }
-                        });
+                        Looper.prepare();
+                        startRecvTerr();
+                        Looper.loop();
                     }
                 }.start();
-                /*ImageView testImage = (ImageView) findViewById(R.id.imageView1);
-                testImage.setImageResource(R.drawable.desert00);
-*/            }
+            }
 
         });
     }
@@ -186,6 +160,8 @@ public class MainActivity extends BaseActivity {
                             //new recvTerrTask().execute();
                             handleRecvMessage(socketService.recvTcpMsg());
                         } catch (Exception e) {
+                            Log.e("MainActivity","Failed to handle position result");
+                            e.printStackTrace();
                             // TODO Auto-generated catch block
                         }
                     }
@@ -264,24 +240,29 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void checkPositionResult(PositionResultMessage m){
-        List<Territory> terrArray = m.getTerritoryArray();
-        ImageView targetView = null;
-        for(Territory t : terrArray){
-            targetView = imageMap.get(5+t.getX()-3*t.getY());
-            assert targetView != null;
-            switch(t.getTerrain().getType()){
-                case "grass":
-                    targetView.setImageResource(R.drawable.plains00);
-                    break;
-                case "mountain":
-                    targetView.setImageResource(R.drawable.mountain00);
-                    break;
-                case "river":
-                    targetView.setImageResource(R.drawable.ocean00);
-                    break;
+    protected void checkPositionResult(final PositionResultMessage m){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                List<Territory> terrArray = m.getTerritoryArray();
+                ImageView targetView = null;
+                for(Territory t : terrArray){
+                    targetView = imageMap.get(5+t.getX()-3*t.getY());
+                    assert targetView != null;
+                    switch(t.getTerrain().getType()){
+                        case "grass":
+                            targetView.setImageResource(R.drawable.plains00);
+                            break;
+                        case "mountain":
+                            targetView.setImageResource(R.drawable.mountain00);
+                            break;
+                        case "river":
+                            targetView.setImageResource(R.drawable.ocean00);
+                            break;
+                    }
+                }
             }
-        }
+        });
     }
 
     @Override
