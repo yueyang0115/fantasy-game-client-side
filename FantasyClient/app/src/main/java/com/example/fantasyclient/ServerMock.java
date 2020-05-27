@@ -24,7 +24,7 @@ public class ServerMock {
         Communicator newCommunicator = new Communicator(sockToClient); // create a new communicator
         System.out.println("Accepted Host!");
         System.out.println("Handshake Host!");
-        String msg = newCommunicator.recv_msg();
-        newCommunicator.send_msg(msg);
+        //String msg = newCommunicator.recvMsg();
+        //newCommunicator.sendMsg(msg);
     }
 }

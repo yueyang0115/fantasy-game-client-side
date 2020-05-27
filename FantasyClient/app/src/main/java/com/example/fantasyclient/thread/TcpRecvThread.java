@@ -17,7 +17,7 @@ public class TcpRecvThread extends SocketThread {
 
     @Override
     public void run() {
-        String msg = comms.recv_msg();
+        String msg = comms.recvMsg();
         stringBuilder.append(msg);
         Log.d("Tcp receive finished", msg);
         latch.countDown();

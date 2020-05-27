@@ -15,7 +15,7 @@ public class TcpSendThread extends SocketThread {
 
     @Override
     public void run() {
-        comms.send_msg(msg+"\n");
+        comms.sendMsg(msg+"\n");
         Log.d("Tcp send finished", msg);
     }
 }
