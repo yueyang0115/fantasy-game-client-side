@@ -18,10 +18,8 @@ import com.example.fantasyclient.helper.*;
 import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,7 +32,7 @@ public class MainActivity extends BaseActivity {
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter adapter = new ImageAdapter(this);
     HashSet<Territory> cachedMap = new HashSet<>();
-    Handler handler;
+    Handler sendHandler, recvHandler;
     TextView textLocation, textVLocation;
     Button btnTest;
 
@@ -45,7 +43,6 @@ public class MainActivity extends BaseActivity {
 
         findView();
 
-        handler = new Handler();
         // construct a new instance of SimpleLocation
         location = new SimpleLocation(this, true, false, 5 * 1000, true);
         //location = new SimpleLocation(this);
@@ -120,11 +117,12 @@ public class MainActivity extends BaseActivity {
      * this AsyncTask runs in background
      */
     public void startSendLocation() {
+        sendHandler = new Handler();
         Timer timer = new Timer();
         TimerTask doAsyncTask = new TimerTask() {
             @Override
             public void run() {
-                handler.post(new Runnable() {
+                sendHandler.post(new Runnable() {
                     public void run() {
                         updateLocation();
                         PositionHelper.convertVPosition(vPosition,location.getLatitude(),location.getLongitude());
@@ -138,11 +136,12 @@ public class MainActivity extends BaseActivity {
     }
 
     public void startRecvTerr() {
+        recvHandler = new Handler();
         Timer timer = new Timer();
         TimerTask doAsyncTask = new TimerTask() {
             @Override
             public void run() {
-                handler.post(new Runnable() {
+                recvHandler.post(new Runnable() {
                     public void run() {
                         handleRecvMessage(socketService.recvTcpMsg());
                     }
@@ -207,30 +206,42 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
+        //set background to be base type
+        adapter.initImage();
+        //set cached territory
         for(Territory t : cachedMap){
-            int position = 64+(t.getX()-vPosition.getX())/10-(t.getY()-vPosition.getY());
-            updateMap(t,position);
+            updateMap(t);
         }
+        //update new territories
         List<Territory> terrArray = m.getTerritoryArray();
         for(Territory t : terrArray){
-            int position = 64+(t.getX()-vPosition.getX())/10-(t.getY()-vPosition.getY());
-            updateMap(t,position);
+            updateMap(t);
             cachedMap.add(t);
         }
-        adapter.notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
-    protected void updateMap(Territory t, int position){
-        switch(t.getTerrain().getType()){
-            case "grass":
-                adapter.updateImage(position,R.drawable.plains00);
-                break;
-            case "mountain":
-                adapter.updateImage(position,R.drawable.mountain00);
-                break;
-            case "river":
-                adapter.updateImage(position,R.drawable.ocean00);
-                break;
+    protected void updateMap(Territory t){
+        int dx = (t.getX()-vPosition.getX())/10;
+        int dy = (t.getY()-vPosition.getY())/10;
+        if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {
+            int position = 64+dx-10*dy;
+            switch (t.getTerrain().getType()) {
+                case "grass":
+                    adapter.updateImage(position, R.drawable.plains00);
+                    break;
+                case "mountain":
+                    adapter.updateImage(position, R.drawable.mountain00);
+                    break;
+                case "river":
+                    adapter.updateImage(position, R.drawable.ocean00);
+                    break;
+            }
         }
     }
 
