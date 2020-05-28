@@ -2,6 +2,7 @@ package com.example.fantasyclient.helper;
 
 import android.content.Context;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -17,6 +18,7 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     // Keep all Images in array
     private Integer[] ImageArray = {R.drawable.base00};
+    private static String TAG = "ImageHelper";
 
     // Constructor
     public ImageAdapter(Context c) {
@@ -59,6 +61,10 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public void updateImage(int pos, int source){
-        ImageArray[pos]=source;
+        try {
+            ImageArray[pos] = source;
+        } catch (Exception e) {
+            Log.e(TAG,"UpdateImage fails");
+        }
     }
 }
