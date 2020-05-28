@@ -65,6 +65,7 @@ public class ImageAdapter extends BaseAdapter {
             ImageArray[pos] = source;
         } catch (Exception e) {
             Log.e(TAG,"UpdateImage fails");
+            e.printStackTrace();
         }
     }
 }

@@ -32,7 +32,7 @@ public class MainActivity extends BaseActivity {
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter adapter = new ImageAdapter(this);
-    HashMap<Territory,Integer> cachedMap = new HashMap<>();
+    HashMap<Integer,Territory> cachedMap = new HashMap<>();
     Handler handler;
     TextView textLocation, textVLocation;
     Button btnTest;
@@ -237,36 +237,29 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for(HashMap.Entry<Territory,Integer> e: cachedMap.entrySet()){
-                    int position = 64+(e.getKey().getX()-vPosition.getX())-10*(e.getKey().getY()-vPosition.getY());
-                    updateMap(e.getKey(),position);
-                }
-                List<Territory> terrArray = m.getTerritoryArray();
-                for(Territory t : terrArray){
-                    int position = 64+(t.getX()-vPosition.getX())-10*(t.getY()-vPosition.getY());
-                    updateMap(t,position);
-                }
-                adapter.notifyDataSetChanged();
-            }
-        });
+        for(HashMap.Entry<Integer,Territory> e: cachedMap.entrySet()){
+            int position = 64+(e.getValue().getX()-vPosition.getX())/10-(e.getValue().getY()-vPosition.getY());
+            updateMap(e.getValue(),position);
+        }
+        List<Territory> terrArray = m.getTerritoryArray();
+        for(Territory t : terrArray){
+            int position = 64+(t.getX()-vPosition.getX())/10-(t.getY()-vPosition.getY());
+            updateMap(t,position);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     protected void updateMap(Territory t, int position){
+        cachedMap.put(t.getId(),t);
         switch(t.getTerrain().getType()){
             case "grass":
                 adapter.updateImage(position,R.drawable.plains00);
-                cachedMap.put(t,R.drawable.plains00);
                 break;
             case "mountain":
                 adapter.updateImage(position,R.drawable.mountain00);
-                cachedMap.put(t,R.drawable.mountain00);
                 break;
             case "river":
                 adapter.updateImage(position,R.drawable.ocean00);
-                cachedMap.put(t,R.drawable.ocean00);
                 break;
         }
     }

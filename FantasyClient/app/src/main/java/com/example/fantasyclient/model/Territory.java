@@ -23,6 +23,15 @@ public class Territory {
         this.status = status;
     }
 
+    @Override
+    public boolean equals(Object e) {
+        if ( e instanceof Territory &&
+                this.id == ((Territory)e).getId())
+            return true;
+        else
+            return false;
+    }
+
     public int getId() {
         return id;
     }
