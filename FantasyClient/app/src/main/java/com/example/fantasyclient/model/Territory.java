@@ -1,4 +1,4 @@
-package com.example.fantasyclient.json;
+package com.example.fantasyclient.model;
 
 import java.util.ArrayList;
 import java.util.List;

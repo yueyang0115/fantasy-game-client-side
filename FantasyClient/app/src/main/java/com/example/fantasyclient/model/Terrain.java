@@ -1,4 +1,4 @@
-package com.example.fantasyclient.json;
+package com.example.fantasyclient.model;
 
 public class Terrain {
 
