@@ -19,6 +19,7 @@ import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -32,7 +33,7 @@ public class MainActivity extends BaseActivity {
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter adapter = new ImageAdapter(this);
-    HashMap<Integer,Territory> cachedMap = new HashMap<>();
+    HashSet<Territory> cachedMap = new HashSet<>();
     Handler handler;
     TextView textLocation, textVLocation;
     Button btnTest;
@@ -106,17 +107,12 @@ public class MainActivity extends BaseActivity {
         // make the device update its location
         //location.beginUpdates();
         updateLocation();
-
-        // ...
     }
 
     @Override
     protected void onPause() {
         // stop location updates (saves battery)
         location.endUpdates();
-
-        // ...
-
         super.onPause();
     }
 
@@ -209,48 +205,22 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    /*@Override
-    protected void checkPositionResult(final PositionResultMessage m){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                List<Territory> terrArray = m.getTerritoryArray();
-                ImageView targetView = null;
-                for(Territory t : terrArray){
-                    targetView = imageMap.get(5+t.getX()-3*t.getY());
-                    assert targetView != null;
-                    switch(t.getTerrain().getType()){
-                        case "grass":
-                            targetView.setImageResource(R.drawable.plains00);
-                            break;
-                        case "mountain":
-                            targetView.setImageResource(R.drawable.mountain00);
-                            break;
-                        case "river":
-                            targetView.setImageResource(R.drawable.ocean00);
-                            break;
-                    }
-                }
-            }
-        });
-    }*/
-
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
-        for(HashMap.Entry<Integer,Territory> e: cachedMap.entrySet()){
-            int position = 64+(e.getValue().getX()-vPosition.getX())/10-(e.getValue().getY()-vPosition.getY());
-            updateMap(e.getValue(),position);
+        for(Territory t : cachedMap){
+            int position = 64+(t.getX()-vPosition.getX())/10-(t.getY()-vPosition.getY());
+            updateMap(t,position);
         }
         List<Territory> terrArray = m.getTerritoryArray();
         for(Territory t : terrArray){
             int position = 64+(t.getX()-vPosition.getX())/10-(t.getY()-vPosition.getY());
             updateMap(t,position);
+            cachedMap.add(t);
         }
         adapter.notifyDataSetChanged();
     }
 
     protected void updateMap(Territory t, int position){
-        cachedMap.put(t.getId(),t);
         switch(t.getTerrain().getType()){
             case "grass":
                 adapter.updateImage(position,R.drawable.plains00);

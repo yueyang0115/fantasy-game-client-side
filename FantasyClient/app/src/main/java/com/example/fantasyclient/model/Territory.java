@@ -32,6 +32,12 @@ public class Territory {
             return false;
     }
 
+    @Override
+    public int hashCode() {
+        Integer tempID = id;
+        return tempID.hashCode();
+    }
+
     public int getId() {
         return id;
     }
