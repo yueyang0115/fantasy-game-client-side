@@ -1,15 +1,13 @@
-package com.example.fantasyclient.json;
+package com.example.fantasyclient.model;
 
-public class PositionRequestMessage {
+public class VirtualPosition {
     private int x;
     private int y;
 
-    public PositionRequestMessage(int x, int y) {
+    public VirtualPosition(int x, int y) {
         this.x = x;
         this.y = y;
     }
-
-    public PositionRequestMessage(){}
 
     public int getX() {
         return x;

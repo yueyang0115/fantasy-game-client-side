@@ -1,4 +1,4 @@
-package com.example.fantasyclient.json;
+package com.example.fantasyclient.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,21 @@ public class Territory {
         this.x = x;
         this.y = y;
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object e) {
+        if ( e instanceof Territory &&
+                this.id == ((Territory)e).getId())
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public int hashCode() {
+        Integer tempID = id;
+        return tempID.hashCode();
     }
 
     public int getId() {

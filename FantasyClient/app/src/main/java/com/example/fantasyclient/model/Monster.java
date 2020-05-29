@@ -1,6 +1,4 @@
-package com.example.fantasyclient.json;
-
-import org.json.JSONObject;
+package com.example.fantasyclient.model;
 
 public class Monster {
 

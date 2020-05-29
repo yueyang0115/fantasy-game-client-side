@@ -3,27 +3,22 @@ package com.example.fantasyclient;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.json.MessageHelper;
-import com.example.fantasyclient.json.MessagesC2S;
-import com.example.fantasyclient.json.MessagesS2C;
-import com.example.fantasyclient.json.PositionRequestMessage;
-import com.example.fantasyclient.json.PositionResultMessage;
-import com.example.fantasyclient.json.Territory;
+import com.example.fantasyclient.helper.*;
+import com.example.fantasyclient.json.*;
+import com.example.fantasyclient.model.*;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -34,12 +29,12 @@ public class MainActivity extends BaseActivity {
 
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
+    VirtualPosition vPosition = new VirtualPosition(0,0);
+    ImageAdapter adapter = new ImageAdapter(this);
+    HashSet<Territory> cachedMap = new HashSet<>();
+    MessageSender sender = new MessageSender();
+    MessageReceiver receiver = new MessageReceiver();
     TextView textLocation, textVLocation;
-    ImageView imageView1, imageView2, imageView3, imageView4, imageView5, imageView6, imageView7, imageView8, imageView9;
-    HashMap<Integer, ImageView> imageMap;
-    /*imageView10,
-            imageView11, imageView12, imageView13, imageView14, imageView15, imageView16, imageView17, imageView18, imageView19, imageView20,
-            imageView21, imageView22, imageView23, imageView24, imageView25;*/
     Button btnTest;
 
     @Override
@@ -48,11 +43,6 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         findView();
-
-        textLocation = (TextView) findViewById(R.id.position);
-        textVLocation = (TextView) findViewById(R.id.v_position);
-        btnTest = (Button) findViewById(R.id.btn_start);
-        // ...
 
         // construct a new instance of SimpleLocation
         location = new SimpleLocation(this, true, false, 5 * 1000, true);
@@ -63,7 +53,7 @@ public class MainActivity extends BaseActivity {
             // ask the user to enable location access
             SimpleLocation.openSettings(this);
         }
-
+        updateLocation();
         doBindService();
 
         btnTest.setOnClickListener(new View.OnClickListener() {
@@ -71,20 +61,44 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
+                //Thread to update location
                 new Thread() {
                     @Override
                     public void run() {
-                        Looper.prepare();
-                        startSendLocation();
-                        Looper.loop();
+                        startUpdateLocation();
                     }
                 }.start();
+                //Thread to enqueue message to send queue
+                new Thread() {
+                    @Override
+                    public void run() {
+                        startSendLocation();
+                    }
+                }.start();
+                //Thread to receive feedback from server
                 new Thread() {
                     @Override
                     public void run() {
                         Looper.prepare();
                         startRecvTerr();
                         Looper.loop();
+                    }
+                }.start();
+                //Thread to keep sending message from queue
+                new Thread(){
+                    @Override
+                    public void run() {
+                        //ensure service is bound
+                        while(socketService==null){}
+                        sender.sendLoop(socketService.communicator);
+                    }
+                }.start();
+                new Thread(){
+                    @Override
+                    public void run() {
+                        //ensure service is bound
+                        while(socketService==null){}
+                        receiver.recvLoop(socketService.communicator);
                     }
                 }.start();
             }
@@ -95,99 +109,39 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         // make the device update its location
         //location.beginUpdates();
         updateLocation();
-
-        // ...
     }
 
     @Override
     protected void onPause() {
         // stop location updates (saves battery)
         location.endUpdates();
-
-        // ...
-
         super.onPause();
     }
 
     /**
      * this AsyncTask runs in background
      */
-    public void startSendLocation() {
-        final Handler handler = new Handler();
-        Timer timer = new Timer();
-        TimerTask doAsyncTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        try {
-                            updateLocation();
-                            PositionRequestMessage p = new PositionRequestMessage(location.getLatitude(),location.getLongitude());
-                            socketService.sendTcpMsg(new MessagesC2S(p));
-                            //(new sendLocationTask()).execute(new MessagesC2S(p));
-                        } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                        }
-                    }
-                });
-            }
-        };
-        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
+    protected void startUpdateLocation(){
+        (new LocationTimerHandler(vPosition,location)).handleTask(0,1000);
     }
 
-    @SuppressLint("StaticFieldLeak")
-    class sendLocationTask extends AsyncTask<MessagesC2S, Void, Void> {
-        @Override
-        protected Void doInBackground(MessagesC2S... msg) {
-            socketService.sendTcpMsg(msg[0]);
-            return null;
-        }
+    public void startSendLocation() {
+        (new SendTimerHandler(vPosition, sender)).handleTask(0,1000);
     }
 
     public void startRecvTerr() {
-        final Handler handler = new Handler();
-        Timer timer = new Timer();
-        TimerTask doAsyncTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    public void run() {
-                        try {
-                            //new recvTerrTask().execute();
-                            handleRecvMessage(socketService.recvTcpMsg());
-                        } catch (Exception e) {
-                            Log.e("MainActivity","Failed to handle position result");
-                            e.printStackTrace();
-                            // TODO Auto-generated catch block
-                        }
-                    }
-                });
+        while(true){
+            if(!receiver.isEmpty()){
+                handleRecvMessage(receiver.dequeue());
             }
-        };
-        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    class recvTerrTask extends AsyncTask<Void, Void, MessagesS2C> {
-        @Override
-        protected MessagesS2C doInBackground(Void... voids) {
-            return socketService.recvTcpMsg();
-        }
-
-        @SuppressLint("SetTextI18n")
-        @Override
-        protected void onPostExecute(MessagesS2C result) {
-            super.onPostExecute(result);
-            handleRecvMessage(result);
         }
     }
 
     /**
-     * these two methods ask for location permission
+     * These two methods ask for location permission
      */
     protected void updateLocation(){
         // Here, thisActivity is the current activity
@@ -239,30 +193,57 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * This method is called after a MessageS2C with PositionResultMessage is received from server
+     * UI and cached map will be updated based on the received message
+     * @param m: received PositionResultMessage
+     */
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
+        //set background to be base type
+        adapter.initImage();
+        //set cached territory
+        for(Territory t : cachedMap){
+            updateTerritory(t);
+        }
+        //update new territories
+        List<Territory> terrArray = m.getTerritoryArray();
+        for(Territory t : terrArray){
+            updateTerritory(t);
+            //add new territory to map cache
+            cachedMap.add(t);
+        }
+        //update UI
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                List<Territory> terrArray = m.getTerritoryArray();
-                ImageView targetView = null;
-                for(Territory t : terrArray){
-                    targetView = imageMap.get(5+t.getX()-3*t.getY());
-                    assert targetView != null;
-                    switch(t.getTerrain().getType()){
-                        case "grass":
-                            targetView.setImageResource(R.drawable.plains00);
-                            break;
-                        case "mountain":
-                            targetView.setImageResource(R.drawable.mountain00);
-                            break;
-                        case "river":
-                            targetView.setImageResource(R.drawable.ocean00);
-                            break;
-                    }
-                }
+                adapter.notifyDataSetChanged();
             }
         });
+    }
+
+    /**
+     * This method change the source file array in ImageAdapter
+     * UI will be updated when adapter.notifyDataSetChanged() is called
+     * @param t: target territory
+     */
+    protected void updateTerritory(Territory t){
+        int dx = (t.getX()-vPosition.getX())/10;
+        int dy = (t.getY()-vPosition.getY())/10;
+        if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {
+            int position = 64+dx-10*dy;
+            switch (t.getTerrain().getType()) {
+                case "grass":
+                    adapter.updateImage(position, R.drawable.plains00);
+                    break;
+                case "mountain":
+                    adapter.updateImage(position, R.drawable.mountain00);
+                    break;
+                case "river":
+                    adapter.updateImage(position, R.drawable.ocean00);
+                    break;
+            }
+        }
     }
 
     @Override
@@ -270,24 +251,8 @@ public class MainActivity extends BaseActivity {
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
         btnTest = (Button) findViewById(R.id.btn_start);
-        imageMap = new HashMap<>();
-        imageView1 = (ImageView) findViewById(R.id.imageView7);
-        imageMap.put(1,imageView1);
-        imageView2 = (ImageView) findViewById(R.id.imageView8);
-        imageMap.put(2,imageView2);
-        imageView3 = (ImageView) findViewById(R.id.imageView9);
-        imageMap.put(3,imageView3);
-        imageView4 = (ImageView) findViewById(R.id.imageView12);
-        imageMap.put(4,imageView4);
-        imageView5 = (ImageView) findViewById(R.id.imageView13);
-        imageMap.put(5,imageView5);
-        imageView6 = (ImageView) findViewById(R.id.imageView14);
-        imageMap.put(6,imageView6);
-        imageView7 = (ImageView) findViewById(R.id.imageView17);
-        imageMap.put(7,imageView7);
-        imageView8 = (ImageView) findViewById(R.id.imageView18);
-        imageMap.put(8,imageView8);
-        imageView9 = (ImageView) findViewById(R.id.imageView19);
-        imageMap.put(9,imageView9);
+        GridView gridview = (GridView) findViewById(R.id.gridView);
+        adapter.initImage();
+        gridview.setAdapter(adapter);
     }
 }

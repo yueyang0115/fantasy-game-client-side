@@ -1,5 +1,7 @@
 package com.example.fantasyclient.json;
 
+import com.example.fantasyclient.model.Territory;
+
 import java.util.List;
 
 public class PositionResultMessage {

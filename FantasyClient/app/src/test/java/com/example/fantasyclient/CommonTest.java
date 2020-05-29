@@ -1,7 +1,5 @@
 package com.example.fantasyclient;
 
-import com.example.fantasyclient.json.CheckTerrainSend;
-
 import org.junit.Test;
 
 public class CommonTest {
