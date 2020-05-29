@@ -140,7 +140,7 @@ public class MainActivity extends BaseActivity {
                 messageSender.enqueue(new MessagesC2S(p));
             }
         };
-        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
+        timer.schedule(doAsyncTask, 0, 1000); //execute in every 5000 ms
     }
 
     public void startRecvTerr() {
