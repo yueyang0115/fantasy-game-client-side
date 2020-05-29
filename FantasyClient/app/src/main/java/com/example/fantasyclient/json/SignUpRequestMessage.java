@@ -9,6 +9,8 @@ public class SignUpRequestMessage {
         this.password = password;
     }
 
+    public SignUpRequestMessage(){}
+
     public String getUsername() {
         return username;
     }

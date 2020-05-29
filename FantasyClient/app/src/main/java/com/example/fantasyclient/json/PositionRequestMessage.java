@@ -9,6 +9,8 @@ public class PositionRequestMessage {
         this.y = y;
     }
 
+    public PositionRequestMessage(){}
+
     public int getX() {
         return x;
     }
