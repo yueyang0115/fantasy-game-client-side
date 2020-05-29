@@ -32,7 +32,8 @@ public class MainActivity extends BaseActivity {
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter adapter = new ImageAdapter(this);
     HashSet<Territory> cachedMap = new HashSet<>();
-    MessageSender messageSender = new MessageSender();
+    MessageSender sender = new MessageSender();
+    MessageReceiver receiver = new MessageReceiver();
     TextView textLocation, textVLocation;
     Button btnTest;
 
@@ -52,7 +53,7 @@ public class MainActivity extends BaseActivity {
             // ask the user to enable location access
             SimpleLocation.openSettings(this);
         }
-
+        updateLocation();
         doBindService();
 
         btnTest.setOnClickListener(new View.OnClickListener() {
@@ -64,18 +65,14 @@ public class MainActivity extends BaseActivity {
                 new Thread() {
                     @Override
                     public void run() {
-                        Looper.prepare();
                         startUpdateLocation();
-                        Looper.loop();
                     }
                 }.start();
                 //Thread to enqueue message to send queue
                 new Thread() {
                     @Override
                     public void run() {
-                        Looper.prepare();
                         startSendLocation();
-                        Looper.loop();
                     }
                 }.start();
                 //Thread to receive feedback from server
@@ -91,7 +88,17 @@ public class MainActivity extends BaseActivity {
                 new Thread(){
                     @Override
                     public void run() {
-                        messageSender.sendLoop(socketService.communicator);
+                        //ensure service is bound
+                        while(socketService==null){}
+                        sender.sendLoop(socketService.communicator);
+                    }
+                }.start();
+                new Thread(){
+                    @Override
+                    public void run() {
+                        //ensure service is bound
+                        while(socketService==null){}
+                        receiver.recvLoop(socketService.communicator);
                     }
                 }.start();
             }
@@ -118,49 +125,19 @@ public class MainActivity extends BaseActivity {
      * this AsyncTask runs in background
      */
     protected void startUpdateLocation(){
-        final Handler handler = new Handler();
-        Timer timer = new Timer();
-        TimerTask doAsyncTask = new TimerTask() {
-            @Override
-            public void run() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateLocation();
-                        PositionHelper.convertVPosition(vPosition,location.getLatitude(),location.getLongitude());
-                    }
-                });
-            }
-        };
-        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
+        (new LocationTimerHandler(vPosition,location)).handleTask(0,1000);
     }
 
     public void startSendLocation() {
-        Timer timer = new Timer();
-        TimerTask doAsyncTask = new TimerTask() {
-            @Override
-            public void run() {
-                PositionRequestMessage p = new PositionRequestMessage(vPosition.getX(),vPosition.getY());
-                messageSender.enqueue(new MessagesC2S(p));
-            }
-        };
-        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
+        (new SendTimerHandler(vPosition, sender)).handleTask(0,1000);
     }
 
     public void startRecvTerr() {
-        final Handler recvHandler = new Handler();
-        Timer timer = new Timer();
-        TimerTask doAsyncTask = new TimerTask() {
-            @Override
-            public void run() {
-                recvHandler.post(new Runnable() {
-                    public void run() {
-                        handleRecvMessage(socketService.recvTcpMsg());
-                    }
-                });
+        while(true){
+            if(!receiver.isEmpty()){
+                handleRecvMessage(receiver.dequeue());
             }
-        };
-        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
+        }
     }
 
     /**
@@ -227,12 +204,12 @@ public class MainActivity extends BaseActivity {
         adapter.initImage();
         //set cached territory
         for(Territory t : cachedMap){
-            updateMap(t);
+            updateTerritory(t);
         }
         //update new territories
         List<Territory> terrArray = m.getTerritoryArray();
         for(Territory t : terrArray){
-            updateMap(t);
+            updateTerritory(t);
             //add new territory to map cache
             cachedMap.add(t);
         }
@@ -250,7 +227,7 @@ public class MainActivity extends BaseActivity {
      * UI will be updated when adapter.notifyDataSetChanged() is called
      * @param t: target territory
      */
-    protected void updateMap(Territory t){
+    protected void updateTerritory(Territory t){
         int dx = (t.getX()-vPosition.getX())/10;
         int dy = (t.getY()-vPosition.getY())/10;
         if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {

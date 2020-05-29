@@ -10,29 +10,22 @@ import com.example.fantasyclient.thread.TcpSendThread;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageSender {
-    final Handler handler;
     LinkedBlockingQueue<MessagesC2S> queue;
     private final String TAG = "MessageSender";
 
     public MessageSender() {
-        handler = new Handler();
         queue = new LinkedBlockingQueue<>();
     }
 
     public void enqueue(final MessagesC2S m){
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                queue.add(m);
-            }
-        });
+        queue.add(m);
     }
 
     public void sendLoop(Communicator c){
         while(true){
             if(!queue.isEmpty()){
                 try {
-                    (new TcpSendThread(c,queue.take())).start();
+                    c.sendMsg(queue.take());
                 } catch (InterruptedException e) {
                     Log.e(TAG,"SendLoop fails");
                 }
