@@ -32,7 +32,7 @@ public class MainActivity extends BaseActivity {
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter adapter = new ImageAdapter(this);
     HashSet<Territory> cachedMap = new HashSet<>();
-    Handler sendHandler, recvHandler;
+    MessageSender messageSender = new MessageSender();
     TextView textLocation, textVLocation;
     Button btnTest;
 
@@ -55,12 +55,49 @@ public class MainActivity extends BaseActivity {
 
         doBindService();
 
-
-        btnTest.setOnClickListener(new View.OnClickListener() {
+        new Thread() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                startUpdateLocation();
+                Looper.loop();
+            }
+        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                startSendLocation();
+                Looper.loop();
+            }
+        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                startRecvTerr();
+                Looper.loop();
+            }
+        }.start();
+        new Thread(){
+            @Override
+            public void run() {
+                messageSender.sendLoop(socketService.communicator);
+            }
+        }.start();
+        /*btnTest.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 // TODO
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        startUpdateLocation();
+                        Looper.loop();
+                    }
+                }.start();
                 new Thread() {
                     @Override
                     public void run() {
@@ -77,30 +114,20 @@ public class MainActivity extends BaseActivity {
                         Looper.loop();
                     }
                 }.start();
-               /* new Thread(){
+                new Thread(){
                     @Override
                     public void run() {
-                        while(true){
-                            if(!sendQueue.isEmpty()){
-                                try {
-                                    socketService.sendTcpMsg(sendQueue.take());
-                                } catch (InterruptedException e) {
-                                    Log.e("SendQueue","Dequeue fails");
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                        messageSender.sendLoop(socketService.communicator);
                     }
-                }.start();*/
+                }.start();
             }
 
-        });
+        });*/
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
         // make the device update its location
         //location.beginUpdates();
         updateLocation();
@@ -116,27 +143,38 @@ public class MainActivity extends BaseActivity {
     /**
      * this AsyncTask runs in background
      */
-    public void startSendLocation() {
-        sendHandler = new Handler();
+    protected void startUpdateLocation(){
+        final Handler handler = new Handler();
         Timer timer = new Timer();
         TimerTask doAsyncTask = new TimerTask() {
             @Override
             public void run() {
-                sendHandler.post(new Runnable() {
+                handler.post(new Runnable() {
+                    @Override
                     public void run() {
                         updateLocation();
                         PositionHelper.convertVPosition(vPosition,location.getLatitude(),location.getLongitude());
-                        PositionRequestMessage p = new PositionRequestMessage(vPosition.getX(),vPosition.getY());
-                        socketService.sendTcpMsg(new MessagesC2S(p));
                     }
                 });
+            }
+        };
+        timer.schedule(doAsyncTask, 0, 1000); //execute in every 5000 ms
+    }
+
+    public void startSendLocation() {
+        Timer timer = new Timer();
+        TimerTask doAsyncTask = new TimerTask() {
+            @Override
+            public void run() {
+                PositionRequestMessage p = new PositionRequestMessage(vPosition.getX(),vPosition.getY());
+                messageSender.enqueue(new MessagesC2S(p));
             }
         };
         timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
     }
 
     public void startRecvTerr() {
-        recvHandler = new Handler();
+        final Handler recvHandler = new Handler();
         Timer timer = new Timer();
         TimerTask doAsyncTask = new TimerTask() {
             @Override
@@ -152,7 +190,7 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * these two methods ask for location permission
+     * These two methods ask for location permission
      */
     protected void updateLocation(){
         // Here, thisActivity is the current activity
@@ -204,6 +242,11 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * This method is called after a MessageS2C with PositionResultMessage is received from server
+     * UI and cached map will be updated based on the received message
+     * @param m: received PositionResultMessage
+     */
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
         //set background to be base type
@@ -216,8 +259,10 @@ public class MainActivity extends BaseActivity {
         List<Territory> terrArray = m.getTerritoryArray();
         for(Territory t : terrArray){
             updateMap(t);
+            //add new territory to map cache
             cachedMap.add(t);
         }
+        //update UI
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -226,6 +271,11 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    /**
+     * This method change the source file array in ImageAdapter
+     * UI will be updated when adapter.notifyDataSetChanged() is called
+     * @param t: target territory
+     */
     protected void updateMap(Territory t){
         int dx = (t.getX()-vPosition.getX())/10;
         int dy = (t.getY()-vPosition.getY())/10;
