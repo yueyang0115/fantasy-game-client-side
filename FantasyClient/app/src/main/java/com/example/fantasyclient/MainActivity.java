@@ -55,37 +55,7 @@ public class MainActivity extends BaseActivity {
 
         doBindService();
 
-        new Thread() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                startUpdateLocation();
-                Looper.loop();
-            }
-        }.start();
-        new Thread() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                startSendLocation();
-                Looper.loop();
-            }
-        }.start();
-        new Thread() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                startRecvTerr();
-                Looper.loop();
-            }
-        }.start();
-        new Thread(){
-            @Override
-            public void run() {
-                messageSender.sendLoop(socketService.communicator);
-            }
-        }.start();
-        /*btnTest.setOnClickListener(new View.OnClickListener() {
+        btnTest.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
@@ -122,7 +92,7 @@ public class MainActivity extends BaseActivity {
                 }.start();
             }
 
-        });*/
+        });
     }
 
     @Override
