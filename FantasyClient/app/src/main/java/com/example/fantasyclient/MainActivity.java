@@ -60,6 +60,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
+                //Thread to update location
                 new Thread() {
                     @Override
                     public void run() {
@@ -68,6 +69,7 @@ public class MainActivity extends BaseActivity {
                         Looper.loop();
                     }
                 }.start();
+                //Thread to enqueue message to send queue
                 new Thread() {
                     @Override
                     public void run() {
@@ -76,6 +78,7 @@ public class MainActivity extends BaseActivity {
                         Looper.loop();
                     }
                 }.start();
+                //Thread to receive feedback from server
                 new Thread() {
                     @Override
                     public void run() {
@@ -84,6 +87,7 @@ public class MainActivity extends BaseActivity {
                         Looper.loop();
                     }
                 }.start();
+                //Thread to keep sending message from queue
                 new Thread(){
                     @Override
                     public void run() {
@@ -128,7 +132,7 @@ public class MainActivity extends BaseActivity {
                 });
             }
         };
-        timer.schedule(doAsyncTask, 0, 1000); //execute in every 5000 ms
+        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
     }
 
     public void startSendLocation() {
@@ -140,7 +144,7 @@ public class MainActivity extends BaseActivity {
                 messageSender.enqueue(new MessagesC2S(p));
             }
         };
-        timer.schedule(doAsyncTask, 0, 1000); //execute in every 5000 ms
+        timer.schedule(doAsyncTask, 0, 5000); //execute in every 5000 ms
     }
 
     public void startRecvTerr() {
