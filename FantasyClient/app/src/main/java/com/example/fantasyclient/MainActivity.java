@@ -216,6 +216,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void run() {
                 terrainAdapter.notifyDataSetChanged();
+                unitAdapter.notifyDataSetChanged();
             }
         });
     }
