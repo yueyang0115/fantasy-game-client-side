@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
@@ -20,8 +19,6 @@ import com.example.fantasyclient.model.*;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -30,7 +27,8 @@ public class MainActivity extends BaseActivity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
-    ImageAdapter adapter = new ImageAdapter(this);
+    ImageAdapter terrainAdapter = new ImageAdapter(this);
+    ImageAdapter unitAdapter = new ImageAdapter(this);
     HashSet<Territory> cachedMap = new HashSet<>();
     MessageSender sender = new MessageSender();
     MessageReceiver receiver = new MessageReceiver();
@@ -201,7 +199,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
         //set background to be base type
-        adapter.initImage();
+        terrainAdapter.initMap(R.drawable.base00);
         //set cached territory
         for(Territory t : cachedMap){
             updateTerritory(t);
@@ -217,7 +215,7 @@ public class MainActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.notifyDataSetChanged();
+                terrainAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -234,13 +232,18 @@ public class MainActivity extends BaseActivity {
             int position = 64+dx-10*dy;
             switch (t.getTerrain().getType()) {
                 case "grass":
-                    adapter.updateImage(position, R.drawable.plains00);
+                    terrainAdapter.updateImage(position, R.drawable.plains00);
                     break;
                 case "mountain":
-                    adapter.updateImage(position, R.drawable.mountain00);
+                    terrainAdapter.updateImage(position, R.drawable.mountain00);
                     break;
                 case "river":
-                    adapter.updateImage(position, R.drawable.ocean00);
+                    terrainAdapter.updateImage(position, R.drawable.ocean00);
+                    break;
+            }
+            switch(t.getMonsters().get(0).getType()) {
+                case "wolf":
+                    unitAdapter.updateImage(position,R.drawable.wolf);
                     break;
             }
         }
@@ -251,8 +254,11 @@ public class MainActivity extends BaseActivity {
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
         btnTest = (Button) findViewById(R.id.btn_start);
-        GridView gridview = (GridView) findViewById(R.id.gridView);
-        adapter.initImage();
-        gridview.setAdapter(adapter);
+        GridView terrainGridView = (GridView) findViewById(R.id.terrainGridView);
+        GridView unitGridView = (GridView) findViewById(R.id.unitGridView);
+        terrainAdapter.initMap(R.drawable.base00);
+        unitAdapter.initMap(R.drawable.transparent);
+        terrainGridView.setAdapter(terrainAdapter);
+        unitGridView.setAdapter(unitAdapter);
     }
 }
