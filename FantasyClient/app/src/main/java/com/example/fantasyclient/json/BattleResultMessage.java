@@ -8,7 +8,7 @@ import java.util.List;
 public class BattleResultMessage {
     private List<Monster> monsters = new ArrayList<>();
     private List<Soldier> soldiers = new ArrayList<>();
-    private String result;
+    private String result;//"win","lose","continue","escaped"
 
     public BattleResultMessage() {
     }

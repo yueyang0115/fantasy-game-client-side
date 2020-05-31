@@ -26,7 +26,6 @@ public class StartActivity extends BaseActivity {
             public void onClick(View v) {
                 launchLogin();
             }
-
         });
     }
 
