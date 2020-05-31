@@ -2,6 +2,7 @@ package com.example.fantasyclient;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
@@ -25,6 +26,7 @@ import im.delight.android.location.SimpleLocation;
 public class MainActivity extends BaseActivity {
 
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    static final int BATTLE = 2;
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter terrainAdapter = new ImageAdapter(this);
@@ -219,6 +221,7 @@ public class MainActivity extends BaseActivity {
                 unitAdapter.notifyDataSetChanged();
             }
         });
+
     }
 
     /**
@@ -242,11 +245,41 @@ public class MainActivity extends BaseActivity {
                     terrainAdapter.updateImage(position, R.drawable.ocean00);
                     break;
             }
-            switch(t.getMonsters().get(0).getType()) {
-                case "wolf":
-                    unitAdapter.updateImage(position,R.drawable.wolf);
-                    break;
+            if(!t.getMonsters().isEmpty()) {
+                switch (t.getMonsters().get(0).getType()) {
+                    case "wolf":
+                        unitAdapter.updateImage(position, R.drawable.wolf);
+                        break;
+                }
+                if(t.getX()==vPosition.getX()&&t.getY()==vPosition.getY()){
+                    Intent intent = new Intent(this,BattleActivity.class);
+                    intent.putExtra("TerritoryID", t.getId());
+                    intent.putExtra("MonsterID",t.getMonsters().get(0).getId());
+                    startActivityForResult(intent,BATTLE);
+                }
             }
+
+        }
+    }
+
+    /**
+     * this method is called after "startActivityForResult"
+     * it handles different return situation from another activity based on:
+     * @param requestCode: determine if the activity is to view or modify
+     * @param resultCode: determine if the player confirm or cancel
+     *                  RESULT_OK: confirm; RESULT_CANCELED: cancel
+     * @param data: Intent to get data submitted by players
+     */
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK) {
+            if(requestCode==BATTLE) {
+
+            }
+        }
+        else if(requestCode==RESULT_CANCELED){
         }
     }
 
