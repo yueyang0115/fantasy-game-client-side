@@ -4,6 +4,7 @@ public class MessagesS2C {
     private PositionResultMessage positionResultMessage;
     private LoginResultMessage loginResultMessage;
     private SignUpResultMessage signUpResultMessage;
+    private BattleResultMessage battleResultMessage;
 
     public MessagesS2C(){
     }
@@ -30,5 +31,13 @@ public class MessagesS2C {
 
     public void setSignUpResultMessage(SignUpResultMessage signUpResultMessage) {
         this.signUpResultMessage = signUpResultMessage;
+    }
+
+    public BattleResultMessage getBattleResultMessage() {
+        return battleResultMessage;
+    }
+
+    public void setBattleResultMessage(BattleResultMessage battleResultMessage) {
+        this.battleResultMessage = battleResultMessage;
     }
 }
