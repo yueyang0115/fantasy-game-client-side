@@ -33,7 +33,7 @@ public class BattleActivity extends BaseActivity{
         final int monsterID = intent.getIntExtra("MonsterID",0);
         final int soldierID = 0;
 
-        //Thread to keep sending message from queue
+        /*//Thread to keep sending message from queue
         new Thread(){
             @Override
             public void run() {
@@ -49,13 +49,13 @@ public class BattleActivity extends BaseActivity{
                 while(socketService==null){}
                 receiver.recvLoop(socketService.communicator);
             }
-        }.start();
+        }.start();*/
 
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 socketService.sendTcpMsg(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
-                handleRecvMessage(socketService.recvTcpMsg());
+                checkBattleResult(socketService.recvTcpMsg().getBattleResultMessage());
             }
         });
 
@@ -63,7 +63,7 @@ public class BattleActivity extends BaseActivity{
             @Override
             public void onClick(View v) {
                 socketService.sendTcpMsg(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
-                handleRecvMessage(socketService.recvTcpMsg());
+                checkBattleResult(socketService.recvTcpMsg().getBattleResultMessage());
             }
         });
     }

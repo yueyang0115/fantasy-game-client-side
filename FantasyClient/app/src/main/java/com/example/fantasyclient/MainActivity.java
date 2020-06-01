@@ -33,6 +33,7 @@ public class MainActivity extends BaseActivity {
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter terrainAdapter = new ImageAdapter(this);
     ImageAdapter unitAdapter = new ImageAdapter(this);
+    Thread locationThread, sendLoopThread, recvLoopThread, sendThread, recvThread;
     List<Soldier> soldiers = new ArrayList<>();
     HashSet<Territory> cachedMap = new HashSet<>();
     MessageSender sender = new MessageSender();
@@ -64,52 +65,58 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
-                new Thread() {
+
+                locationThread = new Thread() {
                     @Override
                     public void run() {
                         startUpdateLocation();
                     }
-                }.start();
+                };
+                locationThread.start();
                 //Thread to enqueue message to send queue
-                new Thread() {
+                sendThread = new Thread() {
                     @Override
                     public void run() {
                         startSendLocation();
                     }
-                }.start();
+                };
+                sendThread.start();
                 //Thread to receive feedback from server
-                new Thread() {
+                recvThread = new Thread() {
                     @Override
                     public void run() {
                         Looper.prepare();
                         startRecvTerr();
                         Looper.loop();
                     }
-                }.start();
+                };
+                recvThread.start();
                 //Thread to keep sending message from queue
-                new Thread(){
+                sendLoopThread = new Thread(){
                     @Override
                     public void run() {
                         //ensure service is bound
                         while(socketService==null){}
                         sender.sendLoop(socketService.communicator);
                     }
-                }.start();
-                new Thread(){
+                };
+                sendLoopThread.start();
+                recvLoopThread = new Thread(){
                     @Override
                     public void run() {
                         //ensure service is bound
                         while(socketService==null){}
                         receiver.recvLoop(socketService.communicator);
                     }
-                }.start();
-                new Thread(){
+                };
+                recvLoopThread.start();
+                /*new Thread(){
                     @Override
                     public void run() {
                         while (socketService==null){}
                         socketService.sendTcpMsg(new MessagesC2S(new AttributeRequestMessage()));
                     }
-                }.start();
+                }.start();*/
             }
 
         });
@@ -308,7 +315,6 @@ public class MainActivity extends BaseActivity {
         unitAdapter.initMap(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
-
         unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
