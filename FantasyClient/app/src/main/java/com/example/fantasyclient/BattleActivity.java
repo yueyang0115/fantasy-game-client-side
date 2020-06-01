@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.fantasyclient.helper.MessageReceiver;
+import com.example.fantasyclient.helper.MessageSender;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
@@ -17,6 +19,8 @@ import com.example.fantasyclient.json.MessagesC2S;
 public class BattleActivity extends BaseActivity{
     Button attackBtn;
     Button escapeBtn;
+    MessageSender sender = new MessageSender();
+    MessageReceiver receiver = new MessageReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,24 @@ public class BattleActivity extends BaseActivity{
         final int terrID = intent.getIntExtra("TerritoryID",0);
         final int monsterID = intent.getIntExtra("MonsterID",0);
         final int soldierID = 0;
+
+        //Thread to keep sending message from queue
+        new Thread(){
+            @Override
+            public void run() {
+                //ensure service is bound
+                while(socketService==null){}
+                sender.sendLoop(socketService.communicator);
+            }
+        }.start();
+        new Thread(){
+            @Override
+            public void run() {
+                //ensure service is bound
+                while(socketService==null){}
+                receiver.recvLoop(socketService.communicator);
+            }
+        }.start();
 
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
