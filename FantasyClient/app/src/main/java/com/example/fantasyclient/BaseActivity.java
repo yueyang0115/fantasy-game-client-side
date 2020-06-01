@@ -76,6 +76,9 @@ public class BaseActivity extends Activity {
             if (m.getBattleResultMessage() != null) {
                 checkBattleResult(m.getBattleResultMessage());
             }
+            if (m.getAttributeResultMessage() != null) {
+                checkAttributeResult(m.getAttributeResultMessage());
+            }
         }
     }
 
@@ -102,6 +105,8 @@ public class BaseActivity extends Activity {
     protected void checkPositionResult(PositionResultMessage m){}
 
     protected void checkBattleResult(BattleResultMessage m){}
+
+    protected void checkAttributeResult(AttributeResultMessage m){}
 
     /**
      * these methods are for service

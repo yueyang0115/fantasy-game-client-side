@@ -18,6 +18,7 @@ import com.example.fantasyclient.helper.*;
 import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class MainActivity extends BaseActivity {
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter terrainAdapter = new ImageAdapter(this);
     ImageAdapter unitAdapter = new ImageAdapter(this);
+    List<Soldier> soldiers = new ArrayList<>();
     HashSet<Territory> cachedMap = new HashSet<>();
     MessageSender sender = new MessageSender();
     MessageReceiver receiver = new MessageReceiver();
@@ -99,6 +101,13 @@ public class MainActivity extends BaseActivity {
                         //ensure service is bound
                         while(socketService==null){}
                         receiver.recvLoop(socketService.communicator);
+                    }
+                }.start();
+                new Thread(){
+                    @Override
+                    public void run() {
+                        while (socketService==null){}
+                        socketService.sendTcpMsg(new MessagesC2S(new AttributeRequestMessage()));
                     }
                 }.start();
             }
@@ -221,7 +230,11 @@ public class MainActivity extends BaseActivity {
                 unitAdapter.notifyDataSetChanged();
             }
         });
+    }
 
+    @Override
+    protected void checkAttributeResult(final AttributeResultMessage m){
+        soldiers = m.getSoldiers();
     }
 
     /**
