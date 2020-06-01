@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -63,7 +64,6 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
-                //Thread to update location
                 new Thread() {
                     @Override
                     public void run() {
@@ -113,6 +113,8 @@ public class MainActivity extends BaseActivity {
             }
 
         });
+
+
     }
 
     @Override
@@ -264,15 +266,14 @@ public class MainActivity extends BaseActivity {
                         unitAdapter.updateImage(position, R.drawable.wolf);
                         break;
                 }
-                if(t.getX()==vPosition.getX()&&t.getY()==vPosition.getY()){
-                    Intent intent = new Intent(this,BattleActivity.class);
-                    intent.putExtra("TerritoryID", t.getId());
-                    intent.putExtra("MonsterID",t.getMonsters().get(0).getId());
-                    startActivityForResult(intent,BATTLE);
-                }
             }
 
         }
+    }
+
+    protected void launchBattle(){
+        Intent intent = new Intent(this,BattleActivity.class);
+        startActivityForResult(intent,BATTLE);
     }
 
     /**
@@ -307,5 +308,14 @@ public class MainActivity extends BaseActivity {
         unitAdapter.initMap(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
+
+        unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position==64 && unitAdapter.getItem(position)==R.drawable.wolf){
+                    launchBattle();
+                }
+            }
+        });
     }
 }

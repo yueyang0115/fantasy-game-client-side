@@ -29,8 +29,8 @@ public class ImageAdapter extends BaseAdapter {
         return ImageArray.length;
     }
 
-    public Object getItem(int position) {
-        return null;
+    public Integer getItem(int position) {
+        return ImageArray[position];
     }
 
     public long getItemId(int position) {
