@@ -43,6 +43,7 @@ public class Communicator {
             Log.d(TAG, "Send:"+objectMapper.writeValueAsString(m));
         } catch (IOException e) {
             Log.e(TAG,"Failed to send data!");
+            e.printStackTrace();
         }
     }
 
