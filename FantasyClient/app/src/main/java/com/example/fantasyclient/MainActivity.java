@@ -36,8 +36,6 @@ public class MainActivity extends BaseActivity {
     Thread locationThread, sendLoopThread, recvLoopThread, sendThread, recvThread;
     List<Soldier> soldiers = new ArrayList<>();
     HashSet<Territory> cachedMap = new HashSet<>();
-    MessageSender sender = new MessageSender();
-    MessageReceiver receiver = new MessageReceiver();
     TextView textLocation, textVLocation;
     Button btnTest;
 
@@ -77,6 +75,7 @@ public class MainActivity extends BaseActivity {
                 sendThread = new Thread() {
                     @Override
                     public void run() {
+                        while(socketService==null){}
                         startSendLocation();
                     }
                 };
@@ -85,6 +84,7 @@ public class MainActivity extends BaseActivity {
                 recvThread = new Thread() {
                     @Override
                     public void run() {
+                        while(socketService==null){}
                         Looper.prepare();
                         startRecvTerr();
                         Looper.loop();
@@ -92,24 +92,6 @@ public class MainActivity extends BaseActivity {
                 };
                 recvThread.start();
                 //Thread to keep sending message from queue
-                sendLoopThread = new Thread(){
-                    @Override
-                    public void run() {
-                        //ensure service is bound
-                        while(socketService==null){}
-                        sender.sendLoop(socketService.communicator);
-                    }
-                };
-                sendLoopThread.start();
-                recvLoopThread = new Thread(){
-                    @Override
-                    public void run() {
-                        //ensure service is bound
-                        while(socketService==null){}
-                        receiver.recvLoop(socketService.communicator);
-                    }
-                };
-                recvLoopThread.start();
                 /*new Thread(){
                     @Override
                     public void run() {
@@ -130,12 +112,39 @@ public class MainActivity extends BaseActivity {
         // make the device update its location
         //location.beginUpdates();
         updateLocation();
+        sendThread = new Thread() {
+            @Override
+            public void run() {
+                if(!interrupted()) {
+                    while (socketService == null) {
+                    }
+                    startSendLocation();
+                }
+            }
+        };
+        sendThread.start();
+        //Thread to receive feedback from server
+        recvThread = new Thread() {
+            @Override
+            public void run() {
+                if(!interrupted()) {
+                    while (socketService == null) {
+                    }
+                    Looper.prepare();
+                    startRecvTerr();
+                    Looper.loop();
+                }
+            }
+        };
+        recvThread.start();
     }
 
     @Override
     protected void onPause() {
         // stop location updates (saves battery)
         location.endUpdates();
+        sendThread.interrupt();
+        recvThread.interrupt();
         super.onPause();
     }
 
@@ -147,13 +156,13 @@ public class MainActivity extends BaseActivity {
     }
 
     public void startSendLocation() {
-        (new SendTimerHandler(vPosition, sender)).handleTask(0,1000);
+        (new SendTimerHandler(vPosition, socketService.sender)).handleTask(0,1000);
     }
 
     public void startRecvTerr() {
         while(true){
-            if(!receiver.isEmpty()){
-                handleRecvMessage(receiver.dequeue());
+            if(!socketService.receiver.isEmpty()){
+                handleRecvMessage(socketService.receiver.dequeue());
             }
         }
     }

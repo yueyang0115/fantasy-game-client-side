@@ -1,6 +1,8 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -54,16 +56,20 @@ public class BattleActivity extends BaseActivity{
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.sendTcpMsg(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
-                checkBattleResult(socketService.recvTcpMsg().getBattleResultMessage());
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
+                if(socketService.isEmpty()){
+                }
+                handleRecvMessage(socketService.dequeue());
             }
         });
 
         escapeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.sendTcpMsg(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
-                checkBattleResult(socketService.recvTcpMsg().getBattleResultMessage());
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
+                if(socketService.isEmpty()){
+                }
+                handleRecvMessage(socketService.dequeue());
             }
         });
     }
@@ -94,5 +100,4 @@ public class BattleActivity extends BaseActivity{
             //battle continues
         }
     }
-
 }

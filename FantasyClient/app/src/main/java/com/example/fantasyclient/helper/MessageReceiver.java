@@ -24,6 +24,7 @@ public class MessageReceiver {
             result = queue.take();
         } catch (InterruptedException e) {
             Log.e(TAG,"Dequeue fails");
+            e.printStackTrace();
         }
         return result;
     }

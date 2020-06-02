@@ -22,6 +22,7 @@ public class BaseActivity extends Activity {
 
     SocketService socketService;
     boolean mIsBound;
+    final static String TAG = "BaseActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,7 @@ public class BaseActivity extends Activity {
     protected void onPause() {
         super.onPause();
     }
+
 
     /**
      * find required common views which may be overrode
@@ -61,7 +63,7 @@ public class BaseActivity extends Activity {
 
     protected void handleRecvMessage(MessagesS2C m){
         if(m == null){
-            Log.e("Receive", "Invalid result received");
+            Log.e(TAG, "HandleRecvMessage: Invalid result received");
         }
         else {
             if (m.getLoginResultMessage() != null) {
@@ -104,7 +106,23 @@ public class BaseActivity extends Activity {
 
     protected void checkPositionResult(PositionResultMessage m){}
 
-    protected void checkBattleResult(BattleResultMessage m){}
+    //protected void checkBattleResult(BattleResultMessage m){}
+    protected void checkBattleResult(final BattleResultMessage m){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!m.getResult().equals("continue")){
+                    //battle ends
+                    Intent intent = new Intent();
+                    setResult(RESULT_CANCELED, intent);
+                    finish();//finishing activity
+                }
+                else{
+                    //battle continues
+                }
+            }
+        });
+    }
 
     protected void checkAttributeResult(AttributeResultMessage m){}
 
