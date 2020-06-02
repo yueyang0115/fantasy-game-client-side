@@ -21,4 +21,8 @@ public class TimerHandler {
         timer.schedule(doAsyncTask, delay, period); //execute in every period
         Looper.loop();
     }
+
+    public void cancelTask(){
+        timer.cancel();
+    }
 }

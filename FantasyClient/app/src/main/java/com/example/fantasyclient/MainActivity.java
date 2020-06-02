@@ -33,7 +33,9 @@ public class MainActivity extends BaseActivity {
     VirtualPosition vPosition = new VirtualPosition(0,0);
     ImageAdapter terrainAdapter = new ImageAdapter(this);
     ImageAdapter unitAdapter = new ImageAdapter(this);
-    Thread locationThread, sendLoopThread, recvLoopThread, sendThread, recvThread;
+    LocationTimerHandler locationTimerHandler;
+    SendTimerHandler sendTimerHandler;
+    boolean ifPause = false;
     List<Soldier> soldiers = new ArrayList<>();
     HashSet<Territory> cachedMap = new HashSet<>();
     TextView textLocation, textVLocation;
@@ -48,8 +50,6 @@ public class MainActivity extends BaseActivity {
 
         // construct a new instance of SimpleLocation
         location = new SimpleLocation(this, true, false, 5 * 1000, true);
-        //location = new SimpleLocation(this);
-
         // if we can't access the location yet
         if (!location.hasLocationEnabled()) {
             // ask the user to enable location access
@@ -63,34 +63,6 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
-
-                locationThread = new Thread() {
-                    @Override
-                    public void run() {
-                        startUpdateLocation();
-                    }
-                };
-                locationThread.start();
-                //Thread to enqueue message to send queue
-                sendThread = new Thread() {
-                    @Override
-                    public void run() {
-                        while(socketService==null){}
-                        startSendLocation();
-                    }
-                };
-                sendThread.start();
-                //Thread to receive feedback from server
-                recvThread = new Thread() {
-                    @Override
-                    public void run() {
-                        while(socketService==null){}
-                        Looper.prepare();
-                        startRecvTerr();
-                        Looper.loop();
-                    }
-                };
-                recvThread.start();
                 //Thread to keep sending message from queue
                 /*new Thread(){
                     @Override
@@ -110,57 +82,51 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         // make the device update its location
-        //location.beginUpdates();
         updateLocation();
-        sendThread = new Thread() {
+        new Thread() {
             @Override
             public void run() {
-                if(!interrupted()) {
-                    while (socketService == null) {
-                    }
-                    startSendLocation();
-                }
+                locationTimerHandler = new LocationTimerHandler(vPosition,location);
+                locationTimerHandler.handleTask(0,1000);
             }
-        };
-        sendThread.start();
+        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                while (socketService == null) {
+                }
+                sendTimerHandler = new SendTimerHandler(vPosition, socketService.sender);
+                sendTimerHandler.handleTask(0,1000);
+            }
+        }.start();
         //Thread to receive feedback from server
-        recvThread = new Thread() {
+        new Thread() {
             @Override
             public void run() {
-                if(!interrupted()) {
-                    while (socketService == null) {
-                    }
-                    Looper.prepare();
-                    startRecvTerr();
-                    Looper.loop();
+                while (socketService == null) {
                 }
+                Looper.prepare();
+                startRecvTerr();
+                Looper.loop();
             }
-        };
-        recvThread.start();
+        }.start();
     }
 
     @Override
     protected void onPause() {
         // stop location updates (saves battery)
-        location.endUpdates();
-        sendThread.interrupt();
-        recvThread.interrupt();
         super.onPause();
+        location.endUpdates();
+        locationTimerHandler.cancelTask();
+        sendTimerHandler.cancelTask();
+        ifPause = true;
     }
 
     /**
      * this AsyncTask runs in background
      */
-    protected void startUpdateLocation(){
-        (new LocationTimerHandler(vPosition,location)).handleTask(0,1000);
-    }
-
-    public void startSendLocation() {
-        (new SendTimerHandler(vPosition, socketService.sender)).handleTask(0,1000);
-    }
-
     public void startRecvTerr() {
-        while(true){
+        while(!ifPause){
             if(!socketService.receiver.isEmpty()){
                 handleRecvMessage(socketService.receiver.dequeue());
             }
@@ -304,6 +270,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        ifPause = false;
         if(resultCode==RESULT_OK) {
             if(requestCode==BATTLE) {
 
