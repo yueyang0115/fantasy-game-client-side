@@ -1,8 +1,9 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,13 +11,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.fantasyclient.helper.MessageReceiver;
+import com.example.fantasyclient.helper.MessageSender;
+import com.example.fantasyclient.json.AttributeRequestMessage;
+import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Soldier;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * This is a template activity related to user accounts
@@ -26,9 +33,8 @@ public class BattleActivity extends BaseActivity{
     Button attackBtn, escapeBtn;
     ImageView soldierImg, monsterImg;
     TextView soldierAtk, soldierHp, monsterAtk, monsterHp;
-    List<Soldier> soldiers;
-    List<Monster> monsters;
-    InitTask initTask = new InitTask();
+    List<Soldier> soldiers = new ArrayList<>();
+    List<Monster> monsters = new ArrayList<>();
     int terrID;
     static final String TAG = "BattleActivity";
 
@@ -41,7 +47,21 @@ public class BattleActivity extends BaseActivity{
         Intent intent = getIntent();
         terrID = intent.getIntExtra("territoryID",0);
 
-        initTask.execute();
+        new Thread(){
+            @Override
+            public void run() {
+                while (socketService==null){
+                    Log.d(TAG, "Initial thread");
+                    try {
+                        sleep(100);
+                    } catch (InterruptedException e) {
+                        Log.e(TAG,"Sleep");
+                    }
+                }
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,0,0,"start")));
+                handleRecvMessage(socketService.dequeue());
+            }
+        }.start();
 
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,18 +137,6 @@ public class BattleActivity extends BaseActivity{
                     break;
             }
             finish();//finishing activity
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class InitTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            while (socketService==null){}
-            socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,0,0,"start")));
-            handleRecvMessage(socketService.dequeue());
-            return null;
         }
     }
 }
