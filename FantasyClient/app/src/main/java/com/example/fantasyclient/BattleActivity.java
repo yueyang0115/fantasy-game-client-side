@@ -32,11 +32,9 @@ public class BattleActivity extends BaseActivity{
     Button attackBtn, escapeBtn;
     ImageView soldierImg, monsterImg;
     TextView soldierAtk, soldierHp, monsterAtk, monsterHp;
-    CountDownLatch latch = new CountDownLatch(1);
     List<Soldier> soldiers = new ArrayList<>();
     List<Monster> monsters = new ArrayList<>();
-    int terrID, monsterID, soldierID = 0;
-    boolean ifPause = false;
+    int terrID, monsterID, soldierID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,18 +52,12 @@ public class BattleActivity extends BaseActivity{
                 while (socketService==null){}
                 socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("battle")));
                 handleRecvMessage(socketService.dequeue());
-                latch.countDown();
             }
         }.start();
 
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
                 handleRecvMessage(socketService.dequeue());
             }
@@ -74,11 +66,6 @@ public class BattleActivity extends BaseActivity{
         escapeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
                 handleRecvMessage(socketService.dequeue());
             }
