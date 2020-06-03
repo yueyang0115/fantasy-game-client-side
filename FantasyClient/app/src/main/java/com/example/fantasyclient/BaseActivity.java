@@ -23,6 +23,9 @@ public class BaseActivity extends Activity {
     SocketService socketService;
     boolean mIsBound;
     final static String TAG = "BaseActivity";
+    static final int RESULT_ESCAPED = RESULT_CANCELED;
+    static final int RESULT_WIN = RESULT_OK;
+    static final int RESULT_LOSE = RESULT_FIRST_USER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

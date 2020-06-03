@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -27,8 +28,10 @@ import im.delight.android.location.SimpleLocation;
 
 public class MainActivity extends BaseActivity {
 
+    static final String TAG = "MainActivity";
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     static final int BATTLE = 2;
+    static final int SHOP = 3;
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
     Territory currTerr;
@@ -64,14 +67,6 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
-                //Thread to keep sending message from queue
-                /*new Thread(){
-                    @Override
-                    public void run() {
-                        while (socketService==null){}
-                        socketService.sendTcpMsg(new MessagesC2S(new AttributeRequestMessage()));
-                    }
-                }.start();*/
             }
 
         });
@@ -259,7 +254,6 @@ public class MainActivity extends BaseActivity {
     protected void launchBattle(){
         Intent intent = new Intent(this,BattleActivity.class);
         intent.putExtra("territoryID", currTerr.getId());
-        intent.putExtra("monsterID", currTerr.getMonsters().get(0).getId());
         startActivityForResult(intent,BATTLE);
     }
 
@@ -275,11 +269,34 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        //resume updating location
         ifPause = false;
-        if(resultCode==RESULT_OK) {
-            unitAdapter.updateImage(64, R.drawable.transparent);
-        }
-        else if(requestCode==RESULT_CANCELED){
+        //check the previous activity
+        switch(requestCode){
+            case BATTLE:
+                //check the result of battle
+                switch(resultCode){
+                    case RESULT_WIN:
+                        unitAdapter.updateImage(64, R.drawable.transparent);
+                        break;
+                    case RESULT_LOSE:
+                    case RESULT_ESCAPED:
+                        break;
+                    default:
+                        Log.e(TAG,"Invalid result code for battle");
+                        break;
+                }
+                break;
+            case SHOP:
+                //check the result of purchase
+                switch (resultCode){
+                    default:
+                        Log.e(TAG, "Invalid result code for shop");
+                        break;
+                }
+            default:
+                Log.e(TAG,"Invalid request code");
+                break;
         }
     }
 

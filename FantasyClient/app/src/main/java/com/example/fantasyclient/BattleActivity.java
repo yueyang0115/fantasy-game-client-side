@@ -1,28 +1,22 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.helper.MessageReceiver;
-import com.example.fantasyclient.helper.MessageSender;
-import com.example.fantasyclient.json.AttributeRequestMessage;
-import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Soldier;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * This is a template activity related to user accounts
@@ -32,9 +26,11 @@ public class BattleActivity extends BaseActivity{
     Button attackBtn, escapeBtn;
     ImageView soldierImg, monsterImg;
     TextView soldierAtk, soldierHp, monsterAtk, monsterHp;
-    List<Soldier> soldiers = new ArrayList<>();
-    List<Monster> monsters = new ArrayList<>();
-    int terrID, monsterID, soldierID = 1;
+    List<Soldier> soldiers;
+    List<Monster> monsters;
+    InitTask initTask = new InitTask();
+    int terrID;
+    static final String TAG = "BattleActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,21 +40,13 @@ public class BattleActivity extends BaseActivity{
         doBindService();
         Intent intent = getIntent();
         terrID = intent.getIntExtra("territoryID",0);
-        monsterID = intent.getIntExtra("monsterID",0);
 
-        new Thread(){
-            @Override
-            public void run() {
-                while (socketService==null){}
-                socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("battle")));
-                handleRecvMessage(socketService.dequeue());
-            }
-        }.start();
+        initTask.execute();
 
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsters.get(0).getId(),soldiers.get(0).getId(),"attack")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
@@ -66,7 +54,7 @@ public class BattleActivity extends BaseActivity{
         escapeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsters.get(0).getId(),soldiers.get(0).getId(),"escape")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
@@ -97,19 +85,7 @@ public class BattleActivity extends BaseActivity{
     @SuppressLint("SetTextI18n")
     @Override
     protected void checkBattleResult(final BattleResultMessage m){
-        if(!m.getResult().equals("continue")){
-            //battle ends
-            doUnbindService();
-            Intent intent = new Intent();
-            if(m.getResult().equals("escaped")) {
-                setResult(RESULT_CANCELED, intent);
-            }
-            else if(m.getResult().equals("win")){
-                setResult(RESULT_OK, intent);
-            }
-            finish();//finishing activity
-        }
-        else{
+        if (m.getResult().equals("continue")) {
             //battle continues
             soldiers = m.getSoldiers();
             monsters = m.getMonsters();
@@ -122,21 +98,37 @@ public class BattleActivity extends BaseActivity{
                     monsterAtk.setText(Integer.toString(monsters.get(0).getAtk()));
                 }
             });
+        } else {
+            //battle ends
+            doUnbindService();
+            Intent intent = new Intent();
+            switch (m.getResult()) {
+                case "escaped":
+                    setResult(RESULT_ESCAPED, intent);
+                    break;
+                case "win":
+                    setResult(RESULT_WIN, intent);
+                    break;
+                case "lose":
+                    setResult(RESULT_LOSE, intent);
+                    break;
+                default:
+                    Log.e(TAG, "Invalid battle result received");
+                    break;
+            }
+            finish();//finishing activity
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    @Override
-    protected void checkAttributeResult(final AttributeResultMessage m){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for(Soldier s : m.getSoldiers()){
-                    soldierHp.setText(Integer.toString(s.getHp()));
-                    soldierAtk.setText(Integer.toString(s.getAtk()));
-                    soldierID = s.getId();
-                }
-            }
-        });
+    @SuppressLint("StaticFieldLeak")
+    private class InitTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            while (socketService==null){}
+            socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,0,0,"start")));
+            handleRecvMessage(socketService.dequeue());
+            return null;
+        }
     }
 }
