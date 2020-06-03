@@ -2,6 +2,7 @@ package com.example.fantasyclient.json;
 
 public class LoginResultMessage {
     private int wid;
+    private int id;
     private String error_msg;
     private String status;
 
@@ -29,4 +30,11 @@ public class LoginResultMessage {
         this.status = status;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

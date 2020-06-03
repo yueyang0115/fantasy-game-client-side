@@ -8,6 +8,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.fantasyclient.helper.MessageReceiver;
+import com.example.fantasyclient.helper.MessageSender;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.thread.Communicator;
@@ -37,7 +39,8 @@ public class SocketService extends Service {
     public DatagramSocket udpSocket;
     public static final int TCP_PORT = 1234;
     public static final int UDP_PORT = 5678;
-    public Properties p = new Properties();
+    public MessageSender sender = new MessageSender();
+    public MessageReceiver receiver = new MessageReceiver();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -70,7 +73,7 @@ public class SocketService extends Service {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    //send message to server
+    /*//send message to server
     public void sendTcpMsg(MessagesC2S m) {
         (new TcpSendThread(communicator, m)).start();
     }
@@ -91,14 +94,41 @@ public class SocketService extends Service {
             System.out.println("Latch Interrupted!");
         }
         return container.get(0);
-    }
+    }*/
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("Service", "Start command");
         super.onStartCommand(intent, flags, startId);
         (new ConnectThread(this)).start();
+
+        while(communicator==null){}
+        new Thread(){
+            @Override
+            public void run() {
+                sender.sendLoop(communicator);
+            }
+        }.start();
+        new Thread(){
+            @Override
+            public void run() {
+                receiver.recvLoop(communicator);
+            }
+        }.start();
+
         return START_STICKY;
+    }
+
+    public void enqueue(MessagesC2S m){
+        sender.enqueue(m);
+    }
+
+    public MessagesS2C dequeue(){
+        return receiver.dequeue();
+    }
+
+    public boolean isEmpty(){
+        return receiver.isEmpty();
     }
 
     @Override

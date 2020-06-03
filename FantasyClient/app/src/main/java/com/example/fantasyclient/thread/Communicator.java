@@ -43,6 +43,7 @@ public class Communicator {
             Log.d(TAG, "Send:"+objectMapper.writeValueAsString(m));
         } catch (IOException e) {
             Log.e(TAG,"Failed to send data!");
+            e.printStackTrace();
         }
     }
 
@@ -52,7 +53,6 @@ public class Communicator {
             m = objectMapper.readValue(is, MessagesS2C.class);
             Log.d(TAG, "Receive:"+objectMapper.writeValueAsString(m));
         } catch (IOException e) {
-            e.printStackTrace();
             Log.e(TAG,"Failed to receive data!");
         }
         return m;

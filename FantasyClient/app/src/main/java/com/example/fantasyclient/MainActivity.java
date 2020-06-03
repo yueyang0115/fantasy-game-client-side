@@ -2,11 +2,13 @@ package com.example.fantasyclient;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
@@ -18,22 +20,28 @@ import com.example.fantasyclient.helper.*;
 import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import im.delight.android.location.SimpleLocation;
 
 public class MainActivity extends BaseActivity {
 
+    static final String TAG = "MainActivity";
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
+    static final int BATTLE = 2;
+    static final int SHOP = 3;
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
-    ImageAdapter adapter = new ImageAdapter(this);
+    Territory currTerr;
+    ImageAdapter terrainAdapter = new ImageAdapter(this);
+    ImageAdapter unitAdapter = new ImageAdapter(this);
+    LocationTimerHandler locationTimerHandler;
+    SendTimerHandler sendTimerHandler;
+    boolean ifPause = false;
+    List<Soldier> soldiers = new ArrayList<>();
     HashSet<Territory> cachedMap = new HashSet<>();
-    MessageSender sender = new MessageSender();
-    MessageReceiver receiver = new MessageReceiver();
     TextView textLocation, textVLocation;
     Button btnTest;
 
@@ -46,8 +54,6 @@ public class MainActivity extends BaseActivity {
 
         // construct a new instance of SimpleLocation
         location = new SimpleLocation(this, true, false, 5 * 1000, true);
-        //location = new SimpleLocation(this);
-
         // if we can't access the location yet
         if (!location.hasLocationEnabled()) {
             // ask the user to enable location access
@@ -61,81 +67,62 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
-                //Thread to update location
-                new Thread() {
-                    @Override
-                    public void run() {
-                        startUpdateLocation();
-                    }
-                }.start();
-                //Thread to enqueue message to send queue
-                new Thread() {
-                    @Override
-                    public void run() {
-                        startSendLocation();
-                    }
-                }.start();
-                //Thread to receive feedback from server
-                new Thread() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        startRecvTerr();
-                        Looper.loop();
-                    }
-                }.start();
-                //Thread to keep sending message from queue
-                new Thread(){
-                    @Override
-                    public void run() {
-                        //ensure service is bound
-                        while(socketService==null){}
-                        sender.sendLoop(socketService.communicator);
-                    }
-                }.start();
-                new Thread(){
-                    @Override
-                    public void run() {
-                        //ensure service is bound
-                        while(socketService==null){}
-                        receiver.recvLoop(socketService.communicator);
-                    }
-                }.start();
             }
 
         });
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // make the device update its location
-        //location.beginUpdates();
         updateLocation();
+        new Thread() {
+            @Override
+            public void run() {
+                locationTimerHandler = new LocationTimerHandler(vPosition,location);
+                locationTimerHandler.handleTask(0,1000);
+            }
+        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                while (socketService == null) {
+                }
+                sendTimerHandler = new SendTimerHandler(vPosition, socketService.sender);
+                sendTimerHandler.handleTask(0,1000);
+            }
+        }.start();
+        //Thread to receive feedback from server
+        new Thread() {
+            @Override
+            public void run() {
+                while (socketService == null) {
+                }
+                startRecvTerr();
+            }
+        }.start();
     }
 
     @Override
     protected void onPause() {
         // stop location updates (saves battery)
-        location.endUpdates();
         super.onPause();
+        location.endUpdates();
+        locationTimerHandler.cancelTask();
+        sendTimerHandler.cancelTask();
+        ifPause = true;
     }
 
     /**
      * this AsyncTask runs in background
      */
-    protected void startUpdateLocation(){
-        (new LocationTimerHandler(vPosition,location)).handleTask(0,1000);
-    }
-
-    public void startSendLocation() {
-        (new SendTimerHandler(vPosition, sender)).handleTask(0,1000);
-    }
-
     public void startRecvTerr() {
-        while(true){
-            if(!receiver.isEmpty()){
-                handleRecvMessage(receiver.dequeue());
+        while(!ifPause){
+            if(!socketService.receiver.isEmpty()){
+                handleRecvMessage(socketService.receiver.dequeue());
             }
         }
     }
@@ -201,7 +188,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
         //set background to be base type
-        adapter.initImage();
+        terrainAdapter.initMap(R.drawable.base00);
+        unitAdapter.initMap(R.drawable.transparent);
         //set cached territory
         for(Territory t : cachedMap){
             updateTerritory(t);
@@ -217,9 +205,15 @@ public class MainActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                adapter.notifyDataSetChanged();
+                terrainAdapter.notifyDataSetChanged();
+                unitAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    @Override
+    protected void checkAttributeResult(final AttributeResultMessage m){
+        soldiers = m.getSoldiers();
     }
 
     /**
@@ -232,17 +226,77 @@ public class MainActivity extends BaseActivity {
         int dy = (t.getY()-vPosition.getY())/10;
         if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {
             int position = 64+dx-10*dy;
+            if(position == 64){
+                currTerr = t;
+            }
             switch (t.getTerrain().getType()) {
                 case "grass":
-                    adapter.updateImage(position, R.drawable.plains00);
+                    terrainAdapter.updateImage(position, R.drawable.plains00);
                     break;
                 case "mountain":
-                    adapter.updateImage(position, R.drawable.mountain00);
+                    terrainAdapter.updateImage(position, R.drawable.mountain00);
                     break;
                 case "river":
-                    adapter.updateImage(position, R.drawable.ocean00);
+                    terrainAdapter.updateImage(position, R.drawable.ocean00);
                     break;
             }
+            if(!t.getMonsters().isEmpty()) {
+                switch (t.getMonsters().get(0).getType()) {
+                    case "wolf":
+                        unitAdapter.updateImage(position, R.drawable.wolf);
+                        break;
+                }
+            }
+
+        }
+    }
+
+    protected void launchBattle(){
+        Intent intent = new Intent(this,BattleActivity.class);
+        intent.putExtra("territoryID", currTerr.getId());
+        startActivityForResult(intent,BATTLE);
+    }
+
+    /**
+     * this method is called after "startActivityForResult"
+     * it handles different return situation from another activity based on:
+     * @param requestCode: determine if the activity is to view or modify
+     * @param resultCode: determine if the player confirm or cancel
+     *                  RESULT_OK: confirm; RESULT_CANCELED: cancel
+     * @param data: Intent to get data submitted by players
+     */
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //resume updating location
+        ifPause = false;
+        //check the previous activity
+        switch(requestCode){
+            case BATTLE:
+                //check the result of battle
+                switch(resultCode){
+                    case RESULT_WIN:
+                        unitAdapter.updateImage(64, R.drawable.transparent);
+                        break;
+                    case RESULT_LOSE:
+                    case RESULT_ESCAPED:
+                        break;
+                    default:
+                        Log.e(TAG,"Invalid result code for battle");
+                        break;
+                }
+                break;
+            case SHOP:
+                //check the result of purchase
+                switch (resultCode){
+                    default:
+                        Log.e(TAG, "Invalid result code for shop");
+                        break;
+                }
+            default:
+                Log.e(TAG,"Invalid request code");
+                break;
         }
     }
 
@@ -251,8 +305,19 @@ public class MainActivity extends BaseActivity {
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
         btnTest = (Button) findViewById(R.id.btn_start);
-        GridView gridview = (GridView) findViewById(R.id.gridView);
-        adapter.initImage();
-        gridview.setAdapter(adapter);
+        GridView terrainGridView = (GridView) findViewById(R.id.terrainGridView);
+        GridView unitGridView = (GridView) findViewById(R.id.unitGridView);
+        terrainAdapter.initMap(R.drawable.base00);
+        unitAdapter.initMap(R.drawable.transparent);
+        terrainGridView.setAdapter(terrainAdapter);
+        unitGridView.setAdapter(unitAdapter);
+        unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position==64 && !currTerr.getMonsters().isEmpty()){
+                    launchBattle();
+                }
+            }
+        });
     }
 }

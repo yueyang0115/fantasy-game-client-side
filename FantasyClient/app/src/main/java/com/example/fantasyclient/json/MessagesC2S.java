@@ -4,6 +4,8 @@ public class MessagesC2S {
     private LoginRequestMessage loginRequestMessage;
     private SignUpRequestMessage signUpRequestMessage;
     private PositionRequestMessage positionRequestMessage;
+    private BattleRequestMessage battleRequestMessage;
+    private AttributeRequestMessage attributeRequestMessage;
 
     public MessagesC2S() {
     }
@@ -18,6 +20,14 @@ public class MessagesC2S {
 
     public MessagesC2S(PositionRequestMessage positionRequestMessage) {
         this.positionRequestMessage = positionRequestMessage;
+    }
+
+    public MessagesC2S(BattleRequestMessage battleRequestMessage) {
+        this.battleRequestMessage = battleRequestMessage;
+    }
+
+    public MessagesC2S(AttributeRequestMessage attributeRequestMessage) {
+        this.attributeRequestMessage = attributeRequestMessage;
     }
 
     public LoginRequestMessage getLoginRequestMessage() {
@@ -42,5 +52,21 @@ public class MessagesC2S {
 
     public void setPositionRequestMessage(PositionRequestMessage positionRequestMessage) {
         this.positionRequestMessage = positionRequestMessage;
+    }
+
+    public BattleRequestMessage getBattleRequestMessage() {
+        return battleRequestMessage;
+    }
+
+    public void setBattleRequestMessage(BattleRequestMessage battleRequestMessage) {
+        this.battleRequestMessage = battleRequestMessage;
+    }
+
+    public AttributeRequestMessage getAttributeRequestMessage() {
+        return attributeRequestMessage;
+    }
+
+    public void setAttributeRequestMessage(AttributeRequestMessage attributeRequestMessage) {
+        this.attributeRequestMessage = attributeRequestMessage;
     }
 }

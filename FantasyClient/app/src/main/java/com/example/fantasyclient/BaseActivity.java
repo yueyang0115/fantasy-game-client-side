@@ -22,6 +22,10 @@ public class BaseActivity extends Activity {
 
     SocketService socketService;
     boolean mIsBound;
+    final static String TAG = "BaseActivity";
+    static final int RESULT_ESCAPED = RESULT_CANCELED;
+    static final int RESULT_WIN = RESULT_OK;
+    static final int RESULT_LOSE = RESULT_FIRST_USER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,7 @@ public class BaseActivity extends Activity {
     protected void onPause() {
         super.onPause();
     }
+
 
     /**
      * find required common views which may be overrode
@@ -61,7 +66,7 @@ public class BaseActivity extends Activity {
 
     protected void handleRecvMessage(MessagesS2C m){
         if(m == null){
-            Log.e("Receive", "Invalid result received");
+            Log.e(TAG, "HandleRecvMessage: Invalid result received");
         }
         else {
             if (m.getLoginResultMessage() != null) {
@@ -72,6 +77,12 @@ public class BaseActivity extends Activity {
             }
             if (m.getPositionResultMessage() != null) {
                 checkPositionResult(m.getPositionResultMessage());
+            }
+            if (m.getBattleResultMessage() != null) {
+                checkBattleResult(m.getBattleResultMessage());
+            }
+            if (m.getAttributeResultMessage() != null) {
+                checkAttributeResult(m.getAttributeResultMessage());
             }
         }
     }
@@ -96,9 +107,11 @@ public class BaseActivity extends Activity {
         }
     }
 
-    protected void checkPositionResult(PositionResultMessage m){
+    protected void checkPositionResult(PositionResultMessage m){}
 
-    }
+    protected void checkBattleResult(BattleResultMessage m){}
+
+    protected void checkAttributeResult(AttributeResultMessage m){}
 
     /**
      * these methods are for service
@@ -130,7 +143,7 @@ public class BaseActivity extends Activity {
         }
     }
 
-    private void doUnbindService() {
+    void doUnbindService() {
         if (mIsBound) {
             // Detach our existing connection.
             unbindService(mConnection);

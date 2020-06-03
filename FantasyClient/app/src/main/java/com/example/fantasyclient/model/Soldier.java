@@ -1,6 +1,5 @@
 package com.example.fantasyclient.model;
 
-public class Monster extends Unit{
+public class Soldier extends Unit{
 
 }
-

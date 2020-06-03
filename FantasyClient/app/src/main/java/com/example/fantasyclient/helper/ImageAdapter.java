@@ -17,7 +17,7 @@ import java.util.Arrays;
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     // Keep all Images in array
-    private Integer[] ImageArray = {R.drawable.base00};
+    private Integer[] ImageArray = {R.drawable.transparent};
     private static String TAG = "ImageHelper";
 
     // Constructor
@@ -29,8 +29,8 @@ public class ImageAdapter extends BaseAdapter {
         return ImageArray.length;
     }
 
-    public Object getItem(int position) {
-        return null;
+    public Integer getItem(int position) {
+        return ImageArray[position];
     }
 
     public long getItemId(int position) {
@@ -55,9 +55,9 @@ public class ImageAdapter extends BaseAdapter {
         return imageView;
     }
 
-    public void initImage(){
+    public void initMap(int source){
         ImageArray = new Integer[150];
-        Arrays.fill(ImageArray,R.drawable.base00);
+        Arrays.fill(ImageArray,source);
     }
 
     public void updateImage(int pos, int source){
