@@ -31,7 +31,7 @@
         app:layout_constraintVertical_bias="0.926" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/soldierImg"
         android:layout_width="156dp"
         android:layout_height="196dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -43,7 +43,7 @@
         app:srcCompat="@drawable/pickachu_back" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/monsterImg"
         android:layout_width="207dp"
         android:layout_height="244dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -53,5 +53,103 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/wolf_battle" />
+
+    <TextView
+        android:id="@+id/hp1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="hp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.198"
+        app:layout_constraintStart_toEndOf="@+id/soldierImg"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.588" />
+
+    <TextView
+        android:id="@+id/soldierHp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.368"
+        app:layout_constraintStart_toEndOf="@+id/hp1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.588" />
+
+    <TextView
+        android:id="@+id/atk1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="attack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.218"
+        app:layout_constraintStart_toEndOf="@+id/soldierImg"
+        app:layout_constraintTop_toBottomOf="@+id/hp1"
+        app:layout_constraintVertical_bias="0.175" />
+
+    <TextView
+        android:id="@+id/monsterAtk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="268dp"
+        android:layout_marginRight="268dp"
+        android:text="20"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/atk2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.196" />
+
+    <TextView
+        android:id="@+id/hp2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="hp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.159"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.108" />
+
+    <TextView
+        android:id="@+id/monsterHp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.155"
+        app:layout_constraintStart_toEndOf="@+id/hp2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.108" />
+
+    <TextView
+        android:id="@+id/atk2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="attack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.169"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.196" />
+
+    <TextView
+        android:id="@+id/soldierAtk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="20"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.256"
+        app:layout_constraintStart_toEndOf="@+id/atk1"
+        app:layout_constraintTop_toBottomOf="@+id/soldierHp"
+        app:layout_constraintVertical_bias="0.175" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

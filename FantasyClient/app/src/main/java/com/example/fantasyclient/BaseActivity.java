@@ -106,23 +106,7 @@ public class BaseActivity extends Activity {
 
     protected void checkPositionResult(PositionResultMessage m){}
 
-    //protected void checkBattleResult(BattleResultMessage m){}
-    protected void checkBattleResult(final BattleResultMessage m){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(!m.getResult().equals("continue")){
-                    //battle ends
-                    Intent intent = new Intent();
-                    setResult(RESULT_CANCELED, intent);
-                    finish();//finishing activity
-                }
-                else{
-                    //battle continues
-                }
-            }
-        });
-    }
+    protected void checkBattleResult(BattleResultMessage m){}
 
     protected void checkAttributeResult(AttributeResultMessage m){}
 
@@ -156,7 +140,7 @@ public class BaseActivity extends Activity {
         }
     }
 
-    private void doUnbindService() {
+    void doUnbindService() {
         if (mIsBound) {
             // Detach our existing connection.
             unbindService(mConnection);

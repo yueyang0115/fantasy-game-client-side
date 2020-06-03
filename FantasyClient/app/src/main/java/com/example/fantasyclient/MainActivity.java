@@ -31,6 +31,7 @@ public class MainActivity extends BaseActivity {
     static final int BATTLE = 2;
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
+    Territory currTerr;
     ImageAdapter terrainAdapter = new ImageAdapter(this);
     ImageAdapter unitAdapter = new ImageAdapter(this);
     LocationTimerHandler locationTimerHandler;
@@ -105,9 +106,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 while (socketService == null) {
                 }
-                Looper.prepare();
                 startRecvTerr();
-                Looper.loop();
             }
         }.start();
     }
@@ -195,6 +194,7 @@ public class MainActivity extends BaseActivity {
     protected void checkPositionResult(final PositionResultMessage m){
         //set background to be base type
         terrainAdapter.initMap(R.drawable.base00);
+        unitAdapter.initMap(R.drawable.transparent);
         //set cached territory
         for(Territory t : cachedMap){
             updateTerritory(t);
@@ -231,6 +231,9 @@ public class MainActivity extends BaseActivity {
         int dy = (t.getY()-vPosition.getY())/10;
         if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {
             int position = 64+dx-10*dy;
+            if(position == 64){
+                currTerr = t;
+            }
             switch (t.getTerrain().getType()) {
                 case "grass":
                     terrainAdapter.updateImage(position, R.drawable.plains00);
@@ -255,6 +258,8 @@ public class MainActivity extends BaseActivity {
 
     protected void launchBattle(){
         Intent intent = new Intent(this,BattleActivity.class);
+        intent.putExtra("territoryID", currTerr.getId());
+        intent.putExtra("monsterID", currTerr.getMonsters().get(0).getId());
         startActivityForResult(intent,BATTLE);
     }
 
