@@ -277,9 +277,7 @@ public class MainActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         ifPause = false;
         if(resultCode==RESULT_OK) {
-            if(requestCode==BATTLE) {
-
-            }
+            unitAdapter.updateImage(64, R.drawable.transparent);
         }
         else if(requestCode==RESULT_CANCELED){
         }
@@ -299,7 +297,7 @@ public class MainActivity extends BaseActivity {
         unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position==64 && unitAdapter.getItem(position)==R.drawable.wolf){
+                if(position==64 && !currTerr.getMonsters().isEmpty()){
                     launchBattle();
                 }
             }

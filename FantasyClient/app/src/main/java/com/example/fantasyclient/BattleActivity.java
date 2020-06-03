@@ -101,7 +101,12 @@ public class BattleActivity extends BaseActivity{
             //battle ends
             doUnbindService();
             Intent intent = new Intent();
-            setResult(RESULT_CANCELED, intent);
+            if(m.getResult().equals("escaped")) {
+                setResult(RESULT_CANCELED, intent);
+            }
+            else if(m.getResult().equals("win")){
+                setResult(RESULT_OK, intent);
+            }
             finish();//finishing activity
         }
         else{
