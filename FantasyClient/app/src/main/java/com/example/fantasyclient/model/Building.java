@@ -8,7 +8,6 @@ public abstract class Building {
 
     private int id;
 
-
     private String name;
 
     private List<Territory> territories = new ArrayList<>();
@@ -26,6 +25,14 @@ public abstract class Building {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<Territory> getTerritories() {

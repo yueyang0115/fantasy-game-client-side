@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.GridLayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -37,6 +39,7 @@ public class MainActivity extends BaseActivity {
     Territory currTerr;
     ImageAdapter terrainAdapter = new ImageAdapter(this);
     ImageAdapter unitAdapter = new ImageAdapter(this);
+    ImageAdapter buildingAdapter = new ImageAdapter(this);
     LocationTimerHandler locationTimerHandler;
     SendTimerHandler sendTimerHandler;
     boolean ifPause = false;
@@ -67,6 +70,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
+
             }
 
         });
@@ -245,6 +249,15 @@ public class MainActivity extends BaseActivity {
                     case "wolf":
                         unitAdapter.updateImage(position, R.drawable.wolf);
                         break;
+                    default:
+                }
+            }
+            if(t.getBuilding()!=null){
+                switch(t.getBuilding().getName()){
+                    case "shop":
+                        buildingAdapter.updateImage(position,R.drawable.dirt_village00);
+                        break;
+                    default:
                 }
             }
 
@@ -307,10 +320,13 @@ public class MainActivity extends BaseActivity {
         btnTest = (Button) findViewById(R.id.btn_start);
         GridView terrainGridView = (GridView) findViewById(R.id.terrainGridView);
         GridView unitGridView = (GridView) findViewById(R.id.unitGridView);
+        GridView buildingGridView = (GridView) findViewById(R.id.buildingGridView);
         terrainAdapter.initMap(R.drawable.base00);
         unitAdapter.initMap(R.drawable.transparent);
+        buildingAdapter.initMap(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
+        buildingGridView.setAdapter(buildingAdapter);
         unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

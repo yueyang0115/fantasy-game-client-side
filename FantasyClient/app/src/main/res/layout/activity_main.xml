@@ -30,6 +30,15 @@
             android:horizontalSpacing="0dp"
             android:adjustViewBounds="true" />
 
+        <GridView
+            android:id="@+id/buildingGridView"
+            android:numColumns="10"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:verticalSpacing="-23dp"
+            android:horizontalSpacing="0dp"
+            android:adjustViewBounds="true" />
+
     </FrameLayout>
 
     <TextView

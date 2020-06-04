@@ -31,8 +31,9 @@ import java.util.concurrent.CountDownLatch;
 @SuppressLint("Registered")
 public class BattleActivity extends BaseActivity{
     Button attackBtn, escapeBtn;
-    ImageView soldierImg, monsterImg;
-    TextView soldierAtk, soldierHp, monsterAtk, monsterHp;
+    ImageView soldierImg1, soldierImg2, soldierImg3, monsterImg1, monsterImg2, monsterImg3, seqImg1, seqImg2, seqImg3, seqImg4;
+    TextView soldierAtk1, soldierHp1, soldierAtk2, soldierHp2, soldierAtk3, soldierHp3,
+            monsterAtk1, monsterHp1, monsterAtk2, monsterHp2, monsterAtk3, monsterHp3;
     List<Soldier> soldiers = new ArrayList<>();
     List<Monster> monsters = new ArrayList<>();
     int terrID;
@@ -85,16 +86,23 @@ public class BattleActivity extends BaseActivity{
      */
     @Override
     protected void findView(){
-        attackBtn = findViewById(R.id.attackBtn);
-        escapeBtn = findViewById(R.id.escapeBtn);
-        soldierImg = findViewById(R.id.soldierImg);
-        monsterImg = findViewById(R.id.monsterImg);
-        soldierImg.setImageResource(R.drawable.pickachu_back);
-        monsterImg.setImageResource(R.drawable.wolf_battle);
-        soldierHp = findViewById(R.id.soldierHp);
-        soldierAtk = findViewById(R.id.soldierAtk);
-        monsterHp = findViewById(R.id.monsterHp);
-        monsterAtk = findViewById(R.id.monsterAtk);
+        attackBtn = findViewById(R.id.attack_btn);
+        escapeBtn = findViewById(R.id.escape_btn);
+        soldierImg1 = findViewById(R.id.soldier1_view);
+        soldierImg2 = findViewById(R.id.soldier2_view);
+        soldierImg3 = findViewById(R.id.soldier3_view);
+        monsterImg1 = findViewById(R.id.monster1_view);
+        monsterImg2 = findViewById(R.id.monster2_view);
+        monsterImg3 = findViewById(R.id.monster3_view);
+        seqImg1 = findViewById(R.id.sequence1_view);
+        seqImg2 = findViewById(R.id.sequence2_view);
+        seqImg3 = findViewById(R.id.sequence3_view);
+        seqImg4 = findViewById(R.id.sequence4_view);
+
+        soldierHp1 = findViewById(R.id.soldier1_hp);
+        soldierAtk1 = findViewById(R.id.soldier1_atk);
+        monsterHp1 = findViewById(R.id.monster1_hp);
+        monsterAtk1 = findViewById(R.id.monster1_atk);
     }
 
     /**
@@ -112,10 +120,12 @@ public class BattleActivity extends BaseActivity{
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    soldierHp.setText(Integer.toString(soldiers.get(0).getHp()));
-                    soldierAtk.setText(Integer.toString(soldiers.get(0).getAtk()));
-                    monsterHp.setText(Integer.toString(monsters.get(0).getHp()));
-                    monsterAtk.setText(Integer.toString(monsters.get(0).getAtk()));
+                    soldierHp1.setText("HP: "+Integer.toString(soldiers.get(0).getHp()));
+                    soldierAtk1.setText("ATK: "+Integer.toString(soldiers.get(0).getAtk()));
+                    soldierImg1.setImageResource(R.drawable.pichachu_battle);
+                    monsterHp1.setText("HP: "+Integer.toString(monsters.get(0).getHp()));
+                    monsterAtk1.setText("ATK: "+Integer.toString(monsters.get(0).getAtk()));
+                    monsterImg1.setImageResource(R.drawable.wolf_battle);
                 }
             });
         } else {
