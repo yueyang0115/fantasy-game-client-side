@@ -39,6 +39,14 @@ public abstract class Building {
     public void addTerritory(Territory territory) {
         this.territories.add(territory);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
 
 
