@@ -1,16 +1,22 @@
 package com.example.fantasyclient.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class Building {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Building {
 
     private int id;
 
-
     private String name;
 
+    @JsonBackReference
+//    @JsonIgnore
     private List<Territory> territories = new ArrayList<>();
 
     public Building() {

@@ -1,5 +1,7 @@
 package com.example.fantasyclient.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +12,14 @@ public class Territory {
     private int x;
     private int y;
     private String status;
+
+//    @JsonManagedReference
     private List<Monster> monsters = new ArrayList<>();
+
     private Terrain terrain;
+
+//    @JsonManagedReference
+    private Building building;
 
     public Building getBuilding() {
         return building;
@@ -20,8 +28,6 @@ public class Territory {
     public void setBuilding(Building building) {
         this.building = building;
     }
-
-    private Building building;
 
     public Territory(){
     }
