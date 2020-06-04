@@ -54,6 +54,7 @@ public class Communicator {
             Log.d(TAG, "Receive:"+objectMapper.writeValueAsString(m));
         } catch (IOException e) {
             Log.e(TAG,"Failed to receive data!");
+            e.printStackTrace();
         }
         return m;
     }

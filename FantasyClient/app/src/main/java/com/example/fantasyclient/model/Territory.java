@@ -13,6 +13,16 @@ public class Territory {
     private List<Monster> monsters = new ArrayList<>();
     private Terrain terrain;
 
+    public Building getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
+
+    private Building building;
+
     public Territory(){
     }
 
