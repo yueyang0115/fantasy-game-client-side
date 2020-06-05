@@ -7,6 +7,7 @@ public class Unit {
     private int hp;
     private int atk;
     private Territory territory;
+    private int speed;
 
     public Unit(){
     }
@@ -47,6 +48,14 @@ public class Unit {
 
     public void setAtk(int atk) {
         this.atk = atk;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
     public Territory getTerritory() {

@@ -3,17 +3,17 @@ package com.example.fantasyclient.json;
 public class BattleRequestMessage {
 
     private int territoryID;
-    private int monsterID;
-    private int soldierID;
+    private int attackeeID;
+    private int attackerID;
     private String action;//"attack","escape","start"
 
     public BattleRequestMessage() {
     }
 
-    public BattleRequestMessage(int territoryID, int monsterID, int soldierID, String action) {
+    public BattleRequestMessage(int territoryID, int attackeeID, int attackerID, String action) {
         this.territoryID = territoryID;
-        this.monsterID = monsterID;
-        this.soldierID = soldierID;
+        this.attackeeID = attackeeID;
+        this.attackerID = attackerID;
         this.action = action;
     }
 
@@ -25,20 +25,20 @@ public class BattleRequestMessage {
         this.territoryID = territoryID;
     }
 
-    public int getMonsterID() {
-        return monsterID;
+    public int getAttackeeID() {
+        return attackeeID;
     }
 
-    public void setMonsterID(int monsterID) {
-        this.monsterID = monsterID;
+    public void setAttackeeID(int attackeeID) {
+        this.attackeeID = attackeeID;
     }
 
-    public int getSoldierID() {
-        return soldierID;
+    public int getAttackerID() {
+        return attackerID;
     }
 
-    public void setSoldierID(int soldierID) {
-        this.soldierID = soldierID;
+    public void setAttackerID(int attackerID) {
+        this.attackerID = attackerID;
     }
 
     public String getAction() {
