@@ -192,6 +192,7 @@ public class MainActivity extends BaseActivity {
         //set background to be base type
         terrainAdapter.initMap(R.drawable.base00);
         unitAdapter.initMap(R.drawable.transparent);
+        buildingAdapter.initMap(R.drawable.transparent);
         //set cached territory
         for(Territory t : cachedMap){
             updateTerritory(t);

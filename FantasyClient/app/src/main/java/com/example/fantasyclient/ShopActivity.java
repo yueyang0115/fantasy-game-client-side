@@ -85,13 +85,16 @@ public class ShopActivity extends BaseActivity {
     @SuppressLint("SetTextI18n")
     @Override
     protected void checkShopResult(final ShopResultMessage m) {
-        if (m.getResult().equals("list")) {
+        if (m.getResult().equals("valid")) {
             //shop starts
+            Log.d(TAG,"checkShopResult");
             itemList = m.getItems();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                   adapter.notifyDataSetChanged();
+                    adapter.clear();
+                    adapter.addAll(itemList);
+                    adapter.notifyDataSetChanged();
                 }
             });
         }
@@ -104,7 +107,7 @@ public class ShopActivity extends BaseActivity {
         btn_cancel = findViewById(R.id.btn_cancel);
         btn_load = findViewById(R.id.btn_load);
         ListView listView = findViewById(R.id.item_list);
-        adapter = new ItemArrayAdapter(this,R.layout.item_layout,R.id.item,itemList);
+        adapter = new ItemArrayAdapter(this,itemList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
