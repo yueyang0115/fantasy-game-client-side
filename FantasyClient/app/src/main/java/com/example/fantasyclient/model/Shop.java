@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Shop extends Building {
 
-    @JsonManagedReference
+//    @JsonManagedReference
     private List<Item> inventory = new ArrayList<>();
 
     public Shop() {
