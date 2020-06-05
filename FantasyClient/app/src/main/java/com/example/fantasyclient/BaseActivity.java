@@ -86,6 +86,9 @@ public class BaseActivity extends Activity {
             if (m.getAttributeResultMessage() != null) {
                 checkAttributeResult(m.getAttributeResultMessage());
             }
+            if (m.getShopResultMessage() != null) {
+                checkShopResult(m.getShopResultMessage());
+            }
 
         }
     }

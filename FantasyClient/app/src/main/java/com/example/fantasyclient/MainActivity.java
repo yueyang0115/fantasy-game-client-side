@@ -114,7 +114,6 @@ public class MainActivity extends BaseActivity {
         // stop location updates (saves battery)
         super.onPause();
         location.endUpdates();
-        locationTimerHandler.cancelTask();
         sendTimerHandler.cancelTask();
         ifPause = true;
     }
@@ -210,6 +209,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 terrainAdapter.notifyDataSetChanged();
                 unitAdapter.notifyDataSetChanged();
+                buildingAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -333,7 +333,7 @@ public class MainActivity extends BaseActivity {
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
-        unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        buildingGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position==64){

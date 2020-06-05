@@ -22,10 +22,11 @@ import java.util.List;
 
 public class ShopActivity extends BaseActivity {
 
-    Button btn_buy, btn_sell, btn_cancel;
+    Button btn_buy, btn_sell, btn_cancel, btn_load;
     int terrID, shopID;
     Item currItem;
     List<Item> itemList = new ArrayList<>();
+    ItemArrayAdapter adapter;
     final static String TAG = "ShopActivity";
 
     @Override
@@ -33,28 +34,21 @@ public class ShopActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
         findView();
-        //doBindService();
+        doBindService();
         Intent intent = getIntent();
         terrID = intent.getIntExtra("territoryID",0);
         shopID = intent.getIntExtra("ShopID",0);
         itemList.add(new Item("Example1",10));
         itemList.add(new Item("Example2",20));
 
-        new Thread(){
+
+        btn_load.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                while (socketService==null){
-                    Log.d(TAG, "Initial thread");
-                    try {
-                        sleep(100);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG,"Sleep");
-                    }
-                }
+            public void onClick(View v) {
                 socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID,0,"list")));
                 handleRecvMessage(socketService.dequeue());
             }
-        }.start();
+        });
 
         btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +91,7 @@ public class ShopActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                   adapter.notifyDataSetChanged();
                 }
             });
         }
@@ -107,8 +102,9 @@ public class ShopActivity extends BaseActivity {
         btn_buy = findViewById(R.id.btn_buy);
         btn_sell = findViewById(R.id.btn_sell);
         btn_cancel = findViewById(R.id.btn_cancel);
+        btn_load = findViewById(R.id.btn_load);
         ListView listView = findViewById(R.id.item_list);
-        ItemArrayAdapter adapter = new ItemArrayAdapter(this,R.layout.activity_shop,itemList);
+        adapter = new ItemArrayAdapter(this,R.layout.item_layout,R.id.item,itemList);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

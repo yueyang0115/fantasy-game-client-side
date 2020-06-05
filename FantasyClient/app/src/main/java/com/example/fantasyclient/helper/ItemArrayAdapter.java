@@ -15,8 +15,7 @@ import java.util.List;
 
 public class ItemArrayAdapter extends ArrayAdapter<Item> {
 
-
-    public ItemArrayAdapter(Context context, int resource, List<Item> objects) {
-        super(context, resource, objects);
+    public ItemArrayAdapter(@NonNull Context context, int resource, int textViewResourceId, @NonNull List<Item> objects) {
+        super(context, resource, textViewResourceId, objects);
     }
 }
