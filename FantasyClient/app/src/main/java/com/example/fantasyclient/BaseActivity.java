@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.fantasyclient.json.*;
 
 /**
@@ -18,7 +20,7 @@ import com.example.fantasyclient.json.*;
  * 2.Redirect to other activities
  */
 @SuppressLint("Registered")
-public class BaseActivity extends Activity {
+public class BaseActivity extends AppCompatActivity {
 
     SocketService socketService;
     boolean mIsBound;

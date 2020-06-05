@@ -13,319 +13,39 @@
         android:layout_weight="2"
         android:layout_height="0dp"
         android:baselineAligned="false">
-        <LinearLayout
-            android:id="@+id/monster_bar"
-            android:orientation="vertical"
-            android:layout_width="0dp"
+
+        <fragment android:name="com.example.fantasyclient.fragment.ItemListFragment"
+            android:id="@+id/item_list_fragment"
+            android:layout_weight="4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <fragment android:name="com.example.fantasyclient.fragment.ItemDetailFragment"
+            android:id="@+id/item_detail_fragment"
             android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/monster2_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/monster2_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/wolf_battle" />
-
-                <LinearLayout
-                    android:id="@+id/monster2_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/monster2_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/monster2_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/monster1_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/monster1_view"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    app:srcCompat="@drawable/wolf_battle" />
-
-                <LinearLayout
-                    android:id="@+id/monster1_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/monster1_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/monster1_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/monster3_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/monster3_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/wolf_battle" />
-
-                <LinearLayout
-                    android:id="@+id/monster3_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/monster3_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/monster3_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/soldier_bar"
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/soldier2_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/soldier2_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-
-                <LinearLayout
-                    android:id="@+id/soldier2_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/soldier2_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/soldier2_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/soldier1_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-
-                <ImageView
-                    android:id="@+id/soldier1_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-
-                <LinearLayout
-                    android:id="@+id/soldier1_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/soldier1_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/soldier1_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/soldier3_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/soldier3_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-
-                <LinearLayout
-                    android:id="@+id/soldier3_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/soldier3_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/soldier3_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-            
-        </LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/menu_bar"
-        android:orientation="horizontal"
+
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="0dp"
-        android:baselineAligned="false">
-        <LinearLayout
-            android:id="@+id/action_bar"
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        android:layout_height="50dp">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar_layout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:baselineAligned="false"
-            tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/action_bar1"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleGravity="top"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
-                <Button
-                    android:id="@+id/attack_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Attack" />
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/action_bar2"
-                android:layout_weight="1"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <Button
-                    android:id="@+id/item_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Item" />
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/action_bar3"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <Button
-                    android:id="@+id/escape_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Escape" />
-            </FrameLayout>
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"/>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/attribute_bar"
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/attribute_bar1"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/attribute_bar2"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/attribute_bar3"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-            </FrameLayout>
-
-        </LinearLayout>
-    </LinearLayout>
 
 </LinearLayout>
