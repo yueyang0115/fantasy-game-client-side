@@ -68,14 +68,16 @@ public class BattleActivity extends BaseActivity{
         monsterImg1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                monsterID = 1;
+                monsterID = monsters.get(0).getId();
+                Log.d(TAG, "Choone monster1");
             }
         });
 
         soldierImg1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                soldierID = 1;
+                soldierID = soldiers.get(0).getId();
+                Log.d(TAG, "Choose soldier1");
             }
         });
 
@@ -133,15 +135,27 @@ public class BattleActivity extends BaseActivity{
             soldiers = m.getSoldiers();
             monsters = m.getMonsters();
             sequence = m.getUnitIDs();
+            monsterID = monsters.get(0).getId();
+            soldierID = soldiers.get(0).getId();
             for(Soldier s : soldiers){
                 if(s.getId()==sequence.get(0)){
-                    seqImg1.setImageResource(R.drawable.pichachu_battle);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            seqImg1.setImageResource(R.drawable.pichachu_battle);
+                        }
+                    });
                     break;
                 }
             }
             for(Monster monster : monsters){
                 if(monster.getId()==sequence.get(0)){
-                    seqImg1.setImageResource(R.drawable.wolf_battle);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            seqImg1.setImageResource(R.drawable.wolf_battle);
+                        }
+                    });
                 }
             }
             runOnUiThread(new Runnable() {
