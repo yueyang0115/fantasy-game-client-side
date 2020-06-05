@@ -36,7 +36,8 @@ public class BattleActivity extends BaseActivity{
             monsterAtk1, monsterHp1, monsterAtk2, monsterHp2, monsterAtk3, monsterHp3;
     List<Soldier> soldiers = new ArrayList<>();
     List<Monster> monsters = new ArrayList<>();
-    int terrID;
+    List<Integer> sequence = new ArrayList<>();
+    int terrID, monsterID, soldierID = 1;
     static final String TAG = "BattleActivity";
 
     @Override
@@ -64,10 +65,24 @@ public class BattleActivity extends BaseActivity{
             }
         }.start();
 
+        monsterImg1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                monsterID = 1;
+            }
+        });
+
+        soldierImg1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                soldierID = 1;
+            }
+        });
+
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsters.get(0).getId(),soldiers.get(0).getId(),"attack")));
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
@@ -75,7 +90,7 @@ public class BattleActivity extends BaseActivity{
         escapeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsters.get(0).getId(),soldiers.get(0).getId(),"escape")));
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
@@ -117,6 +132,18 @@ public class BattleActivity extends BaseActivity{
             //battle continues
             soldiers = m.getSoldiers();
             monsters = m.getMonsters();
+            sequence = m.getUnitIDs();
+            for(Soldier s : soldiers){
+                if(s.getId()==sequence.get(0)){
+                    seqImg1.setImageResource(R.drawable.pichachu_battle);
+                    break;
+                }
+            }
+            for(Monster monster : monsters){
+                if(monster.getId()==sequence.get(0)){
+                    seqImg1.setImageResource(R.drawable.wolf_battle);
+                }
+            }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

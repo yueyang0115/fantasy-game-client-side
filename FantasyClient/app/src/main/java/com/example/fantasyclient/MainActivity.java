@@ -270,6 +270,13 @@ public class MainActivity extends BaseActivity {
         startActivityForResult(intent,BATTLE);
     }
 
+    protected void launchShop(){
+        Intent intent = new Intent(this,ShopActivity.class);
+        intent.putExtra("territoryID", currTerr.getId());
+        intent.putExtra("ShopID", currTerr.getBuilding().getId());
+        startActivityForResult(intent,SHOP);
+    }
+
     /**
      * this method is called after "startActivityForResult"
      * it handles different return situation from another activity based on:
@@ -330,8 +337,13 @@ public class MainActivity extends BaseActivity {
         unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position==64 && !currTerr.getMonsters().isEmpty()){
-                    launchBattle();
+                if(position==64){
+                    if(!currTerr.getMonsters().isEmpty()) {
+                        launchBattle();
+                    }
+                    else if(currTerr.getBuilding()!=null){
+                        launchShop();
+                    }
                 }
             }
         });

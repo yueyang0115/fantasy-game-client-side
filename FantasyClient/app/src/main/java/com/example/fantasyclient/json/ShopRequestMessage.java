@@ -9,6 +9,13 @@ public class ShopRequestMessage {
     public ShopRequestMessage() {
     }
 
+    public ShopRequestMessage(int shopID, int territoryID, int itemID, String action) {
+        this.shopID = shopID;
+        this.territoryID = territoryID;
+        this.itemID = itemID;
+        this.action = action;
+    }
+
     public int getShopID() {
         return shopID;
     }

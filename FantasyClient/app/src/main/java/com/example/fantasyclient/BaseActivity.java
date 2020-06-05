@@ -86,6 +86,7 @@ public class BaseActivity extends AppCompatActivity {
             if (m.getAttributeResultMessage() != null) {
                 checkAttributeResult(m.getAttributeResultMessage());
             }
+
         }
     }
 
@@ -114,6 +115,8 @@ public class BaseActivity extends AppCompatActivity {
     protected void checkBattleResult(BattleResultMessage m){}
 
     protected void checkAttributeResult(AttributeResultMessage m){}
+
+    protected void checkShopResult(ShopResultMessage m){}
 
     /**
      * these methods are for service
