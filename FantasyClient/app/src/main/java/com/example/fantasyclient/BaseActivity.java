@@ -20,7 +20,7 @@ import com.example.fantasyclient.json.*;
  * 2.Redirect to other activities
  */
 @SuppressLint("Registered")
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends Activity {
 
     SocketService socketService;
     boolean mIsBound;

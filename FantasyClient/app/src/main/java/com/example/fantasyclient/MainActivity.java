@@ -82,20 +82,19 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         // make the device update its location
-        updateLocation();
-        new Thread() {
+/*        new Thread() {
             @Override
             public void run() {
                 locationTimerHandler = new LocationTimerHandler(vPosition,location);
                 locationTimerHandler.handleTask(0,1000);
             }
-        }.start();
+        }.start();*/
         new Thread() {
             @Override
             public void run() {
                 while (socketService == null) {
                 }
-                sendTimerHandler = new SendTimerHandler(vPosition, socketService.sender);
+                sendTimerHandler = new SendTimerHandler(vPosition, location, socketService.sender);
                 sendTimerHandler.handleTask(0,1000);
             }
         }.start();
