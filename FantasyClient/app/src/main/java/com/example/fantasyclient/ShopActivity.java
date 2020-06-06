@@ -16,6 +16,7 @@ import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Item;
+import com.example.fantasyclient.model.ItemPack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class ShopActivity extends BaseActivity {
     Button btn_buy, btn_sell, btn_cancel, btn_load;
     int terrID, shopID;
     Item currItem;
-    List<Item> itemList = new ArrayList<>();
+    List<ItemPack> itemList = new ArrayList<>();
     ItemArrayAdapter adapter;
     final static String TAG = "ShopActivity";
 
@@ -38,8 +39,8 @@ public class ShopActivity extends BaseActivity {
         Intent intent = getIntent();
         terrID = intent.getIntExtra("territoryID",0);
         shopID = intent.getIntExtra("ShopID",0);
-        itemList.add(new Item("Example1",10));
-        itemList.add(new Item("Example2",20));
+//        itemList.add(new Item("Example1",10));
+//        itemList.add(new Item("Example2",20));
 
 
         btn_load.setOnClickListener(new View.OnClickListener() {

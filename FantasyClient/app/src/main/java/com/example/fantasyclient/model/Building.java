@@ -17,7 +17,7 @@ public class Building {
 
     @JsonBackReference
 //    @JsonIgnore
-    private List<Territory> territories = new ArrayList<>();
+    private Territory territory;
 
     public Building() {
     }
@@ -42,18 +42,13 @@ public class Building {
         this.name = name;
     }
 
-    public List<Territory> getTerritories() {
-        return territories;
+    public Territory getTerritory() {
+        return territory;
     }
 
-    public void setTerritories(List<Territory> territories) {
-        this.territories = territories;
+    public void setTerritory(Territory territory) {
+        this.territory = territory;
     }
-
-    public void addTerritory(Territory territory) {
-        this.territories.add(territory);
-    }
-
 }
 
 
