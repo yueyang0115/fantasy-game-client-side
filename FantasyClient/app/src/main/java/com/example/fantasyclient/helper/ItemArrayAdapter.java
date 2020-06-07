@@ -2,6 +2,7 @@ package com.example.fantasyclient.helper;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ public class ItemArrayAdapter extends ArrayAdapter<ItemPack> {
 
     //Map to store numbers of items to act on
     Map<Integer,Integer> itemMap = new HashMap<>();
+    static final String TAG = "ItemArrayAdapter";
 
     //View lookup cache
     private static class ViewHolder{
@@ -73,5 +75,10 @@ public class ItemArrayAdapter extends ArrayAdapter<ItemPack> {
 
     public Map<Integer,Integer> getItemMap(){
         return itemMap;
+    }
+
+    public void clearMap(){
+        itemMap.clear();
+        Log.d(TAG, "Clear Map");
     }
 }

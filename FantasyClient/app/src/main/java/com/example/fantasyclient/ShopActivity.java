@@ -77,6 +77,7 @@ public class ShopActivity extends ItemActivity {
                 socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, shopAdapter.getItemMap(),"buy")));
                 handleRecvMessage(socketService.dequeue());
                 updateInventory();
+                shopAdapter.clearMap();
             }
         });
         btn_sell.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +86,7 @@ public class ShopActivity extends ItemActivity {
                 socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, inventoryAdapter.getItemMap(),"sell")));
                 handleRecvMessage(socketService.dequeue());
                 updateInventory();
+                inventoryAdapter.clearMap();
             }
         });
     }
