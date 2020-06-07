@@ -4,6 +4,7 @@ public class ShopRequestMessage {
     private int shopID;
     private int territoryID;
     private int itemID;
+    private int amount;
     private String action;//"list""buy""sell"
 
     public ShopRequestMessage() {
