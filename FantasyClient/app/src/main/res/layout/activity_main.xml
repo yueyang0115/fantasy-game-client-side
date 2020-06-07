@@ -45,7 +45,7 @@
         android:id="@+id/position"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="position"
+        android:text="test"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.189"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -57,7 +57,7 @@
         android:id="@+id/v_position"
         android:layout_width="67dp"
         android:layout_height="25dp"
-        android:text="v_position"
+        android:text="test2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.84"
@@ -66,11 +66,11 @@
         app:layout_constraintVertical_bias="0.929" />
 
     <Button
-        android:id="@+id/btn_start"
+        android:id="@+id/btn_bag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
-        android:text="Start"
+        android:text="Bag"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/v_position"
         app:layout_constraintHorizontal_bias="0.506"

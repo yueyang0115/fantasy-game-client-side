@@ -5,11 +5,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Looper;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.GridLayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -30,66 +27,40 @@ import im.delight.android.location.SimpleLocation;
 
 public class MainActivity extends BaseActivity {
 
-    static final String TAG = "MainActivity";
-    static final int PERMISSIONS_REQUEST_LOCATION = 1;
-    static final int BATTLE = 2;
-    static final int SHOP = 3;
-    static final int CENTER = 64;
-    SimpleLocation location;
+    static final String TAG = "MainActivity";//tag for log
+    static final int PERMISSIONS_REQUEST_LOCATION = 1;//request code for location permission
+    static final int BATTLE = 2;//request code for battle
+    static final int SHOP = 3;//request code for shop
+    static final int CENTER = 64;//center of the map
+    SimpleLocation location;//used to track current location
     VirtualPosition vPosition = new VirtualPosition(0,0);
     Territory currTerr;
-    ImageAdapter terrainAdapter = new ImageAdapter(this);
-    ImageAdapter unitAdapter = new ImageAdapter(this);
-    ImageAdapter buildingAdapter = new ImageAdapter(this);
-    LocationTimerHandler locationTimerHandler;
-    SendTimerHandler sendTimerHandler;
-    boolean ifPause = false;
+    ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
+    GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
+    SendTimerHandler sendTimerHandler;//handler to send location periodically
+    boolean ifPause = false;//flag to stop threads
     List<Soldier> soldiers = new ArrayList<>();
-    HashSet<Territory> cachedMap = new HashSet<>();
+    HashSet<Territory> cachedMap = new HashSet<>();//cached map which has been found
     TextView textLocation, textVLocation;
-    Button btnTest;
+    Button btnBag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         findView();
-
-        // construct a new instance of SimpleLocation
-        location = new SimpleLocation(this, true, false, 5 * 1000, true);
-        // if we can't access the location yet
-        if (!location.hasLocationEnabled()) {
-            // ask the user to enable location access
-            SimpleLocation.openSettings(this);
-        }
+        initView();
+        initLocation();
+        //inform players to give location permission
         updateLocation();
         doBindService();
-
-        btnTest.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                // TODO
-
-            }
-
-        });
-
-
+        setOnClickListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // make the device update its location
-/*        new Thread() {
-            @Override
-            public void run() {
-                locationTimerHandler = new LocationTimerHandler(vPosition,location);
-                locationTimerHandler.handleTask(0,1000);
-            }
-        }.start();*/
+        //Thread to update location and send to server
         new Thread() {
             @Override
             public void run() {
@@ -105,28 +76,34 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 while (socketService == null) {
                 }
-                startRecvTerr();
+                while(!ifPause){
+                    if(!socketService.receiver.isEmpty()){
+                        handleRecvMessage(socketService.receiver.dequeue());
+                    }
+                }
             }
         }.start();
     }
 
     @Override
     protected void onPause() {
-        // stop location updates (saves battery)
         super.onPause();
+        //stop location updates and background threads
         location.endUpdates();
         sendTimerHandler.cancelTask();
         ifPause = true;
     }
 
     /**
-     * this AsyncTask runs in background
+     * This method initializes the location
      */
-    public void startRecvTerr() {
-        while(!ifPause){
-            if(!socketService.receiver.isEmpty()){
-                handleRecvMessage(socketService.receiver.dequeue());
-            }
+    protected void initLocation(){
+        // construct a new instance of SimpleLocation
+        location = new SimpleLocation(this, true, false, 5 * 1000, true);
+        // if we can't access the location yet
+        if (!location.hasLocationEnabled()) {
+            // ask the user to enable location access
+            SimpleLocation.openSettings(this);
         }
     }
 
@@ -138,9 +115,7 @@ public class MainActivity extends BaseActivity {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted
-            // Should we show an explanation?
+            // Permission is not granted, should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // Show an explanation to the user *asynchronously* -- don't block
@@ -151,7 +126,6 @@ public class MainActivity extends BaseActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_LOCATION);
-
                 // PERMISSIONS_REQUEST_LOCATION is an app-defined int constant.
                 // The callback method gets the result of the request.
             }
@@ -162,8 +136,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -345,16 +318,28 @@ public class MainActivity extends BaseActivity {
     protected void findView(){
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        btnTest = (Button) findViewById(R.id.btn_start);
-        GridView terrainGridView = (GridView) findViewById(R.id.terrainGridView);
-        GridView unitGridView = (GridView) findViewById(R.id.unitGridView);
-        GridView buildingGridView = (GridView) findViewById(R.id.buildingGridView);
+        btnBag = (Button) findViewById(R.id.btn_bag);
+        terrainGridView = (GridView) findViewById(R.id.terrainGridView);
+        unitGridView = (GridView) findViewById(R.id.unitGridView);
+        buildingGridView = (GridView) findViewById(R.id.buildingGridView);
+
+    }
+
+    @Override
+    protected void initView(){
+        terrainAdapter = new ImageAdapter(this);
+        unitAdapter = new ImageAdapter(this);
+        buildingAdapter = new ImageAdapter(this);
         terrainAdapter.initMap(R.drawable.base00);
         unitAdapter.initMap(R.drawable.transparent);
         buildingAdapter.initMap(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
+    }
+
+    @Override
+    protected void setOnClickListener(){
         buildingGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -368,6 +353,16 @@ public class MainActivity extends BaseActivity {
                     }
                 }
             }
+        });
+
+        btnBag.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                // TODO
+                socketService.enqueue(new MessagesC2S());
+            }
+
         });
     }
 }

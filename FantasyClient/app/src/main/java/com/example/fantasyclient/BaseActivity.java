@@ -25,6 +25,7 @@ public class BaseActivity extends Activity {
     SocketService socketService;
     boolean mIsBound;
     final static String TAG = "BaseActivity";
+    //common constants for activities
     static final int RESULT_ESCAPED = RESULT_CANCELED;
     static final int RESULT_WIN = RESULT_OK;
     static final int RESULT_LOSE = RESULT_FIRST_USER;
@@ -44,12 +45,20 @@ public class BaseActivity extends Activity {
         super.onPause();
     }
 
+    /**
+     * find and init required common views, which may be overrode
+     */
+    protected void findView(){ }
+    protected void initView(){ }
+    /**
+     * set required listeners, which may be overrode
+     */
+    protected void setOnClickListener(){ }
 
     /**
-     * find required common views which may be overrode
+     * get extra information passed by calling activity
      */
-    protected void findView(){
-    }
+    protected void getExtra(){ }
 
     protected void launchSignUp() {
         Intent intent = new Intent(this, UserSignUpActivity.class);
@@ -66,6 +75,12 @@ public class BaseActivity extends Activity {
         startActivity(intent);
     }
 
+    /**
+     * This is the only interface to handle received message(MessageS2C) from server
+     * differently based on different fields in the messages
+     * Those "check" methods are overrode by different activities as needed
+     * @param m: MessagesS2C received
+     */
     protected void handleRecvMessage(MessagesS2C m){
         if(m == null){
             Log.e(TAG, "HandleRecvMessage: Invalid result received");

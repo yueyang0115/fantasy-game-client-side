@@ -47,16 +47,45 @@ public class BattleActivity extends BaseActivity{
         setContentView(R.layout.activity_battle);
         findView();
         doBindService();
+        getExtra();
+        setOnClickListener();
+    }
+
+    @Override
+    protected void findView(){
+        attackBtn = findViewById(R.id.attack_btn);
+        escapeBtn = findViewById(R.id.escape_btn);
+        soldierImg1 = findViewById(R.id.soldier1_view);
+        soldierImg2 = findViewById(R.id.soldier2_view);
+        soldierImg3 = findViewById(R.id.soldier3_view);
+        monsterImg1 = findViewById(R.id.monster1_view);
+        monsterImg2 = findViewById(R.id.monster2_view);
+        monsterImg3 = findViewById(R.id.monster3_view);
+        seqImg1 = findViewById(R.id.sequence1_view);
+        seqImg2 = findViewById(R.id.sequence2_view);
+        seqImg3 = findViewById(R.id.sequence3_view);
+        seqImg4 = findViewById(R.id.sequence4_view);
+        soldierHp1 = findViewById(R.id.soldier1_hp);
+        soldierAtk1 = findViewById(R.id.soldier1_atk);
+        monsterHp1 = findViewById(R.id.monster1_hp);
+        monsterAtk1 = findViewById(R.id.monster1_atk);
+    }
+
+    @Override
+    protected void getExtra(){
         Intent intent = getIntent();
         battleResultMessage = (BattleResultMessage) intent.getSerializableExtra("BattleResultMessage");
         assert battleResultMessage != null;
         checkBattleResult(battleResultMessage);
+    }
 
+    @Override
+    protected void setOnClickListener(){
         monsterImg1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 monsterID = monsters.get(0).getId();
-                Log.d(TAG, "Choone monster1");
+                Log.d(TAG, "Choose monster1");
             }
         });
 
@@ -83,30 +112,6 @@ public class BattleActivity extends BaseActivity{
                 handleRecvMessage(socketService.dequeue());
             }
         });
-    }
-
-    /**
-     * find required common views which may be overrode
-     */
-    @Override
-    protected void findView(){
-        attackBtn = findViewById(R.id.attack_btn);
-        escapeBtn = findViewById(R.id.escape_btn);
-        soldierImg1 = findViewById(R.id.soldier1_view);
-        soldierImg2 = findViewById(R.id.soldier2_view);
-        soldierImg3 = findViewById(R.id.soldier3_view);
-        monsterImg1 = findViewById(R.id.monster1_view);
-        monsterImg2 = findViewById(R.id.monster2_view);
-        monsterImg3 = findViewById(R.id.monster3_view);
-        seqImg1 = findViewById(R.id.sequence1_view);
-        seqImg2 = findViewById(R.id.sequence2_view);
-        seqImg3 = findViewById(R.id.sequence3_view);
-        seqImg4 = findViewById(R.id.sequence4_view);
-
-        soldierHp1 = findViewById(R.id.soldier1_hp);
-        soldierAtk1 = findViewById(R.id.soldier1_atk);
-        monsterHp1 = findViewById(R.id.monster1_hp);
-        monsterAtk1 = findViewById(R.id.monster1_atk);
     }
 
     /**

@@ -23,11 +23,12 @@ import java.util.List;
 
 public class ShopActivity extends BaseActivity {
 
-    Button btn_buy, btn_sell, btn_cancel, btn_load;
+    Button btn_buy, btn_sell, btn_cancel;
     int terrID, shopID;
     Item currItem;
     List<ItemPack> itemList = new ArrayList<>();
     ItemArrayAdapter adapter;
+    ListView listView;
     ShopResultMessage shopResultMessage;
     final static String TAG = "ShopActivity";
 
@@ -36,21 +37,43 @@ public class ShopActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shop);
         findView();
+        initView();
         doBindService();
+        getExtra();
+        setOnClickListener();
+    }
+
+    @Override
+    protected void findView(){
+        btn_buy = findViewById(R.id.btn_buy);
+        btn_sell = findViewById(R.id.btn_sell);
+        btn_cancel = findViewById(R.id.btn_cancel);
+        listView = findViewById(R.id.item_list);
+
+    }
+
+    @Override
+    protected void initView(){
+        adapter = new ItemArrayAdapter(this,itemList);
+        listView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void getExtra(){
         Intent intent = getIntent();
         shopResultMessage = (ShopResultMessage) intent.getSerializableExtra("ShopResultMessage");
         checkShopResult(shopResultMessage);
         terrID = intent.getIntExtra("territoryID",0);
         shopID = intent.getIntExtra("ShopID",0);
-//        itemList.add(new Item("Example1",10));
-//        itemList.add(new Item("Example2",20));
+    }
 
-
-        btn_load.setOnClickListener(new View.OnClickListener() {
+    @Override
+    protected void setOnClickListener(){
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID,0,"list")));
-                handleRecvMessage(socketService.dequeue());
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                currItem = (Item) parent.getItemAtPosition(position);
+                Log.d(TAG,"Current item is "+ currItem.getName());
             }
         });
 
@@ -104,21 +127,5 @@ public class ShopActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void findView(){
-        btn_buy = findViewById(R.id.btn_buy);
-        btn_sell = findViewById(R.id.btn_sell);
-        btn_cancel = findViewById(R.id.btn_cancel);
-        btn_load = findViewById(R.id.btn_load);
-        ListView listView = findViewById(R.id.item_list);
-        adapter = new ItemArrayAdapter(this,itemList);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currItem = (Item) parent.getItemAtPosition(position);
-                Log.d(TAG,"Current item is "+ currItem.getName());
-            }
-        });
-    }
+
 }
