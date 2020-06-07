@@ -57,7 +57,7 @@ public class ItemArrayAdapter extends ArrayAdapter<ItemPack> {
         assert itemPack != null;
         viewHolder.itemName.setText(itemPack.getItem().getName());
         viewHolder.itemCost.setText(Integer.toString(itemPack.getItem().getCost()));
-        viewHolder.itemAmount.setText(itemPack.getAmount());
+        viewHolder.itemAmount.setText(Integer.toString(itemPack.getAmount()));
         viewHolder.itemNumPicker.setMaxValue(itemPack.getAmount());
         viewHolder.itemNumPicker.setMinValue(0);
         viewHolder.itemNumPicker.setValue(0);

@@ -15,6 +15,7 @@ import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.model.ItemPack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public class ItemActivity extends BaseActivity {
 
     Button btn_cancel;
     TextView text_money;
-    List<ItemPack> inventoryItemList;
+    List<ItemPack> inventoryItemList = new ArrayList<>();
     ItemArrayAdapter inventoryAdapter;
     ListView inventoryListView;
     InventoryResultMessage inventoryResultMessage;

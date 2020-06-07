@@ -14,6 +14,7 @@ import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.ItemPack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class ShopActivity extends ItemActivity {
 
     Button btn_buy, btn_sell;
     int terrID, shopID;
-    List<ItemPack> shopItemList;
+    List<ItemPack> shopItemList = new ArrayList<>();
     ItemArrayAdapter shopAdapter;
     ListView shopListView;
     ShopResultMessage shopResultMessage;
