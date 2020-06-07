@@ -10,12 +10,9 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.fantasyclient.helper.ItemArrayAdapter;
-import com.example.fantasyclient.json.BattleRequestMessage;
-import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
-import com.example.fantasyclient.model.Item;
 import com.example.fantasyclient.model.ItemPack;
 
 import java.util.ArrayList;
@@ -25,7 +22,7 @@ public class ShopActivity extends BaseActivity {
 
     Button btn_buy, btn_sell, btn_cancel;
     int terrID, shopID;
-    Item currItem;
+    ItemPack currItemPack;
     List<ItemPack> itemList = new ArrayList<>();
     ItemArrayAdapter adapter;
     ListView listView;
@@ -72,15 +69,15 @@ public class ShopActivity extends BaseActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currItem = (Item) parent.getItemAtPosition(position);
-                Log.d(TAG,"Current item is "+ currItem.getName());
+                currItemPack = (ItemPack) parent.getItemAtPosition(position);
+                Log.d(TAG,"Current item is "+ currItemPack.getItem().getName());
             }
         });
 
         btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID,currItem.getId(),"buy")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, currItemPack.getId(),"buy")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
@@ -88,7 +85,7 @@ public class ShopActivity extends BaseActivity {
         btn_sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID,currItem.getId(),"sell")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, currItemPack.getId(),"sell")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
