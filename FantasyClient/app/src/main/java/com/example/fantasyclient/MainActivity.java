@@ -49,6 +49,7 @@ public class MainActivity extends BaseActivity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;//request code for location permission
     static final int BATTLE = 2;//request code for battle
     static final int SHOP = 3;//request code for shop
+    static final int INVENTORY = 4;//request code for inventory
     static final int CENTER = 64;//center of the map
     SimpleLocation location;//used to track current location
     VirtualPosition vPosition = new VirtualPosition(0,0);
@@ -238,6 +239,9 @@ public class MainActivity extends BaseActivity {
             if(shopResultMessage!=null) {
                 launchShop();
             }
+            else{
+                launchInventory();
+            }
         }
     }
 
@@ -248,7 +252,18 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(this, ShopActivity.class);
         intent.putExtra("ShopResultMessage", shopResultMessage);
         intent.putExtra("InventoryResultMessage", inventoryResultMessage);
+        intent.putExtra("territoryID", currTerr.getId());
+        intent.putExtra("ShopID", currTerr.getBuilding().getId());
         startActivityForResult(intent, SHOP);
+    }
+
+    /**
+     * Launch inventory activity with necessary inventory information
+     */
+    protected void launchInventory(){
+        Intent intent = new Intent(this, ShopActivity.class);
+        intent.putExtra("InventoryResultMessage", inventoryResultMessage);
+        startActivityForResult(intent, INVENTORY);
     }
 
     /**
@@ -263,7 +278,6 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this,BattleActivity.class);
             intent.putExtra("BattleResultMessage", m);
             intent.putExtra("territoryID", currTerr.getId());
-            intent.putExtra("ShopID", currTerr.getBuilding().getId());
             startActivityForResult(intent,BATTLE);
         }
     }
