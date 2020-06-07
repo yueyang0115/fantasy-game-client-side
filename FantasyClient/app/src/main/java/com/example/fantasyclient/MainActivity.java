@@ -384,7 +384,6 @@ public class MainActivity extends BaseActivity {
                     else if(currTerr.getBuilding()!=null){
                         socketService.enqueue(new MessagesC2S(
                                 new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),new HashMap<Integer, Integer>(),"list")));
-                        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
                     }
                 }
             }
