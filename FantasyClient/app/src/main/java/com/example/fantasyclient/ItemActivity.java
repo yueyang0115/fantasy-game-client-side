@@ -69,11 +69,6 @@ public class ItemActivity extends BaseActivity {
         });
     }
 
-    protected void updateInventory(){
-        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
-        handleRecvMessage(socketService.dequeue());
-    }
-
     /**
      * This method is called after a MessageS2C with InventoryResultMessage is received from server
      * UI and cached map will be updated based on the received message
