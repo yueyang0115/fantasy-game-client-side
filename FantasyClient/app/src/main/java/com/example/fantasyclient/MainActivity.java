@@ -20,6 +20,7 @@ import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,6 +39,9 @@ public class MainActivity extends BaseActivity {
     ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
     SendTimerHandler sendTimerHandler;//handler to send location periodically
+    //cached shop-related message to pass to ShopActivity;
+    ShopResultMessage shopResultMessage;
+    InventoryResultMessage inventoryResultMessage;
     boolean ifPause = false;//flag to stop threads
     List<Soldier> soldiers = new ArrayList<>();
     HashSet<Territory> cachedMap = new HashSet<>();//cached map which has been found
@@ -192,16 +196,42 @@ public class MainActivity extends BaseActivity {
     /**
      * This method is called after a MessageS2C with ShopResultMessage is received from server
      * It happens in MainActivity only if players try to enter shops and send "list"
-     * After permission from server, ShopActivity will be launched
+     * After InventoryResultMessage is also received, ShopActivity will be launched
      * @param m: received ShopResultMessage
      */
     @Override
     protected void checkShopResult(final ShopResultMessage m){
         if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this,ShopActivity.class);
-            intent.putExtra("ShopResultMessage", m);
-            startActivityForResult(intent,SHOP);
+            shopResultMessage = m;
+            if(inventoryResultMessage!=null){
+                launchShop();
+            }
         }
+    }
+
+    /**
+     * This method is called after a MessageS2C with InventoryResultMessage is received from server
+     * After ShopResultMessage is also received, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
+    @Override
+    protected void checkInventoryResult(InventoryResultMessage m){
+        if (m.getResult().equals("valid")) {
+            inventoryResultMessage = m;
+            if(shopResultMessage!=null) {
+                launchShop();
+            }
+        }
+    }
+
+    /**
+     * Launch shop activity with necessary shop and inventory information
+     */
+    protected void launchShop(){
+        Intent intent = new Intent(this, ShopActivity.class);
+        intent.putExtra("ShopResultMessage", shopResultMessage);
+        intent.putExtra("InventoryResultMessage", inventoryResultMessage);
+        startActivityForResult(intent, SHOP);
     }
 
     /**
@@ -349,7 +379,8 @@ public class MainActivity extends BaseActivity {
                                 new BattleRequestMessage(currTerr.getId(), 0, 0, "start")));
                     else if(currTerr.getBuilding()!=null){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),0,0,"list")));
+                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),new HashMap<Integer, Integer>(),"list")));
+                        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage()));
                     }
                 }
             }

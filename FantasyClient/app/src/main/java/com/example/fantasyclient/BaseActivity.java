@@ -104,7 +104,9 @@ public class BaseActivity extends Activity {
             if (m.getShopResultMessage() != null) {
                 checkShopResult(m.getShopResultMessage());
             }
-
+            if (m.getInventoryResultMessage() != null){
+                checkInventoryResult(m.getInventoryResultMessage());
+            }
         }
     }
 
@@ -135,6 +137,8 @@ public class BaseActivity extends Activity {
     protected void checkAttributeResult(AttributeResultMessage m){}
 
     protected void checkShopResult(ShopResultMessage m){}
+
+    protected void checkInventoryResult(InventoryResultMessage m){}
 
     /**
      * these methods are for service
