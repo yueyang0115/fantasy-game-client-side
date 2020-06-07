@@ -16,7 +16,9 @@ import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.ItemPack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ShopActivity extends BaseActivity {
 
@@ -24,6 +26,7 @@ public class ShopActivity extends BaseActivity {
     int terrID, shopID;
     ItemPack currItemPack;
     List<ItemPack> itemList = new ArrayList<>();
+    Map<Integer,Integer> itemMap = new HashMap<>();
     ItemArrayAdapter adapter;
     ListView listView;
     ShopResultMessage shopResultMessage;
@@ -73,11 +76,11 @@ public class ShopActivity extends BaseActivity {
                 Log.d(TAG,"Current item is "+ currItemPack.getItem().getName());
             }
         });
-
         btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, currItemPack.getId(),"buy")));
+
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, itemMap,"buy")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
@@ -85,7 +88,7 @@ public class ShopActivity extends BaseActivity {
         btn_sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, currItemPack.getId(),"sell")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, itemMap,"sell")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
