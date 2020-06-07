@@ -1,7 +1,5 @@
 package com.example.fantasyclient.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import java.util.ArrayList;
 import java.util.List;
 

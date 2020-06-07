@@ -15,17 +15,6 @@
             android:layout_height="match_parent"
             android:layout_weight="4">
             <ListView
-                android:id="@+id/shop_item_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </ListView>
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="4">
-            <ListView
                 android:id="@+id/inventory_item_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
@@ -40,23 +29,22 @@
         android:layout_weight="1">
 
         <Button
-            android:id="@+id/btn_buy"
+            android:id="@+id/btn_use"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Buy"/>
+            android:text="Use"/>
 
         <Button
-            android:id="@+id/btn_sell"
+            android:id="@+id/btn_drop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sell"/>
+            android:text="Drop"/>
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"/>
-
         <TextView
             android:id="@+id/text_money"
             android:layout_width="wrap_content"

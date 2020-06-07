@@ -2,11 +2,8 @@ package com.example.fantasyclient.helper;
 
 import android.util.Log;
 
-import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.thread.Communicator;
-import com.example.fantasyclient.thread.TcpRecvThread;
-import com.example.fantasyclient.thread.TcpSendThread;
 
 import java.util.concurrent.LinkedBlockingQueue;
 

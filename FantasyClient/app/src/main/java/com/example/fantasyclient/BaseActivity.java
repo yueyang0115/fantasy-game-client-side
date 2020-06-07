@@ -10,9 +10,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.fantasyclient.json.*;
+import com.example.fantasyclient.json.AttributeResultMessage;
+import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.LoginResultMessage;
+import com.example.fantasyclient.json.MessagesS2C;
+import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.ShopResultMessage;
+import com.example.fantasyclient.json.SignUpResultMessage;
 
 /**
  * This is base activity which contains several basic methods for all activities:

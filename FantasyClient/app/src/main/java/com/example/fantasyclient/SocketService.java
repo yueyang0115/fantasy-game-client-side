@@ -2,7 +2,6 @@ package com.example.fantasyclient;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -14,18 +13,9 @@ import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.thread.Communicator;
 import com.example.fantasyclient.thread.ConnectThread;
-import com.example.fantasyclient.thread.TcpRecvThread;
-import com.example.fantasyclient.thread.TcpSendThread;
-import com.example.fantasyclient.thread.UdpSendThread;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * this service is built to communicate with server

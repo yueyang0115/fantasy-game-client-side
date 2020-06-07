@@ -15,9 +15,19 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.helper.*;
-import com.example.fantasyclient.json.*;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.helper.ImageAdapter;
+import com.example.fantasyclient.helper.SendTimerHandler;
+import com.example.fantasyclient.json.BattleRequestMessage;
+import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.ShopRequestMessage;
+import com.example.fantasyclient.json.ShopResultMessage;
+import com.example.fantasyclient.model.Soldier;
+import com.example.fantasyclient.model.Territory;
+import com.example.fantasyclient.model.VirtualPosition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +36,13 @@ import java.util.List;
 
 import im.delight.android.location.SimpleLocation;
 
+/**
+ * This is the main activity for players to play on, basically it has elements as following:
+ * 1. A multi-layers map to show terrain, units and building information of territories
+ * 2. Several buttons to access players' inventory, soldiers and other stuff
+ * 3. A location variable to track players' current locations
+ * 4. A SocketService to keep sending to and receiving from the server
+ */
 public class MainActivity extends BaseActivity {
 
     static final String TAG = "MainActivity";//tag for log
@@ -391,7 +408,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
-                socketService.enqueue(new MessagesC2S());
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage()));
             }
 
         });

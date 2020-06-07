@@ -1,7 +1,5 @@
 package com.example.fantasyclient.helper;
 
-import android.util.Log;
-
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.model.VirtualPosition;

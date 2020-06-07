@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.example.fantasyclient.json.*;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.SignUpRequestMessage;
 
 /**
  * This is sign up activity

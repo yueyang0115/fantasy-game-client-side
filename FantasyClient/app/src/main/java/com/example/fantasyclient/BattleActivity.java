@@ -1,8 +1,6 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,10 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.helper.MessageReceiver;
-import com.example.fantasyclient.helper.MessageSender;
-import com.example.fantasyclient.json.AttributeRequestMessage;
-import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
@@ -23,7 +17,6 @@ import com.example.fantasyclient.model.Soldier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * This is a template activity related to user accounts

@@ -6,21 +6,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+/**
+ * This is the start of game which create a service to keep connection with server
+ */
 public class StartActivity extends BaseActivity {
 
-    Button btnTest;
+    Button btnStart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        btnTest = (Button) findViewById(R.id.btn_start);
+        btnStart = (Button) findViewById(R.id.btn_start);
 
         startService(new Intent(StartActivity.this, SocketService.class));
         doBindService();
 
-        btnTest.setOnClickListener(new View.OnClickListener() {
+        btnStart.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
