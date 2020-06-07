@@ -57,9 +57,6 @@ public class MainActivity extends BaseActivity {
     ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
     SendTimerHandler sendTimerHandler;//handler to send location periodically
-    //cached shop-related message to pass to ShopActivity;
-    ShopResultMessage shopResultMessage;
-    InventoryResultMessage inventoryResultMessage;
     boolean ifPause = false;//flag to stop threads
     List<Soldier> soldiers = new ArrayList<>();
     HashSet<Territory> cachedMap = new HashSet<>();//cached map which has been found
@@ -220,10 +217,11 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkShopResult(final ShopResultMessage m){
         if (m.getResult().equals("valid")) {
-            shopResultMessage = m;
-            if(inventoryResultMessage!=null){
-                launchShop();
-            }
+            Intent intent = new Intent(this, ShopActivity.class);
+            intent.putExtra("ShopResultMessage", m);
+            intent.putExtra("territoryID", currTerr.getId());
+            intent.putExtra("ShopID", currTerr.getBuilding().getId());
+            startActivityForResult(intent, SHOP);
         }
     }
 
@@ -235,35 +233,10 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkInventoryResult(InventoryResultMessage m){
         if (m.getResult().equals("valid")) {
-            inventoryResultMessage = m;
-            if(shopResultMessage!=null) {
-                launchShop();
-            }
-            else{
-                launchInventory();
-            }
+            Intent intent = new Intent(this, ShopActivity.class);
+            intent.putExtra("InventoryResultMessage", m);
+            startActivityForResult(intent, INVENTORY);
         }
-    }
-
-    /**
-     * Launch shop activity with necessary shop and inventory information
-     */
-    protected void launchShop(){
-        Intent intent = new Intent(this, ShopActivity.class);
-        intent.putExtra("ShopResultMessage", shopResultMessage);
-        intent.putExtra("InventoryResultMessage", inventoryResultMessage);
-        intent.putExtra("territoryID", currTerr.getId());
-        intent.putExtra("ShopID", currTerr.getBuilding().getId());
-        startActivityForResult(intent, SHOP);
-    }
-
-    /**
-     * Launch inventory activity with necessary inventory information
-     */
-    protected void launchInventory(){
-        Intent intent = new Intent(this, ShopActivity.class);
-        intent.putExtra("InventoryResultMessage", inventoryResultMessage);
-        startActivityForResult(intent, INVENTORY);
     }
 
     /**

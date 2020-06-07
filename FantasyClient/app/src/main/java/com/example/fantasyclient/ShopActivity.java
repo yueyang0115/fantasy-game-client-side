@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.fantasyclient.helper.ItemArrayAdapter;
+import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
@@ -58,10 +59,10 @@ public class ShopActivity extends ItemActivity {
 
     @Override
     protected void getExtra(){
-        super.getExtra();
         Intent intent = getIntent();
         shopResultMessage = (ShopResultMessage) intent.getSerializableExtra("ShopResultMessage");
         assert shopResultMessage != null;
+        inventoryResultMessage = shopResultMessage.getInventoryResultMessage();
         checkShopResult(shopResultMessage);
         terrID = intent.getIntExtra("territoryID",0);
         shopID = intent.getIntExtra("ShopID",0);
