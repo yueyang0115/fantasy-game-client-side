@@ -2,10 +2,11 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BattleResultMessage {
+public class BattleResultMessage implements Serializable {
     private List<Monster> monsters = new ArrayList<>();  //all monsters in the territory
     private List<Soldier> soldiers = new ArrayList<>();  //all soldiers the player has
     private String result;//"win","lose","continue","escaped"

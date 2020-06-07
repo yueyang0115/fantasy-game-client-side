@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity {
     static final int PERMISSIONS_REQUEST_LOCATION = 1;
     static final int BATTLE = 2;
     static final int SHOP = 3;
+    static final int CENTER = 64;
     SimpleLocation location;
     VirtualPosition vPosition = new VirtualPosition(0,0);
     Territory currTerr;
@@ -215,24 +216,52 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    /**
+     * This method is called after a MessageS2C with ShopResultMessage is received from server
+     * It happens in MainActivity only if players try to enter shops and send "list"
+     * After permission from server, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
     @Override
-    protected void checkAttributeResult(final AttributeResultMessage m){
-        soldiers = m.getSoldiers();
+    protected void checkShopResult(final ShopResultMessage m){
+        if (m.getResult().equals("valid")) {
+            Intent intent = new Intent(this,ShopActivity.class);
+            intent.putExtra("ShopResultMessage", m);
+            startActivityForResult(intent,SHOP);
+        }
     }
 
     /**
-     * This method change the source file array in ImageAdapter
-     * UI will be updated when adapter.notifyDataSetChanged() is called
+     * This method is called after a MessageS2C with BattleResultMessage is received from server
+     * It happens in MainActivity only if players try to battle with monsters and send "start"
+     * After permission from server, BattleActivity will be launched
+     * @param m: received BattleResultMessage
+     */
+    @Override
+    protected void checkBattleResult(final BattleResultMessage m){
+        if(m.getResult().equals("continue")){
+            Intent intent = new Intent(this,BattleActivity.class);
+            intent.putExtra("BattleResultMessage", m);
+            intent.putExtra("territoryID", currTerr.getId());
+            intent.putExtra("ShopID", currTerr.getBuilding().getId());
+            startActivityForResult(intent,BATTLE);
+        }
+    }
+
+    /**
+     * This method change the source file array in several adapters for corresponding map layers
+     * UI will be updated when adapter.notifyDataSetChanged() is called on UI thread
      * @param t: target territory
      */
     protected void updateTerritory(Territory t){
         int dx = (t.getX()-vPosition.getX())/10;
         int dy = (t.getY()-vPosition.getY())/10;
         if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {
-            int position = 64+dx-10*dy;
-            if(position == 64){
+            int position = CENTER+dx-10*dy;
+            if(position == CENTER){
                 currTerr = t;
             }
+            //update terrain layer
             switch (t.getTerrain().getType()) {
                 case "grass":
                     terrainAdapter.updateImage(position, R.drawable.plains00);
@@ -244,6 +273,7 @@ public class MainActivity extends BaseActivity {
                     terrainAdapter.updateImage(position, R.drawable.ocean00);
                     break;
             }
+            //update monster layer
             if(!t.getMonsters().isEmpty()) {
                 switch (t.getMonsters().get(0).getType()) {
                     case "wolf":
@@ -252,6 +282,7 @@ public class MainActivity extends BaseActivity {
                     default:
                 }
             }
+            //update building layer
             if(t.getBuilding()!=null){
                 switch(t.getBuilding().getName()){
                     case "shop":
@@ -264,25 +295,13 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    protected void launchBattle(){
-        Intent intent = new Intent(this,BattleActivity.class);
-        intent.putExtra("territoryID", currTerr.getId());
-        startActivityForResult(intent,BATTLE);
-    }
-
-    protected void launchShop(){
-        Intent intent = new Intent(this,ShopActivity.class);
-        intent.putExtra("territoryID", currTerr.getId());
-        intent.putExtra("ShopID", currTerr.getBuilding().getId());
-        startActivityForResult(intent,SHOP);
-    }
-
     /**
-     * this method is called after "startActivityForResult"
-     * it handles different return situation from another activity based on:
-     * @param requestCode: determine if the activity is to view or modify
-     * @param resultCode: determine if the player confirm or cancel
-     *                  RESULT_OK: confirm; RESULT_CANCELED: cancel
+     * This method is called after "startActivityForResult" is finished
+     * It handles different results returned from another activity based on:
+     * @param requestCode: determine what the activity is: BATTLE, SHOP
+     * @param resultCode: determine what the result is:
+     *                  BATTLE: RESULT_WIN, RESULT_LOSE, RESULT_ESCAPED
+     *                  SHOP: RESULT_CANCELED
      * @param data: Intent to get data submitted by players
      */
     @SuppressLint("SetTextI18n")
@@ -297,7 +316,7 @@ public class MainActivity extends BaseActivity {
                 //check the result of battle
                 switch(resultCode){
                     case RESULT_WIN:
-                        unitAdapter.updateImage(64, R.drawable.transparent);
+                        unitAdapter.updateImage(CENTER, R.drawable.transparent);
                         break;
                     case RESULT_LOSE:
                     case RESULT_ESCAPED:
@@ -310,6 +329,8 @@ public class MainActivity extends BaseActivity {
             case SHOP:
                 //check the result of purchase
                 switch (resultCode){
+                    case RESULT_CANCELED:
+                        break;
                     default:
                         Log.e(TAG, "Invalid result code for shop");
                         break;
@@ -337,12 +358,13 @@ public class MainActivity extends BaseActivity {
         buildingGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position==64){
-                    if(!currTerr.getMonsters().isEmpty()) {
-                        launchBattle();
-                    }
+                if(position==CENTER){
+                    if(!currTerr.getMonsters().isEmpty())
+                        socketService.enqueue(new MessagesC2S(
+                                new BattleRequestMessage(currTerr.getId(), 0, 0, "start")));
                     else if(currTerr.getBuilding()!=null){
-                        launchShop();
+                        socketService.enqueue(new MessagesC2S(
+                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),0,"list")));
                     }
                 }
             }

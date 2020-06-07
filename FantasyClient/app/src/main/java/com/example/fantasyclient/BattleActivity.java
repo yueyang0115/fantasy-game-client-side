@@ -38,6 +38,7 @@ public class BattleActivity extends BaseActivity{
     List<Monster> monsters = new ArrayList<>();
     List<Integer> sequence = new ArrayList<>();
     int terrID, monsterID, soldierID = 1;
+    BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
 
     @Override
@@ -47,23 +48,9 @@ public class BattleActivity extends BaseActivity{
         findView();
         doBindService();
         Intent intent = getIntent();
-        terrID = intent.getIntExtra("territoryID",0);
-
-        new Thread(){
-            @Override
-            public void run() {
-                while (socketService==null){
-                    Log.d(TAG, "Initial thread");
-                    try {
-                        sleep(100);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG,"Sleep");
-                    }
-                }
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,0,0,"start")));
-                handleRecvMessage(socketService.dequeue());
-            }
-        }.start();
+        battleResultMessage = (BattleResultMessage) intent.getSerializableExtra("BattleResultMessage");
+        assert battleResultMessage != null;
+        checkBattleResult(battleResultMessage);
 
         monsterImg1.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,10 +2,11 @@ package com.example.fantasyclient.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item {
+public class Item implements Serializable {
 
     private int id;
 

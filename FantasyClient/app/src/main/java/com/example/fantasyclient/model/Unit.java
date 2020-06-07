@@ -1,6 +1,8 @@
 package com.example.fantasyclient.model;
 
-public class Unit {
+import java.io.Serializable;
+
+public class Unit implements Serializable {
 
     private int id;
     private String type;

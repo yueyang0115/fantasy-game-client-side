@@ -28,6 +28,7 @@ public class ShopActivity extends BaseActivity {
     Item currItem;
     List<ItemPack> itemList = new ArrayList<>();
     ItemArrayAdapter adapter;
+    ShopResultMessage shopResultMessage;
     final static String TAG = "ShopActivity";
 
     @Override
@@ -37,6 +38,8 @@ public class ShopActivity extends BaseActivity {
         findView();
         doBindService();
         Intent intent = getIntent();
+        shopResultMessage = (ShopResultMessage) intent.getSerializableExtra("ShopResultMessage");
+        checkShopResult(shopResultMessage);
         terrID = intent.getIntExtra("territoryID",0);
         shopID = intent.getIntExtra("ShopID",0);
 //        itemList.add(new Item("Example1",10));
