@@ -69,7 +69,7 @@ public class ItemActivity extends BaseActivity {
     }
 
     protected void updateInventory(){
-        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage()));
+        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
         handleRecvMessage(socketService.dequeue());
     }
 

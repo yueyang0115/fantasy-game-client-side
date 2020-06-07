@@ -397,7 +397,7 @@ public class MainActivity extends BaseActivity {
                     else if(currTerr.getBuilding()!=null){
                         socketService.enqueue(new MessagesC2S(
                                 new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),new HashMap<Integer, Integer>(),"list")));
-                        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage()));
+                        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
                     }
                 }
             }
@@ -408,7 +408,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // TODO
-                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage()));
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
             }
 
         });
