@@ -233,7 +233,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkInventoryResult(InventoryResultMessage m){
         if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this, ShopActivity.class);
+            Intent intent = new Intent(this, InventoryActivity.class);
             intent.putExtra("InventoryResultMessage", m);
             startActivityForResult(intent, INVENTORY);
         }
