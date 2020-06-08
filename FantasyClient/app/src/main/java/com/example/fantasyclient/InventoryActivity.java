@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is an activity to show players' inventory
+ * This is an activity to show players' inventory as well as soldiers information
  */
 public class InventoryActivity extends ItemActivity {
 

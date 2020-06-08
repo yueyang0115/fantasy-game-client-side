@@ -76,7 +76,7 @@ public class ItemActivity extends BaseActivity {
     @Override
     protected void checkInventoryResult(final InventoryResultMessage m){
         if (m.getResult().equals("valid")) {
-            Log.d(TAG,"checkInventoryResult");
+            //action is valid, update UI
             inventoryItemList = m.getItems();
             runOnUiThread(new Runnable() {
                 @Override
@@ -87,6 +87,10 @@ public class ItemActivity extends BaseActivity {
                 }
             });
             text_money.setText(Integer.toString(m.getMoney()));
+        }
+        else{
+            //action is invalid, show error message
+            socketService.errorAlert(m.getResult());
         }
     }
 

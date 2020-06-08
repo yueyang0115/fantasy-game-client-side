@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.fantasyclient.adapter.ItemArrayAdapter;
 import com.example.fantasyclient.json.MessagesC2S;
@@ -98,7 +99,7 @@ public class ShopActivity extends ItemActivity {
     @Override
     protected void checkShopResult(final ShopResultMessage m) {
         if (m.getResult().equals("valid")) {
-            //shop starts
+            //action is valid, updateUI
             Log.d(TAG,"checkShopResult");
             shopItemList = m.getItems();
             runOnUiThread(new Runnable() {
@@ -110,6 +111,10 @@ public class ShopActivity extends ItemActivity {
                 }
             });
             checkInventoryResult(m.getInventoryResultMessage());
+        }
+        else{
+            //action is invalid, show error message
+            socketService.errorAlert(m.getResult());
         }
     }
 }

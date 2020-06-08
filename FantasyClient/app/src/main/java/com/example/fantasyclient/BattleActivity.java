@@ -31,6 +31,7 @@ public class BattleActivity extends BaseActivity{
     List<Monster> monsters = new ArrayList<>();
     List<Integer> sequence = new ArrayList<>();
     int terrID, monsterID, soldierID = 1;
+    boolean ifStop = false;
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
 
@@ -42,6 +43,20 @@ public class BattleActivity extends BaseActivity{
         doBindService();
         getExtra();
         setOnClickListener();
+
+        //Thread to receive feedback from server
+        new Thread() {
+            @Override
+            public void run() {
+                while (socketService == null) {
+                }
+                while(!ifStop){
+                    if(!socketService.receiver.isEmpty()){
+                        handleRecvMessage(socketService.receiver.dequeue());
+                    }
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -94,15 +109,13 @@ public class BattleActivity extends BaseActivity{
             @Override
             public void onClick(View v) {
                 socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
-                handleRecvMessage(socketService.dequeue());
             }
         });
 
         escapeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
-                handleRecvMessage(socketService.dequeue());
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage("escape")));
             }
         });
     }
@@ -157,6 +170,7 @@ public class BattleActivity extends BaseActivity{
         } else {
             //battle ends
             doUnbindService();
+            ifStop = true;
             Intent intent = new Intent();
             switch (m.getResult()) {
                 case "escaped":

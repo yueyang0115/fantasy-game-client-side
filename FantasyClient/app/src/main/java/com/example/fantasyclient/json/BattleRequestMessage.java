@@ -10,6 +10,18 @@ public class BattleRequestMessage {
     public BattleRequestMessage() {
     }
 
+    //constructor for "start"
+    public BattleRequestMessage(int territoryID, String action) {
+        this.territoryID = territoryID;
+        this.action = action;
+    }
+
+    //constructor for "escape"
+    public BattleRequestMessage(String action) {
+        this.action = action;
+    }
+
+    //constructor for "attack"
     public BattleRequestMessage(int territoryID, int attackeeID, int attackerID, String action) {
         this.territoryID = territoryID;
         this.attackeeID = attackeeID;

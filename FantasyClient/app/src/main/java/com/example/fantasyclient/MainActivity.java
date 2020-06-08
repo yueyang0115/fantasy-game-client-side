@@ -379,7 +379,7 @@ public class MainActivity extends BaseActivity {
                 if(position==CENTER){
                     if(!currTerr.getMonsters().isEmpty())
                         socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currTerr.getId(), 0, 0, "start")));
+                                new BattleRequestMessage(currTerr.getId(), "start")));
                     else if(currTerr.getBuilding()!=null){
                         socketService.enqueue(new MessagesC2S(
                                 new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),"list")));
