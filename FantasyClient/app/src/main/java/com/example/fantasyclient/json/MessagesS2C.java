@@ -6,6 +6,8 @@ public class MessagesS2C {
     private SignUpResultMessage signUpResultMessage;
     private BattleResultMessage battleResultMessage;
     private AttributeResultMessage attributeResultMessage;
+    private ShopResultMessage shopResultMessage;
+    private InventoryResultMessage inventoryResultMessage;
 
     public MessagesS2C(){
     }
@@ -48,5 +50,21 @@ public class MessagesS2C {
 
     public void setAttributeResultMessage(AttributeResultMessage attributeResultMessage) {
         this.attributeResultMessage = attributeResultMessage;
+    }
+
+    public ShopResultMessage getShopResultMessage() {
+        return shopResultMessage;
+    }
+
+    public void setShopResultMessage(ShopResultMessage shopResultMessage) {
+        this.shopResultMessage = shopResultMessage;
+    }
+
+    public InventoryResultMessage getInventoryResultMessage() {
+        return inventoryResultMessage;
+    }
+
+    public void setInventoryResultMessage(InventoryResultMessage inventoryResultMessage) {
+        this.inventoryResultMessage = inventoryResultMessage;
     }
 }

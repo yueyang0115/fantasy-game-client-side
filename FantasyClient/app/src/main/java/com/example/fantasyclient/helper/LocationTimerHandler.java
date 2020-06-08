@@ -1,7 +1,7 @@
 package com.example.fantasyclient.helper;
 
-import com.example.fantasyclient.json.MessagesC2S;
-import com.example.fantasyclient.json.PositionRequestMessage;
+import android.util.Log;
+
 import com.example.fantasyclient.model.VirtualPosition;
 
 import java.util.TimerTask;
@@ -20,6 +20,7 @@ public class LocationTimerHandler extends TimerHandler {
                     public void run() {
                         location.beginUpdates();
                         PositionHelper.convertVPosition(vPosition,location.getLatitude(),location.getLongitude());
+                        Log.d("location",location.getLatitude()+","+location.getLongitude());
                     }
                 });
             }

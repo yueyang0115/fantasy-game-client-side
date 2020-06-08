@@ -1,6 +1,8 @@
 package com.example.fantasyclient.model;
 
-public class Terrain {
+import java.io.Serializable;
+
+public class Terrain implements Serializable {
 
     private int id;
     private String type;

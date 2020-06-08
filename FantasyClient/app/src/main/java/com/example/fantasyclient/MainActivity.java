@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,82 +15,77 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.helper.*;
-import com.example.fantasyclient.json.*;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.helper.ImageAdapter;
+import com.example.fantasyclient.helper.SendTimerHandler;
+import com.example.fantasyclient.json.BattleRequestMessage;
+import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.ShopRequestMessage;
+import com.example.fantasyclient.json.ShopResultMessage;
+import com.example.fantasyclient.model.Soldier;
+import com.example.fantasyclient.model.Territory;
+import com.example.fantasyclient.model.VirtualPosition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import im.delight.android.location.SimpleLocation;
 
+/**
+ * This is the main activity for players to play on, basically it has elements as following:
+ * 1. A multi-layers map to show terrain, units and building information of territories
+ * 2. Several buttons to access players' inventory, soldiers and other stuff
+ * 3. A location variable to track players' current locations
+ * 4. A SocketService to keep sending to and receiving from the server
+ */
 public class MainActivity extends BaseActivity {
 
-    static final String TAG = "MainActivity";
-    static final int PERMISSIONS_REQUEST_LOCATION = 1;
-    static final int BATTLE = 2;
-    static final int SHOP = 3;
-    SimpleLocation location;
+    static final String TAG = "MainActivity";//tag for log
+    static final int PERMISSIONS_REQUEST_LOCATION = 1;//request code for location permission
+    static final int BATTLE = 2;//request code for battle
+    static final int SHOP = 3;//request code for shop
+    static final int INVENTORY = 4;//request code for inventory
+    static final int CENTER = 64;//center of the map
+    SimpleLocation location;//used to track current location
     VirtualPosition vPosition = new VirtualPosition(0,0);
     Territory currTerr;
-    ImageAdapter terrainAdapter = new ImageAdapter(this);
-    ImageAdapter unitAdapter = new ImageAdapter(this);
-    LocationTimerHandler locationTimerHandler;
-    SendTimerHandler sendTimerHandler;
-    boolean ifPause = false;
+    ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
+    GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
+    SendTimerHandler sendTimerHandler;//handler to send location periodically
+    boolean ifPause = false;//flag to stop threads
     List<Soldier> soldiers = new ArrayList<>();
-    HashSet<Territory> cachedMap = new HashSet<>();
+    HashSet<Territory> cachedMap = new HashSet<>();//cached map which has been found
     TextView textLocation, textVLocation;
-    Button btnTest;
+    Button btnBag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         findView();
-
-        // construct a new instance of SimpleLocation
-        location = new SimpleLocation(this, true, false, 5 * 1000, true);
-        // if we can't access the location yet
-        if (!location.hasLocationEnabled()) {
-            // ask the user to enable location access
-            SimpleLocation.openSettings(this);
-        }
+        initView();
+        initLocation();
+        //inform players to give location permission
         updateLocation();
         doBindService();
-
-        btnTest.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                // TODO
-            }
-
-        });
-
-
+        setOnClickListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // make the device update its location
-        updateLocation();
-        new Thread() {
-            @Override
-            public void run() {
-                locationTimerHandler = new LocationTimerHandler(vPosition,location);
-                locationTimerHandler.handleTask(0,1000);
-            }
-        }.start();
+        //Thread to update location and send to server
         new Thread() {
             @Override
             public void run() {
                 while (socketService == null) {
                 }
-                sendTimerHandler = new SendTimerHandler(vPosition, socketService.sender);
+                sendTimerHandler = new SendTimerHandler(vPosition, location, socketService.sender);
                 sendTimerHandler.handleTask(0,1000);
             }
         }.start();
@@ -101,29 +95,34 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 while (socketService == null) {
                 }
-                startRecvTerr();
+                while(!ifPause){
+                    if(!socketService.receiver.isEmpty()){
+                        handleRecvMessage(socketService.receiver.dequeue());
+                    }
+                }
             }
         }.start();
     }
 
     @Override
     protected void onPause() {
-        // stop location updates (saves battery)
         super.onPause();
+        //stop location updates and background threads
         location.endUpdates();
-        locationTimerHandler.cancelTask();
         sendTimerHandler.cancelTask();
         ifPause = true;
     }
 
     /**
-     * this AsyncTask runs in background
+     * This method initializes the location
      */
-    public void startRecvTerr() {
-        while(!ifPause){
-            if(!socketService.receiver.isEmpty()){
-                handleRecvMessage(socketService.receiver.dequeue());
-            }
+    protected void initLocation(){
+        // construct a new instance of SimpleLocation
+        location = new SimpleLocation(this, true, false, 5 * 1000, true);
+        // if we can't access the location yet
+        if (!location.hasLocationEnabled()) {
+            // ask the user to enable location access
+            SimpleLocation.openSettings(this);
         }
     }
 
@@ -135,9 +134,7 @@ public class MainActivity extends BaseActivity {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted
-            // Should we show an explanation?
+            // Permission is not granted, should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 // Show an explanation to the user *asynchronously* -- don't block
@@ -148,7 +145,6 @@ public class MainActivity extends BaseActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_LOCATION);
-
                 // PERMISSIONS_REQUEST_LOCATION is an app-defined int constant.
                 // The callback method gets the result of the request.
             }
@@ -159,8 +155,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
@@ -190,6 +185,7 @@ public class MainActivity extends BaseActivity {
         //set background to be base type
         terrainAdapter.initMap(R.drawable.base00);
         unitAdapter.initMap(R.drawable.transparent);
+        buildingAdapter.initMap(R.drawable.transparent);
         //set cached territory
         for(Territory t : cachedMap){
             updateTerritory(t);
@@ -207,28 +203,72 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 terrainAdapter.notifyDataSetChanged();
                 unitAdapter.notifyDataSetChanged();
+                buildingAdapter.notifyDataSetChanged();
             }
         });
     }
 
+    /**
+     * This method is called after a MessageS2C with ShopResultMessage is received from server
+     * It happens in MainActivity only if players try to enter shops and send "list"
+     * After InventoryResultMessage is also received, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
     @Override
-    protected void checkAttributeResult(final AttributeResultMessage m){
-        soldiers = m.getSoldiers();
+    protected void checkShopResult(final ShopResultMessage m){
+        if (m.getResult().equals("valid")) {
+            Intent intent = new Intent(this, ShopActivity.class);
+            intent.putExtra("ShopResultMessage", m);
+            intent.putExtra("territoryID", currTerr.getId());
+            intent.putExtra("ShopID", currTerr.getBuilding().getId());
+            startActivityForResult(intent, SHOP);
+        }
     }
 
     /**
-     * This method change the source file array in ImageAdapter
-     * UI will be updated when adapter.notifyDataSetChanged() is called
+     * This method is called after a MessageS2C with InventoryResultMessage is received from server
+     * After ShopResultMessage is also received, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
+    @Override
+    protected void checkInventoryResult(InventoryResultMessage m){
+        if (m.getResult().equals("valid")) {
+            Intent intent = new Intent(this, InventoryActivity.class);
+            intent.putExtra("InventoryResultMessage", m);
+            startActivityForResult(intent, INVENTORY);
+        }
+    }
+
+    /**
+     * This method is called after a MessageS2C with BattleResultMessage is received from server
+     * It happens in MainActivity only if players try to battle with monsters and send "start"
+     * After permission from server, BattleActivity will be launched
+     * @param m: received BattleResultMessage
+     */
+    @Override
+    protected void checkBattleResult(final BattleResultMessage m){
+        if(m.getResult().equals("continue")){
+            Intent intent = new Intent(this,BattleActivity.class);
+            intent.putExtra("BattleResultMessage", m);
+            intent.putExtra("territoryID", currTerr.getId());
+            startActivityForResult(intent,BATTLE);
+        }
+    }
+
+    /**
+     * This method change the source file array in several adapters for corresponding map layers
+     * UI will be updated when adapter.notifyDataSetChanged() is called on UI thread
      * @param t: target territory
      */
     protected void updateTerritory(Territory t){
         int dx = (t.getX()-vPosition.getX())/10;
         int dy = (t.getY()-vPosition.getY())/10;
         if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {
-            int position = 64+dx-10*dy;
-            if(position == 64){
+            int position = CENTER+dx-10*dy;
+            if(position == CENTER){
                 currTerr = t;
             }
+            //update terrain layer
             switch (t.getTerrain().getType()) {
                 case "grass":
                     terrainAdapter.updateImage(position, R.drawable.plains00);
@@ -240,29 +280,35 @@ public class MainActivity extends BaseActivity {
                     terrainAdapter.updateImage(position, R.drawable.ocean00);
                     break;
             }
+            //update monster layer
             if(!t.getMonsters().isEmpty()) {
                 switch (t.getMonsters().get(0).getType()) {
                     case "wolf":
                         unitAdapter.updateImage(position, R.drawable.wolf);
                         break;
+                    default:
+                }
+            }
+            //update building layer
+            if(t.getBuilding()!=null){
+                switch(t.getBuilding().getName()){
+                    case "shop":
+                        buildingAdapter.updateImage(position,R.drawable.dirt_village00);
+                        break;
+                    default:
                 }
             }
 
         }
     }
 
-    protected void launchBattle(){
-        Intent intent = new Intent(this,BattleActivity.class);
-        intent.putExtra("territoryID", currTerr.getId());
-        startActivityForResult(intent,BATTLE);
-    }
-
     /**
-     * this method is called after "startActivityForResult"
-     * it handles different return situation from another activity based on:
-     * @param requestCode: determine if the activity is to view or modify
-     * @param resultCode: determine if the player confirm or cancel
-     *                  RESULT_OK: confirm; RESULT_CANCELED: cancel
+     * This method is called after "startActivityForResult" is finished
+     * It handles different results returned from another activity based on:
+     * @param requestCode: determine what the activity is: BATTLE, SHOP
+     * @param resultCode: determine what the result is:
+     *                  BATTLE: RESULT_WIN, RESULT_LOSE, RESULT_ESCAPED
+     *                  SHOP: RESULT_CANCELED
      * @param data: Intent to get data submitted by players
      */
     @SuppressLint("SetTextI18n")
@@ -277,7 +323,7 @@ public class MainActivity extends BaseActivity {
                 //check the result of battle
                 switch(resultCode){
                     case RESULT_WIN:
-                        unitAdapter.updateImage(64, R.drawable.transparent);
+                        unitAdapter.updateImage(CENTER, R.drawable.transparent);
                         break;
                     case RESULT_LOSE:
                     case RESULT_ESCAPED:
@@ -290,6 +336,8 @@ public class MainActivity extends BaseActivity {
             case SHOP:
                 //check the result of purchase
                 switch (resultCode){
+                    case RESULT_CANCELED:
+                        break;
                     default:
                         Log.e(TAG, "Invalid result code for shop");
                         break;
@@ -304,20 +352,51 @@ public class MainActivity extends BaseActivity {
     protected void findView(){
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        btnTest = (Button) findViewById(R.id.btn_start);
-        GridView terrainGridView = (GridView) findViewById(R.id.terrainGridView);
-        GridView unitGridView = (GridView) findViewById(R.id.unitGridView);
+        btnBag = (Button) findViewById(R.id.btn_bag);
+        terrainGridView = (GridView) findViewById(R.id.terrainGridView);
+        unitGridView = (GridView) findViewById(R.id.unitGridView);
+        buildingGridView = (GridView) findViewById(R.id.buildingGridView);
+
+    }
+
+    @Override
+    protected void initView(){
+        terrainAdapter = new ImageAdapter(this);
+        unitAdapter = new ImageAdapter(this);
+        buildingAdapter = new ImageAdapter(this);
         terrainAdapter.initMap(R.drawable.base00);
         unitAdapter.initMap(R.drawable.transparent);
+        buildingAdapter.initMap(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
-        unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        buildingGridView.setAdapter(buildingAdapter);
+    }
+
+    @Override
+    protected void setOnClickListener(){
+        buildingGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position==64 && !currTerr.getMonsters().isEmpty()){
-                    launchBattle();
+                if(position==CENTER){
+                    if(!currTerr.getMonsters().isEmpty())
+                        socketService.enqueue(new MessagesC2S(
+                                new BattleRequestMessage(currTerr.getId(), 0, 0, "start")));
+                    else if(currTerr.getBuilding()!=null){
+                        socketService.enqueue(new MessagesC2S(
+                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),new HashMap<Integer, Integer>(),"list")));
+                    }
                 }
             }
+        });
+
+        btnBag.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                // TODO
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
+            }
+
         });
     }
 }

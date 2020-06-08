@@ -10,7 +10,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.fantasyclient.json.*;
+import com.example.fantasyclient.json.AttributeResultMessage;
+import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.LoginResultMessage;
+import com.example.fantasyclient.json.MessagesS2C;
+import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.ShopResultMessage;
+import com.example.fantasyclient.json.SignUpResultMessage;
 
 /**
  * This is base activity which contains several basic methods for all activities:
@@ -23,6 +30,7 @@ public class BaseActivity extends Activity {
     SocketService socketService;
     boolean mIsBound;
     final static String TAG = "BaseActivity";
+    //common constants for activities
     static final int RESULT_ESCAPED = RESULT_CANCELED;
     static final int RESULT_WIN = RESULT_OK;
     static final int RESULT_LOSE = RESULT_FIRST_USER;
@@ -42,12 +50,20 @@ public class BaseActivity extends Activity {
         super.onPause();
     }
 
+    /**
+     * find and init required common views, which may be overrode
+     */
+    protected void findView(){ }
+    protected void initView(){ }
+    /**
+     * set required listeners, which may be overrode
+     */
+    protected void setOnClickListener(){ }
 
     /**
-     * find required common views which may be overrode
+     * get extra information passed by calling activity
      */
-    protected void findView(){
-    }
+    protected void getExtra(){ }
 
     protected void launchSignUp() {
         Intent intent = new Intent(this, UserSignUpActivity.class);
@@ -64,6 +80,12 @@ public class BaseActivity extends Activity {
         startActivity(intent);
     }
 
+    /**
+     * This is the only interface to handle received message(MessageS2C) from server
+     * differently based on different fields in the messages
+     * Those "check" methods are overrode by different activities as needed
+     * @param m: MessagesS2C received
+     */
     protected void handleRecvMessage(MessagesS2C m){
         if(m == null){
             Log.e(TAG, "HandleRecvMessage: Invalid result received");
@@ -83,6 +105,12 @@ public class BaseActivity extends Activity {
             }
             if (m.getAttributeResultMessage() != null) {
                 checkAttributeResult(m.getAttributeResultMessage());
+            }
+            if (m.getShopResultMessage() != null) {
+                checkShopResult(m.getShopResultMessage());
+            }
+            if (m.getInventoryResultMessage() != null){
+                checkInventoryResult(m.getInventoryResultMessage());
             }
         }
     }
@@ -112,6 +140,10 @@ public class BaseActivity extends Activity {
     protected void checkBattleResult(BattleResultMessage m){}
 
     protected void checkAttributeResult(AttributeResultMessage m){}
+
+    protected void checkShopResult(ShopResultMessage m){}
+
+    protected void checkInventoryResult(InventoryResultMessage m){}
 
     /**
      * these methods are for service

@@ -1,8 +1,6 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,10 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.helper.MessageReceiver;
-import com.example.fantasyclient.helper.MessageSender;
-import com.example.fantasyclient.json.AttributeRequestMessage;
-import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
@@ -23,7 +17,6 @@ import com.example.fantasyclient.model.Soldier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * This is a template activity related to user accounts
@@ -31,11 +24,14 @@ import java.util.concurrent.CountDownLatch;
 @SuppressLint("Registered")
 public class BattleActivity extends BaseActivity{
     Button attackBtn, escapeBtn;
-    ImageView soldierImg, monsterImg;
-    TextView soldierAtk, soldierHp, monsterAtk, monsterHp;
+    ImageView soldierImg1, soldierImg2, soldierImg3, monsterImg1, monsterImg2, monsterImg3, seqImg1, seqImg2, seqImg3, seqImg4;
+    TextView soldierAtk1, soldierHp1, soldierAtk2, soldierHp2, soldierAtk3, soldierHp3,
+            monsterAtk1, monsterHp1, monsterAtk2, monsterHp2, monsterAtk3, monsterHp3;
     List<Soldier> soldiers = new ArrayList<>();
     List<Monster> monsters = new ArrayList<>();
-    int terrID;
+    List<Integer> sequence = new ArrayList<>();
+    int terrID, monsterID, soldierID = 1;
+    BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
 
     @Override
@@ -44,29 +40,60 @@ public class BattleActivity extends BaseActivity{
         setContentView(R.layout.activity_battle);
         findView();
         doBindService();
-        Intent intent = getIntent();
-        terrID = intent.getIntExtra("territoryID",0);
+        getExtra();
+        setOnClickListener();
+    }
 
-        new Thread(){
+    @Override
+    protected void findView(){
+        attackBtn = findViewById(R.id.attack_btn);
+        escapeBtn = findViewById(R.id.escape_btn);
+        soldierImg1 = findViewById(R.id.soldier1_view);
+        soldierImg2 = findViewById(R.id.soldier2_view);
+        soldierImg3 = findViewById(R.id.soldier3_view);
+        monsterImg1 = findViewById(R.id.monster1_view);
+        monsterImg2 = findViewById(R.id.monster2_view);
+        monsterImg3 = findViewById(R.id.monster3_view);
+        seqImg1 = findViewById(R.id.sequence1_view);
+        seqImg2 = findViewById(R.id.sequence2_view);
+        seqImg3 = findViewById(R.id.sequence3_view);
+        seqImg4 = findViewById(R.id.sequence4_view);
+        soldierHp1 = findViewById(R.id.soldier1_hp);
+        soldierAtk1 = findViewById(R.id.soldier1_atk);
+        monsterHp1 = findViewById(R.id.monster1_hp);
+        monsterAtk1 = findViewById(R.id.monster1_atk);
+    }
+
+    @Override
+    protected void getExtra(){
+        Intent intent = getIntent();
+        battleResultMessage = (BattleResultMessage) intent.getSerializableExtra("BattleResultMessage");
+        assert battleResultMessage != null;
+        checkBattleResult(battleResultMessage);
+    }
+
+    @Override
+    protected void setOnClickListener(){
+        monsterImg1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                while (socketService==null){
-                    Log.d(TAG, "Initial thread");
-                    try {
-                        sleep(100);
-                    } catch (InterruptedException e) {
-                        Log.e(TAG,"Sleep");
-                    }
-                }
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,0,0,"start")));
-                handleRecvMessage(socketService.dequeue());
+            public void onClick(View v) {
+                monsterID = monsters.get(0).getId();
+                Log.d(TAG, "Choose monster1");
             }
-        }.start();
+        });
+
+        soldierImg1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                soldierID = soldiers.get(0).getId();
+                Log.d(TAG, "Choose soldier1");
+            }
+        });
 
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsters.get(0).getId(),soldiers.get(0).getId(),"attack")));
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
@@ -74,27 +101,10 @@ public class BattleActivity extends BaseActivity{
         escapeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsters.get(0).getId(),soldiers.get(0).getId(),"escape")));
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"escape")));
                 handleRecvMessage(socketService.dequeue());
             }
         });
-    }
-
-    /**
-     * find required common views which may be overrode
-     */
-    @Override
-    protected void findView(){
-        attackBtn = findViewById(R.id.attackBtn);
-        escapeBtn = findViewById(R.id.escapeBtn);
-        soldierImg = findViewById(R.id.soldierImg);
-        monsterImg = findViewById(R.id.monsterImg);
-        soldierImg.setImageResource(R.drawable.pickachu_back);
-        monsterImg.setImageResource(R.drawable.wolf_battle);
-        soldierHp = findViewById(R.id.soldierHp);
-        soldierAtk = findViewById(R.id.soldierAtk);
-        monsterHp = findViewById(R.id.monsterHp);
-        monsterAtk = findViewById(R.id.monsterAtk);
     }
 
     /**
@@ -109,13 +119,39 @@ public class BattleActivity extends BaseActivity{
             //battle continues
             soldiers = m.getSoldiers();
             monsters = m.getMonsters();
+            sequence = m.getUnitIDs();
+            monsterID = monsters.get(0).getId();
+            soldierID = soldiers.get(0).getId();
+            for(Soldier s : soldiers){
+                if(s.getId()==sequence.get(0)){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            seqImg1.setImageResource(R.drawable.pichachu_battle);
+                        }
+                    });
+                    break;
+                }
+            }
+            for(Monster monster : monsters){
+                if(monster.getId()==sequence.get(0)){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            seqImg1.setImageResource(R.drawable.wolf_battle);
+                        }
+                    });
+                }
+            }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    soldierHp.setText(Integer.toString(soldiers.get(0).getHp()));
-                    soldierAtk.setText(Integer.toString(soldiers.get(0).getAtk()));
-                    monsterHp.setText(Integer.toString(monsters.get(0).getHp()));
-                    monsterAtk.setText(Integer.toString(monsters.get(0).getAtk()));
+                    soldierHp1.setText("HP: "+Integer.toString(soldiers.get(0).getHp()));
+                    soldierAtk1.setText("ATK: "+Integer.toString(soldiers.get(0).getAtk()));
+                    soldierImg1.setImageResource(R.drawable.pichachu_battle);
+                    monsterHp1.setText("HP: "+Integer.toString(monsters.get(0).getHp()));
+                    monsterAtk1.setText("ATK: "+Integer.toString(monsters.get(0).getAtk()));
+                    monsterImg1.setImageResource(R.drawable.wolf_battle);
                 }
             });
         } else {

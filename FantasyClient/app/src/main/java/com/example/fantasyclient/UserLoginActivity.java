@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.example.fantasyclient.json.*;
+import com.example.fantasyclient.json.LoginRequestMessage;
+import com.example.fantasyclient.json.MessagesC2S;
 
 /**
  * This is login activity

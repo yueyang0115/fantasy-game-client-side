@@ -1,155 +1,393 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/attackBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Attack"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/escapeBtn"
-        app:layout_constraintHorizontal_bias="0.485"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.926" />
+    <LinearLayout
+        android:id="@+id/battle_bar"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_weight="2"
+        android:layout_height="0dp"
+        android:baselineAligned="false">
+        <LinearLayout
+            android:id="@+id/monster_bar"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            tools:ignore="NestedWeights">
+            <FrameLayout
+                android:id="@+id/monster2_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <ImageView
+                    android:id="@+id/monster2_view"
+                    android:layout_width="150dp"
+                    android:layout_gravity="right"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/wolf_battle" />
 
-    <Button
-        android:id="@+id/escapeBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="72dp"
-        android:layout_marginRight="72dp"
-        android:text="Escape"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.926" />
+                <LinearLayout
+                    android:id="@+id/monster2_attribute_bar"
+                    android:layout_width="85dp"
+                    android:layout_height="match_parent"
+                    android:baselineAligned="false"
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
 
-    <ImageView
-        android:id="@+id/soldierImg"
-        android:layout_width="156dp"
-        android:layout_height="196dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.685"
-        app:srcCompat="@drawable/pickachu_back" />
+                    <TextView
+                        android:id="@+id/monster2_hp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="" />
 
-    <ImageView
-        android:id="@+id/monsterImg"
-        android:layout_width="207dp"
-        android:layout_height="244dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/wolf_battle" />
+                    <TextView
+                        android:id="@+id/monster2_atk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
 
-    <TextView
-        android:id="@+id/hp1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="hp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.198"
-        app:layout_constraintStart_toEndOf="@+id/soldierImg"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.588" />
+                </LinearLayout>
+            </FrameLayout>
 
-    <TextView
-        android:id="@+id/soldierHp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="50"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.368"
-        app:layout_constraintStart_toEndOf="@+id/hp1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.588" />
+            <FrameLayout
+                android:id="@+id/monster1_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <ImageView
+                    android:id="@+id/monster1_view"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    app:srcCompat="@drawable/wolf_battle" />
 
-    <TextView
-        android:id="@+id/atk1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="attack"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.218"
-        app:layout_constraintStart_toEndOf="@+id/soldierImg"
-        app:layout_constraintTop_toBottomOf="@+id/hp1"
-        app:layout_constraintVertical_bias="0.175" />
+                <LinearLayout
+                    android:id="@+id/monster1_attribute_bar"
+                    android:layout_width="85dp"
+                    android:layout_height="match_parent"
+                    android:baselineAligned="false"
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
 
-    <TextView
-        android:id="@+id/monsterAtk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="268dp"
-        android:layout_marginRight="268dp"
-        android:text="10"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/atk2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.196" />
+                    <TextView
+                        android:id="@+id/monster1_hp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="" />
 
-    <TextView
-        android:id="@+id/hp2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="hp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.159"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.108" />
+                    <TextView
+                        android:id="@+id/monster1_atk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
 
-    <TextView
-        android:id="@+id/monsterHp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="100"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.155"
-        app:layout_constraintStart_toEndOf="@+id/hp2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.108" />
+                </LinearLayout>
 
-    <TextView
-        android:id="@+id/atk2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="attack"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.169"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.196" />
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/monster3_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <ImageView
+                    android:id="@+id/monster3_view"
+                    android:layout_width="150dp"
+                    android:layout_gravity="right"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/wolf_battle" />
 
-    <TextView
-        android:id="@+id/soldierAtk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="5"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.256"
-        app:layout_constraintStart_toEndOf="@+id/atk1"
-        app:layout_constraintTop_toBottomOf="@+id/soldierHp"
-        app:layout_constraintVertical_bias="0.175" />
+                <LinearLayout
+                    android:id="@+id/monster3_attribute_bar"
+                    android:layout_width="85dp"
+                    android:layout_height="match_parent"
+                    android:baselineAligned="false"
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/monster3_hp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/monster3_atk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/soldier_bar"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            tools:ignore="NestedWeights">
+            <FrameLayout
+                android:id="@+id/soldier2_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <ImageView
+                    android:id="@+id/soldier2_view"
+                    android:layout_width="150dp"
+                    android:layout_gravity="right"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/pichachu_battle" />
+
+                <LinearLayout
+                    android:id="@+id/soldier2_attribute_bar"
+                    android:layout_width="85dp"
+                    android:layout_height="match_parent"
+                    android:baselineAligned="false"
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
+
+                    <TextView
+                        android:id="@+id/soldier2_hp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/soldier2_atk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                </LinearLayout>
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/soldier1_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <ImageView
+                    android:id="@+id/soldier1_view"
+                    android:layout_width="150dp"
+                    android:layout_gravity="right"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/pichachu_battle" />
+
+                <LinearLayout
+                    android:id="@+id/soldier1_attribute_bar"
+                    android:layout_width="85dp"
+                    android:layout_height="match_parent"
+                    android:baselineAligned="false"
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
+
+                    <TextView
+                        android:id="@+id/soldier1_hp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/soldier1_atk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                </LinearLayout>
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/soldier3_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <ImageView
+                    android:id="@+id/soldier3_view"
+                    android:layout_width="150dp"
+                    android:layout_gravity="right"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/pichachu_battle" />
+
+                <LinearLayout
+                    android:id="@+id/soldier3_attribute_bar"
+                    android:layout_width="85dp"
+                    android:layout_height="match_parent"
+                    android:baselineAligned="false"
+                    android:orientation="vertical"
+                    tools:ignore="NestedWeights">
+
+                    <TextView
+                        android:id="@+id/soldier3_hp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/soldier3_atk"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+
+                </LinearLayout>
+            </FrameLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/menu_bar"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:baselineAligned="false">
+        <LinearLayout
+            android:id="@+id/action_bar"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            tools:ignore="NestedWeights">
+            <FrameLayout
+                android:id="@+id/action1_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <Button
+                    android:id="@+id/attack_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Attack" />
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/action2_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <Button
+                    android:id="@+id/item_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Item" />
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/action3_bar"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <Button
+                    android:id="@+id/escape_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Escape" />
+            </FrameLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/attribute_bar"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            tools:ignore="NestedWeights">
+            <FrameLayout
+                android:id="@+id/attribute_bar1"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/attribute_bar2"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/attribute_bar3"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+            </FrameLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/sequence_bar"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            tools:ignore="NestedWeights">
+            <FrameLayout
+                android:id="@+id/sequence1"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <ImageView
+                    android:id="@+id/sequence1_view"
+                    android:layout_width="50dp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/pichachu_battle" />
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/sequence2"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <ImageView
+                    android:id="@+id/sequence2_view"
+                    android:layout_width="50dp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/wolf_battle" />
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/sequence3"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <ImageView
+                    android:id="@+id/sequence3_view"
+                    android:layout_width="50dp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/pichachu_battle" />
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/sequence4"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <ImageView
+                    android:id="@+id/sequence4_view"
+                    android:layout_width="50dp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/wolf_battle" />
+            </FrameLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

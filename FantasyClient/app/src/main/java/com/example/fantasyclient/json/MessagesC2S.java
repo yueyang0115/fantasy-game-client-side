@@ -6,8 +6,14 @@ public class MessagesC2S {
     private PositionRequestMessage positionRequestMessage;
     private BattleRequestMessage battleRequestMessage;
     private AttributeRequestMessage attributeRequestMessage;
+    private ShopRequestMessage shopRequestMessage;
+    private InventoryRequestMessage inventoryRequestMessage;
 
     public MessagesC2S() {
+    }
+
+    public MessagesC2S(ShopRequestMessage shopRequestMessage) {
+        this.shopRequestMessage = shopRequestMessage;
     }
 
     public MessagesC2S(LoginRequestMessage loginRequestMessage) {
@@ -28,6 +34,10 @@ public class MessagesC2S {
 
     public MessagesC2S(AttributeRequestMessage attributeRequestMessage) {
         this.attributeRequestMessage = attributeRequestMessage;
+    }
+
+    public MessagesC2S(InventoryRequestMessage inventoryRequestMessage) {
+        this.inventoryRequestMessage = inventoryRequestMessage;
     }
 
     public LoginRequestMessage getLoginRequestMessage() {
@@ -68,5 +78,21 @@ public class MessagesC2S {
 
     public void setAttributeRequestMessage(AttributeRequestMessage attributeRequestMessage) {
         this.attributeRequestMessage = attributeRequestMessage;
+    }
+
+    public ShopRequestMessage getShopRequestMessage() {
+        return shopRequestMessage;
+    }
+
+    public void setShopRequestMessage(ShopRequestMessage shopRequestMessage) {
+        this.shopRequestMessage = shopRequestMessage;
+    }
+
+    public InventoryRequestMessage getInventoryRequestMessage() {
+        return inventoryRequestMessage;
+    }
+
+    public void setInventoryRequestMessage(InventoryRequestMessage inventoryRequestMessage) {
+        this.inventoryRequestMessage = inventoryRequestMessage;
     }
 }

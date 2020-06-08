@@ -1,17 +1,32 @@
 package com.example.fantasyclient.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Territory {
+public class Territory implements Serializable {
 
     private int id;
     private int wid;
     private int x;
     private int y;
     private String status;
+
+//    @JsonManagedReference
     private List<Monster> monsters = new ArrayList<>();
+
     private Terrain terrain;
+
+//    @JsonManagedReference
+    private Building building;
+
+    public Building getBuilding() {
+        return building;
+    }
+
+    public void setBuilding(Building building) {
+        this.building = building;
+    }
 
     public Territory(){
     }

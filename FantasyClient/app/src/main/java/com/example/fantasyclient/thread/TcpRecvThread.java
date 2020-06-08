@@ -1,7 +1,5 @@
 package com.example.fantasyclient.thread;
 
-import android.util.Log;
-
 import com.example.fantasyclient.json.MessagesS2C;
 
 import java.util.List;

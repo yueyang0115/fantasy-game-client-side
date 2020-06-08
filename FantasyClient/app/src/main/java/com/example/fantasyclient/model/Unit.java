@@ -1,12 +1,15 @@
 package com.example.fantasyclient.model;
 
-public class Unit {
+import java.io.Serializable;
+
+public class Unit implements Serializable {
 
     private int id;
     private String type;
     private int hp;
     private int atk;
     private Territory territory;
+    private int speed;
 
     public Unit(){
     }
@@ -47,6 +50,14 @@ public class Unit {
 
     public void setAtk(int atk) {
         this.atk = atk;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
     }
 
     public Territory getTerritory() {
