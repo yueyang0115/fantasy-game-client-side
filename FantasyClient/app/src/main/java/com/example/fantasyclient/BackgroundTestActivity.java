@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 
-import com.example.fantasyclient.helper.ImageAdapter;
+import com.example.fantasyclient.adapter.ImageAdapter;
 
 public class BackgroundTestActivity extends BaseActivity {
 

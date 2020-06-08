@@ -1,15 +1,17 @@
 package com.example.fantasyclient;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.fantasyclient.helper.ItemArrayAdapter;
-import com.example.fantasyclient.helper.SoldierArrayAdapter;
+import com.example.fantasyclient.adapter.SoldierArrayAdapter;
 import com.example.fantasyclient.json.AttributeResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.model.ItemPack;
 import com.example.fantasyclient.model.Soldier;
 
 import java.util.ArrayList;
@@ -20,8 +22,10 @@ import java.util.List;
  */
 public class InventoryActivity extends ItemActivity {
 
-    Button btn_use, btn_drop;
+    Button btn_use, btn_drop;//button to use and drop item
     List<Soldier> soldierList = new ArrayList<>();
+    Soldier currSoldier;//current soldier to use item
+    ItemPack currItemPack;//current item to use
     SoldierArrayAdapter soldierAdapter;
     ListView soldierListView;
     AttributeResultMessage attributeResultMessage;
@@ -48,6 +52,8 @@ public class InventoryActivity extends ItemActivity {
     @Override
     protected void initView(){
         super.initView();
+        soldierAdapter = new SoldierArrayAdapter(this, soldierList);
+        soldierListView.setAdapter(soldierAdapter);
     }
 
     @Override
@@ -64,13 +70,33 @@ public class InventoryActivity extends ItemActivity {
         btn_use.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use",currItemPack.getId(),currSoldier.getId())));
             }
         });
         btn_drop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
             }
         });
+        soldierListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                currSoldier = (Soldier) parent.getItemAtPosition(position);
+            }
+        });
+        inventoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                currItemPack = (ItemPack) parent.getItemAtPosition(position);
+            }
+        });
+    }
+
+    @Override
+    protected void checkInventoryResult(InventoryResultMessage m){
+        super.checkInventoryResult(m);
+        checkAttributeResult(m.getAttributeResultMessage());
     }
 
     @Override
@@ -81,16 +107,8 @@ public class InventoryActivity extends ItemActivity {
             public void run() {
                 soldierAdapter.clear();
                 soldierAdapter.addAll();
+                soldierAdapter.notifyDataSetChanged();
             }
         });
-        /*shopItemList = m.getItems();
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                shopAdapter.clear();
-                shopAdapter.addAll(shopItemList);
-                shopAdapter.notifyDataSetChanged();
-            }
-        });*/
     }
 }

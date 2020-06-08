@@ -2,7 +2,7 @@ package com.example.fantasyclient.json;
 
 public class InventoryRequestMessage {
 
-    private String action;
+    private String action;//"list" "use" "drop"
     private int itemPackID;
     private int unitID;
 

@@ -1,7 +1,8 @@
-package com.example.fantasyclient.helper;
+package com.example.fantasyclient.handler;
 
 import android.util.Log;
 
+import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.model.VirtualPosition;
 
 import java.util.TimerTask;

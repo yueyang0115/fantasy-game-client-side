@@ -15,8 +15,8 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.helper.ImageAdapter;
-import com.example.fantasyclient.helper.SendTimerHandler;
+import com.example.fantasyclient.adapter.ImageAdapter;
+import com.example.fantasyclient.handler.SendTimerHandler;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
@@ -30,7 +30,6 @@ import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.VirtualPosition;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 

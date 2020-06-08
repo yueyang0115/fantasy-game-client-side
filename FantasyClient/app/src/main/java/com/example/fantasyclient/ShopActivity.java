@@ -8,8 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.fantasyclient.helper.ItemArrayAdapter;
-import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.adapter.ItemArrayAdapter;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;

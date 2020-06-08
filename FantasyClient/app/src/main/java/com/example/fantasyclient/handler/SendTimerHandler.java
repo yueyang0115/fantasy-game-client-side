@@ -1,5 +1,7 @@
-package com.example.fantasyclient.helper;
+package com.example.fantasyclient.handler;
 
+import com.example.fantasyclient.helper.MessageSender;
+import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.model.VirtualPosition;

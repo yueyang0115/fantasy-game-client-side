@@ -9,10 +9,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.helper.ItemArrayAdapter;
-import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.adapter.ItemArrayAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
-import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.model.ItemPack;
 
 import java.util.ArrayList;

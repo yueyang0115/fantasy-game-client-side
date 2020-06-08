@@ -1,4 +1,4 @@
-package com.example.fantasyclient.helper;
+package com.example.fantasyclient.adapter;
 
 import android.content.Context;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package com.example.fantasyclient.helper;
+package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

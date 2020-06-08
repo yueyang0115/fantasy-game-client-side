@@ -1,4 +1,4 @@
-package com.example.fantasyclient.helper;
+package com.example.fantasyclient.handler;
 
 import android.os.Handler;
 import android.os.Looper;
