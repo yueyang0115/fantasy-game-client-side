@@ -71,7 +71,15 @@ public class InventoryActivity extends ItemActivity {
         btn_use.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use",currItemPack.getId(),currSoldier.getId())));
+                if(inventoryItemList.isEmpty()){
+                    socketService.errorAlert("Nothing to use");
+                }
+                else {
+                    if(currItemPack == null) {
+                        currItemPack = inventoryItemList.get(0);
+                    }
+                    socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currItemPack.getId(), currSoldier.getId())));
+                }
             }
         });
         btn_drop.setOnClickListener(new View.OnClickListener() {
@@ -103,8 +111,6 @@ public class InventoryActivity extends ItemActivity {
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
         soldierList = m.getSoldiers();
-        currSoldier = soldierList.get(0);
-        currItemPack = inventoryItemList.get(0);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
