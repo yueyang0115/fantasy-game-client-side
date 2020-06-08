@@ -11,6 +11,12 @@ public class ShopRequestMessage {
     public ShopRequestMessage() {
     }
 
+    public ShopRequestMessage(int shopID, int territoryID, String action) {
+        this.shopID = shopID;
+        this.territoryID = territoryID;
+        this.action = action;
+    }
+
     public ShopRequestMessage(int shopID, int territoryID, Map<Integer,Integer> itemMap, String action) {
         this.shopID = shopID;
         this.territoryID = territoryID;

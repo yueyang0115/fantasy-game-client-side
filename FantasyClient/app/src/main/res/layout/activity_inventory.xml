@@ -5,14 +5,25 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4">
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4">
+            <ListView
+                android:id="@+id/soldier_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ListView>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="4">
             <ListView
                 android:id="@+id/inventory_item_list"
@@ -20,6 +31,7 @@
                 android:layout_height="wrap_content" >
             </ListView>
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout

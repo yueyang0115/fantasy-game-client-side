@@ -383,7 +383,7 @@ public class MainActivity extends BaseActivity {
                                 new BattleRequestMessage(currTerr.getId(), 0, 0, "start")));
                     else if(currTerr.getBuilding()!=null){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),new HashMap<Integer, Integer>(),"list")));
+                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),"list")));
                     }
                 }
             }
