@@ -103,11 +103,13 @@ public class InventoryActivity extends ItemActivity {
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
         soldierList = m.getSoldiers();
+        currSoldier = soldierList.get(0);
+        currItemPack = inventoryItemList.get(0);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 soldierAdapter.clear();
-                soldierAdapter.addAll();
+                soldierAdapter.addAll(soldierList);
                 soldierAdapter.notifyDataSetChanged();
             }
         });
