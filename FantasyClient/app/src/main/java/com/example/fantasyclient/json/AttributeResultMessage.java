@@ -2,9 +2,10 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Soldier;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class AttributeResultMessage {
+public class AttributeResultMessage implements Serializable {
 
     List<Soldier> soldiers;
 
