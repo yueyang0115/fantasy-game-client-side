@@ -1,6 +1,8 @@
 package com.example.fantasyclient.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Unit implements Serializable {
 
@@ -10,6 +12,8 @@ public class Unit implements Serializable {
     private int atk;
     private Territory territory;
     private int speed;
+
+    private List<Equipment> equipment = new ArrayList<>();
 
     public Unit(){
     }
@@ -66,5 +70,13 @@ public class Unit implements Serializable {
 
     public void setTerritory(Territory territory) {
         this.territory = territory;
+    }
+
+    public List<Equipment> getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(List<Equipment> equipment) {
+        this.equipment = equipment;
     }
 }
