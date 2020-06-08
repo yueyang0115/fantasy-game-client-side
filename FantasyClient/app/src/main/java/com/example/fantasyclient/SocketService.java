@@ -117,6 +117,11 @@ public class SocketService extends Service {
         return receiver.dequeue();
     }
 
+    public void clearQueue(){
+        sender.clear();
+        receiver.clear();
+    }
+
     public boolean isEmpty(){
         return receiver.isEmpty();
     }

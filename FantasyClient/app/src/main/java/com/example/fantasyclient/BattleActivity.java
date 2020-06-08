@@ -30,7 +30,7 @@ public class BattleActivity extends BaseActivity{
     List<Soldier> soldiers = new ArrayList<>();
     List<Monster> monsters = new ArrayList<>();
     List<Integer> sequence = new ArrayList<>();
-    int terrID, monsterID, soldierID = 1;
+    int terrID, monsterID, soldierID;
     boolean ifStop = false;
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
@@ -108,7 +108,19 @@ public class BattleActivity extends BaseActivity{
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
+                if(monsters.isEmpty() || soldiers.isEmpty()){
+                    Log.e(TAG,"Battle has already ends");
+                }
+                else{
+                    if(monsterID == 0){
+                        monsterID = monsters.get(0).getId();
+                    }
+                    if(soldierID == 0){
+                        soldierID = soldiers.get(0).getId();
+                    }
+                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
+                }
+
             }
         });
 
@@ -133,8 +145,6 @@ public class BattleActivity extends BaseActivity{
             soldiers = m.getSoldiers();
             monsters = m.getMonsters();
             sequence = m.getUnitIDs();
-            monsterID = monsters.get(0).getId();
-            soldierID = soldiers.get(0).getId();
             for(Soldier s : soldiers){
                 if(s.getId()==sequence.get(0)){
                     runOnUiThread(new Runnable() {

@@ -74,11 +74,19 @@ public class InventoryActivity extends ItemActivity {
                 if(inventoryItemList.isEmpty()){
                     socketService.errorAlert("Nothing to use");
                 }
+                else if(soldierList.isEmpty()){
+                    socketService.errorAlert("No soldier to use on");
+                }
                 else {
                     if(currItemPack == null) {
                         currItemPack = inventoryItemList.get(0);
                     }
+                    if(currSoldier == null){
+                        currSoldier = soldierList.get(0);
+                    }
+                    socketService.clearQueue();
                     socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currItemPack.getId(), currSoldier.getId())));
+                    handleRecvMessage(socketService.dequeue());
                 }
             }
         });

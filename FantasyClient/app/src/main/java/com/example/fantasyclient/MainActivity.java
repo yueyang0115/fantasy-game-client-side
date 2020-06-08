@@ -94,6 +94,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 while (socketService == null) {
                 }
+                socketService.clearQueue();
                 while(!ifPause){
                     if(!socketService.receiver.isEmpty()){
                         handleRecvMessage(socketService.receiver.dequeue());
@@ -320,30 +321,17 @@ public class MainActivity extends BaseActivity {
         switch(requestCode){
             case BATTLE:
                 //check the result of battle
-                switch(resultCode){
-                    case RESULT_WIN:
-                        unitAdapter.updateImage(CENTER, R.drawable.transparent);
-                        break;
-                    case RESULT_LOSE:
-                    case RESULT_ESCAPED:
-                        break;
-                    default:
-                        Log.e(TAG,"Invalid result code for battle");
-                        break;
+                if(resultCode == RESULT_WIN){
+                    unitAdapter.updateImage(CENTER, R.drawable.transparent);
                 }
                 break;
             case SHOP:
                 //check the result of purchase
-                switch (resultCode){
-                    case RESULT_CANCELED:
-                        break;
-                    default:
-                        Log.e(TAG, "Invalid result code for shop");
-                        break;
-                }
+                break;
+            case INVENTORY:
+                break;
             default:
                 Log.e(TAG,"Invalid request code");
-                break;
         }
     }
 
