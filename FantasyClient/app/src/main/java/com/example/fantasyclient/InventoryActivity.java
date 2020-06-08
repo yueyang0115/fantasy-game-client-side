@@ -47,6 +47,7 @@ public class InventoryActivity extends ItemActivity {
         super.findView();
         btn_use = findViewById(R.id.btn_use);
         btn_drop = findViewById(R.id.btn_drop);
+        soldierListView = findViewById(R.id.soldier_list);
     }
 
     @Override

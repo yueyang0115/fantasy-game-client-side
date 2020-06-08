@@ -21,7 +21,8 @@ public class UnitFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_unit, container, false);
         unitImg = v.findViewById(R.id.soldierImg);
-
+        hpTextView = v.findViewById(R.id.soldierHp);
+        atkTextView = v.findViewById(R.id.soldierAtk);
         return v;
     }
 }
