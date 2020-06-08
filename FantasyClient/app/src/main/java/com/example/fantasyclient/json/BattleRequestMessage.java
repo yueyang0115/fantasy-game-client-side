@@ -3,9 +3,8 @@ package com.example.fantasyclient.json;
 public class BattleRequestMessage {
 
     private int territoryID;
-    private int attackeeID;
-    private int attackerID;
     private String action;//"attack","escape","start"
+    private BattleAction battleAction; //include attackerID, attackeeID, action("normal, magical")
 
     public BattleRequestMessage() {
     }
@@ -13,19 +12,6 @@ public class BattleRequestMessage {
     //constructor for "start"
     public BattleRequestMessage(int territoryID, String action) {
         this.territoryID = territoryID;
-        this.action = action;
-    }
-
-    //constructor for "escape"
-    public BattleRequestMessage(String action) {
-        this.action = action;
-    }
-
-    //constructor for "attack"
-    public BattleRequestMessage(int territoryID, int attackeeID, int attackerID, String action) {
-        this.territoryID = territoryID;
-        this.attackeeID = attackeeID;
-        this.attackerID = attackerID;
         this.action = action;
     }
 
@@ -37,22 +23,6 @@ public class BattleRequestMessage {
         this.territoryID = territoryID;
     }
 
-    public int getAttackeeID() {
-        return attackeeID;
-    }
-
-    public void setAttackeeID(int attackeeID) {
-        this.attackeeID = attackeeID;
-    }
-
-    public int getAttackerID() {
-        return attackerID;
-    }
-
-    public void setAttackerID(int attackerID) {
-        this.attackerID = attackerID;
-    }
-
     public String getAction() {
         return action;
     }
@@ -60,4 +30,8 @@ public class BattleRequestMessage {
     public void setAction(String action) {
         this.action = action;
     }
+
+    public BattleAction getBattleAction() { return battleAction; }
+
+    public void setBattleAction(BattleAction battleAction) { this.battleAction = battleAction; }
 }
