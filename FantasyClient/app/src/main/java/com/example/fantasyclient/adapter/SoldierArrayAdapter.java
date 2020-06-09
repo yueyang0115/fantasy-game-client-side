@@ -57,9 +57,9 @@ public class SoldierArrayAdapter extends ArrayAdapter<Soldier> {
 
         // Populate the data into the template view using the data object
         assert soldier != null;
-        viewHolder.soldierID.setText(Integer.toString(soldier.getId()));
-        viewHolder.soldierHp.setText(Integer.toString(soldier.getHp()));
-        viewHolder.soldierAtk.setText(Integer.toString(soldier.getAtk()));
+        viewHolder.soldierID.setText("ID: "+ soldier.getId());
+        viewHolder.soldierHp.setText("HP: "+ soldier.getHp());
+        viewHolder.soldierAtk.setText("ATK: "+ soldier.getAtk());
         viewHolder.soldierImg.setImageResource(R.drawable.pichachu_battle);
         // Return the completed view to render on screen
         return convertView;

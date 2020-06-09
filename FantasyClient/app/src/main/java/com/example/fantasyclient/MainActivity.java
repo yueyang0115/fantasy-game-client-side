@@ -2,6 +2,7 @@ package com.example.fantasyclient;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -269,23 +270,26 @@ public class MainActivity extends BaseActivity {
                 currTerr = t;
             }
             //update terrain layer
-            String terrainType = t.getTerrain().getType();
-            int terrainImageID = getResources().getIdentifier(terrainType, "drawable", getPackageName());
-            terrainAdapter.updateImage(position,terrainImageID);
+            terrainAdapter.updateImage(position,getImageID(this,t.getTerrain().getType()));
             //update monster layer
             if(!t.getMonsters().isEmpty()) {
-                String monsterType = t.getMonsters().get(0).getType();
-                int monsterImageID = getResources().getIdentifier(monsterType,"drawable", getPackageName());
-                unitAdapter.updateImage(position,monsterImageID);
+                unitAdapter.updateImage(position,getImageID(this,t.getMonsters().get(0).getType()));
             }
             //update building layer
             if(t.getBuilding()!=null){
-                String buildingType = t.getBuilding().getName();
-                int buildingImageID = getResources().getIdentifier(buildingType,"drawable", getPackageName());
-                buildingAdapter.updateImage(position,buildingImageID);
+                buildingAdapter.updateImage(position,getImageID(this,t.getBuilding().getName()));
             }
 
         }
+    }
+
+    /**
+     * This method convert image file name to image ID
+     * @param ImageName
+     * @return: Image ID
+     */
+    public static int getImageID(Context context, String ImageName){
+        return context.getResources().getIdentifier(ImageName, "drawable", context.getPackageName());
     }
 
     /**
