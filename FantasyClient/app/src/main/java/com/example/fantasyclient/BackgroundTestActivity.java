@@ -23,7 +23,7 @@ public class BackgroundTestActivity extends BaseActivity {
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                terrainAdapter.updateImage(10,R.drawable.ocean00);
+                terrainAdapter.updateImage(10,R.drawable.river);
                 terrainAdapter.notifyDataSetChanged();
                 unitAdapter.updateImage(100,R.drawable.wolf);
                 unitAdapter.notifyDataSetChanged();

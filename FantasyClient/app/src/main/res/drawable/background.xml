@@ -5,12 +5,12 @@
             android:gravity="top" />
     </item>
     <item android:top="0dp" android:left="-510dp">
-        <bitmap android:src="@drawable/plains00"
+        <bitmap android:src="@drawable/grass"
 
             android:gravity="top" />
     </item>
     <item android:top="0dp" android:left="510dp">
-        <bitmap android:src="@drawable/ocean00"
+        <bitmap android:src="@drawable/river"
             android:gravity="top" />
     </item>
 </layer-list>

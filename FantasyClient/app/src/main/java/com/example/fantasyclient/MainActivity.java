@@ -269,34 +269,20 @@ public class MainActivity extends BaseActivity {
                 currTerr = t;
             }
             //update terrain layer
-            switch (t.getTerrain().getType()) {
-                case "grass":
-                    terrainAdapter.updateImage(position, R.drawable.plains00);
-                    break;
-                case "mountain":
-                    terrainAdapter.updateImage(position, R.drawable.mountain00);
-                    break;
-                case "river":
-                    terrainAdapter.updateImage(position, R.drawable.ocean00);
-                    break;
-            }
+            String terrainType = t.getTerrain().getType();
+            int terrainImageID = getResources().getIdentifier(terrainType, "drawable", getPackageName());
+            terrainAdapter.updateImage(position,terrainImageID);
             //update monster layer
             if(!t.getMonsters().isEmpty()) {
-                switch (t.getMonsters().get(0).getType()) {
-                    case "wolf":
-                        unitAdapter.updateImage(position, R.drawable.wolf);
-                        break;
-                    default:
-                }
+                String monsterType = t.getMonsters().get(0).getType();
+                int monsterImageID = getResources().getIdentifier(monsterType,"drawable", getPackageName());
+                unitAdapter.updateImage(position,monsterImageID);
             }
             //update building layer
             if(t.getBuilding()!=null){
-                switch(t.getBuilding().getName()){
-                    case "shop":
-                        buildingAdapter.updateImage(position,R.drawable.dirt_village00);
-                        break;
-                    default:
-                }
+                String buildingType = t.getBuilding().getName();
+                int buildingImageID = getResources().getIdentifier(buildingType,"drawable", getPackageName());
+                buildingAdapter.updateImage(position,buildingImageID);
             }
 
         }

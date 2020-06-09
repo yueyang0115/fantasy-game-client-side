@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.fantasyclient.json.BattleAction;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
@@ -118,7 +119,8 @@ public class BattleActivity extends BaseActivity{
                     if(soldierID == 0){
                         soldierID = soldiers.get(0).getId();
                     }
-                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,monsterID,soldierID,"attack")));
+                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,"attack",
+                            new BattleAction(soldierID,monsterID,"normal"))));
                 }
 
             }
