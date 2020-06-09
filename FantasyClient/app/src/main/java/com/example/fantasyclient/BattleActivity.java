@@ -86,6 +86,7 @@ public class BattleActivity extends BaseActivity{
         battleResultMessage = (BattleResultMessage) intent.getSerializableExtra("BattleResultMessage");
         assert battleResultMessage != null;
         checkBattleResult(battleResultMessage);
+        terrID = intent.getIntExtra("territoryID",0);
     }
 
     @Override

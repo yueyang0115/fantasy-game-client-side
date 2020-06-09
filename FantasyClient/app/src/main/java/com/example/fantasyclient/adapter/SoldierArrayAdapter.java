@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.example.fantasyclient.MainActivity;
 import com.example.fantasyclient.R;
 import com.example.fantasyclient.model.ItemPack;
 import com.example.fantasyclient.model.Soldier;
@@ -60,7 +61,7 @@ public class SoldierArrayAdapter extends ArrayAdapter<Soldier> {
         viewHolder.soldierID.setText("ID: "+ soldier.getId());
         viewHolder.soldierHp.setText("HP: "+ soldier.getHp());
         viewHolder.soldierAtk.setText("ATK: "+ soldier.getAtk());
-        viewHolder.soldierImg.setImageResource(R.drawable.pichachu_battle);
+        viewHolder.soldierImg.setImageResource(MainActivity.getImageID(getContext(),soldier.getType()));
         // Return the completed view to render on screen
         return convertView;
     }
