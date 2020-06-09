@@ -227,20 +227,6 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * This method is called after a MessageS2C with InventoryResultMessage is received from server
-     * After ShopResultMessage is also received, ShopActivity will be launched
-     * @param m: received ShopResultMessage
-     */
-    @Override
-    protected void checkInventoryResult(InventoryResultMessage m){
-        if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this, InventoryActivity.class);
-            intent.putExtra("InventoryResultMessage", m);
-            startActivityForResult(intent, INVENTORY);
-        }
-    }
-
-    /**
      * This method is called after a MessageS2C with BattleResultMessage is received from server
      * It happens in MainActivity only if players try to battle with monsters and send "start"
      * After permission from server, BattleActivity will be launched
@@ -357,7 +343,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void setOnClickListener(){
-        buildingGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position==CENTER){

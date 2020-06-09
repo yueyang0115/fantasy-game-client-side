@@ -22,6 +22,8 @@ import com.example.fantasyclient.json.SignUpResultMessage;
 
 import java.util.Objects;
 
+import static com.example.fantasyclient.MainActivity.INVENTORY;
+
 /**
  * This is base activity which contains several basic methods for all activities:
  * 1.Bind to socket service: communicate with server
@@ -146,7 +148,18 @@ public class BaseActivity extends Activity {
 
     protected void checkShopResult(ShopResultMessage m){}
 
-    protected void checkInventoryResult(InventoryResultMessage m){}
+    /**
+     * This method is called after a MessageS2C with InventoryResultMessage is received from server
+     * After ShopResultMessage is also received, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
+    protected void checkInventoryResult(InventoryResultMessage m){
+        if (m.getResult().equals("valid")) {
+            Intent intent = new Intent(this, InventoryActivity.class);
+            intent.putExtra("InventoryResultMessage", m);
+            startActivityForResult(intent, INVENTORY);
+        }
+    }
 
     protected void updateAdapter(ArrayAdapter a, Object object){
         a.clear();

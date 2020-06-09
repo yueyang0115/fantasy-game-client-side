@@ -21,7 +21,7 @@ import java.util.List;
  */
 @SuppressLint("Registered")
 public class BattleActivity extends BaseActivity{
-    Button attackBtn, escapeBtn;
+    Button attackBtn, itemBtn, escapeBtn;
     List<Unit> soldierList = new ArrayList<>();
     List<Unit> monsterList = new ArrayList<>();
     List<Unit> seqList = new ArrayList<>();
@@ -68,6 +68,7 @@ public class BattleActivity extends BaseActivity{
     protected void findView(){
         attackBtn = findViewById(R.id.attack_btn);
         escapeBtn = findViewById(R.id.escape_btn);
+        itemBtn = findViewById(R.id.item_btn);
         soldierListView = findViewById(R.id.soldier_list);
         monsterListView = findViewById(R.id.monster_list);
         seqListView = findViewById(R.id.sequence_list);
@@ -111,6 +112,15 @@ public class BattleActivity extends BaseActivity{
                             new BattleAction(soldierID,monsterID,"normal"))));
                 }
 
+            }
+        });
+
+        itemBtn.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onClick(View v) {
+                // TODO
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
             }
         });
 
