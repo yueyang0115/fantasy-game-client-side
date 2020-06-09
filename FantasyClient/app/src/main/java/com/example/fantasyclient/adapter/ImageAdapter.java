@@ -53,7 +53,7 @@ public class ImageAdapter extends BaseAdapter {
         return imageView;
     }
 
-    public void initMap(int source){
+    public void initImage(int source){
         ImageArray = new Integer[150];
         Arrays.fill(ImageArray,source);
     }

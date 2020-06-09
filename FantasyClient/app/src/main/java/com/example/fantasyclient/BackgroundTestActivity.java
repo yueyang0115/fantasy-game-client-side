@@ -47,8 +47,8 @@ public class BackgroundTestActivity extends BaseActivity {
         btnTest = (Button) findViewById(R.id.btn_start);
         GridView terrainGridView = (GridView) findViewById(R.id.terrainGridView);
         GridView unitGridView = (GridView) findViewById(R.id.unitGridView);
-        terrainAdapter.initMap(R.drawable.base00);
-        unitAdapter.initMap(R.drawable.transparent);
+        terrainAdapter.initImage(R.drawable.base00);
+        unitAdapter.initImage(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
     }

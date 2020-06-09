@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
@@ -18,6 +19,8 @@ import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
+
+import java.util.Objects;
 
 /**
  * This is base activity which contains several basic methods for all activities:
@@ -144,6 +147,12 @@ public class BaseActivity extends Activity {
     protected void checkShopResult(ShopResultMessage m){}
 
     protected void checkInventoryResult(InventoryResultMessage m){}
+
+    protected void updateAdapter(ArrayAdapter a, Object object){
+        a.clear();
+        a.addAll(object);
+        a.notifyDataSetChanged();
+    }
 
     /**
      * these methods are for service

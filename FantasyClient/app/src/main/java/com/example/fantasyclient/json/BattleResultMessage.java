@@ -2,6 +2,7 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Soldier;
+import com.example.fantasyclient.model.Unit;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,16 +17,16 @@ public class BattleResultMessage implements Serializable {
     /* unitIDs: records units's ID engaged in the battle, first sorted by unit's speed,
     the units will take turns to attack in the order of the list,
     first unitID in the list will be set as next round's attacker in next battleRequestMsg */
-    private List<Integer> unitIDs = new ArrayList<>();
+    private List<Unit> units = new ArrayList<>();
 
     public BattleResultMessage() {
     }
 
-    public BattleResultMessage(List<Monster> monsters, List<Soldier> soldiers, String result, List<Integer> unitIDs) {
+    public BattleResultMessage(List<Monster> monsters, List<Soldier> soldiers, String result, List<Unit> units) {
         this.monsters = monsters;
         this.soldiers = soldiers;
         this.result = result;
-        this.unitIDs = unitIDs;
+        this.units = units;
     }
 
     public List<Monster> getMonsters() {
@@ -52,9 +53,9 @@ public class BattleResultMessage implements Serializable {
         this.result = result;
     }
 
-    public List<Integer> getUnitIDs() { return unitIDs; }
+    public List<Unit> getUnits() { return units; }
 
-    public void setUnitIDs(List<Integer> unitIDs) { this.unitIDs = unitIDs; }
+    public void setUnits(List<Unit> units) { this.units = units; }
 
     public BattleAction getBattleAction() { return battleAction; }
 

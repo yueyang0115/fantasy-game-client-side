@@ -6,13 +6,9 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.fantasyclient.adapter.SoldierArrayAdapter;
-import com.example.fantasyclient.json.AttributeResultMessage;
-import com.example.fantasyclient.json.InventoryRequestMessage;
-import com.example.fantasyclient.json.InventoryResultMessage;
-import com.example.fantasyclient.json.MessagesC2S;
-import com.example.fantasyclient.model.ItemPack;
-import com.example.fantasyclient.model.Soldier;
+import com.example.fantasyclient.adapter.*;
+import com.example.fantasyclient.json.*;
+import com.example.fantasyclient.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +19,10 @@ import java.util.List;
 public class InventoryActivity extends ItemActivity {
 
     Button btn_use, btn_drop;//button to use and drop item
-    List<Soldier> soldierList = new ArrayList<>();
+    List<Unit> soldierList = new ArrayList<>();
     Soldier currSoldier;//current soldier to use item
     ItemPack currItemPack;//current item to use
-    SoldierArrayAdapter soldierAdapter;
+    UnitArrayAdapter soldierAdapter;
     ListView soldierListView;
     AttributeResultMessage attributeResultMessage;
     final static String TAG = "InventoryActivity";
@@ -53,7 +49,7 @@ public class InventoryActivity extends ItemActivity {
     @Override
     protected void initView(){
         super.initView();
-        soldierAdapter = new SoldierArrayAdapter(this, soldierList);
+        soldierAdapter = new UnitArrayAdapter(this, soldierList);
         soldierListView.setAdapter(soldierAdapter);
     }
 
@@ -82,7 +78,7 @@ public class InventoryActivity extends ItemActivity {
                         currItemPack = inventoryItemList.get(0);
                     }
                     if(currSoldier == null){
-                        currSoldier = soldierList.get(0);
+                        currSoldier = (Soldier) soldierList.get(0);
                     }
                     socketService.clearQueue();
                     socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currItemPack.getId(), currSoldier.getId())));
@@ -118,7 +114,7 @@ public class InventoryActivity extends ItemActivity {
 
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
-        soldierList = m.getSoldiers();
+        soldierList = new ArrayList<Unit>(m.getSoldiers());
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

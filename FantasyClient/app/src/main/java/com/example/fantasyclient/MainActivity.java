@@ -184,9 +184,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
         //set background to be base type
-        terrainAdapter.initMap(R.drawable.base00);
-        unitAdapter.initMap(R.drawable.transparent);
-        buildingAdapter.initMap(R.drawable.transparent);
+        terrainAdapter.initImage(R.drawable.base00);
+        unitAdapter.initImage(R.drawable.transparent);
+        buildingAdapter.initImage(R.drawable.transparent);
         //set cached territory
         for(Territory t : cachedMap){
             updateTerritory(t);
@@ -275,9 +275,15 @@ public class MainActivity extends BaseActivity {
             if(!t.getMonsters().isEmpty()) {
                 unitAdapter.updateImage(position,getImageID(this,t.getMonsters().get(0).getType()));
             }
+            else{
+                unitAdapter.updateImage(position,R.drawable.transparent);
+            }
             //update building layer
             if(t.getBuilding()!=null){
                 buildingAdapter.updateImage(position,getImageID(this,t.getBuilding().getName()));
+            }
+            else{
+                buildingAdapter.updateImage(position,R.drawable.transparent);
             }
 
         }
@@ -341,9 +347,9 @@ public class MainActivity extends BaseActivity {
         terrainAdapter = new ImageAdapter(this);
         unitAdapter = new ImageAdapter(this);
         buildingAdapter = new ImageAdapter(this);
-        terrainAdapter.initMap(R.drawable.base00);
-        unitAdapter.initMap(R.drawable.transparent);
-        buildingAdapter.initMap(R.drawable.transparent);
+        terrainAdapter.initImage(R.drawable.base00);
+        unitAdapter.initImage(R.drawable.transparent);
+        buildingAdapter.initImage(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
