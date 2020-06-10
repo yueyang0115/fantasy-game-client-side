@@ -17,6 +17,10 @@ public class ImageAdapter extends BaseAdapter {
     // Keep all Images in array
     private Integer[] ImageArray = {R.drawable.transparent};
     private static String TAG = "ImageHelper";
+    //Change this: to have (1) current virtual coordinate
+    //and (2) HashMap<VirtualCoord, Territory>
+
+
 
     // Constructor
     public ImageAdapter(Context c) {
@@ -37,6 +41,9 @@ public class ImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
+        //position turn it into dx + dy
+        //look up current + (dx,dy) -> territory -> image -> return it
+        //   if not found ? "unexplored"  (remember in a list) -> send to server (eslewhere) "TerrQueryMesg: [{x:1,y:2},{x:1,y:3},...]]
         ImageView imageView;
 
         if (convertView == null) {

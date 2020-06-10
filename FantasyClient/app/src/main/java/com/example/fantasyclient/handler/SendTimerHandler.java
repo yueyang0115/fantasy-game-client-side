@@ -22,7 +22,7 @@ public class SendTimerHandler extends TimerHandler {
                     public void run() {
                         location.beginUpdates();
                         PositionHelper.convertVPosition(vPosition,location.getLatitude(),location.getLongitude());
-                        PositionRequestMessage p = new PositionRequestMessage(vPosition.getX(),vPosition.getY());
+                        PositionRequestMessage p = new PositionRequestMessage(vPosition.getX(),vPosition.getY()); //add to this message: a list of coordinates you want information for
                         messageSender.enqueue(new MessagesC2S(p));
                     }
                 });

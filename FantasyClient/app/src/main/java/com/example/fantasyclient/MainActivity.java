@@ -195,6 +195,7 @@ public class MainActivity extends BaseActivity {
         List<Territory> terrArray = m.getTerritoryArray();
         for(Territory t : terrArray){
             updateTerritory(t);
+            updateTerritory(t);
             //add new territory to map cache
             cachedMap.add(t);
         }
