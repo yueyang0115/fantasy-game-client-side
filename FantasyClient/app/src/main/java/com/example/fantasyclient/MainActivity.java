@@ -18,17 +18,8 @@ import androidx.core.content.ContextCompat;
 
 import com.example.fantasyclient.adapter.ImageAdapter;
 import com.example.fantasyclient.handler.SendTimerHandler;
-import com.example.fantasyclient.json.BattleRequestMessage;
-import com.example.fantasyclient.json.BattleResultMessage;
-import com.example.fantasyclient.json.InventoryRequestMessage;
-import com.example.fantasyclient.json.InventoryResultMessage;
-import com.example.fantasyclient.json.MessagesC2S;
-import com.example.fantasyclient.json.PositionResultMessage;
-import com.example.fantasyclient.json.ShopRequestMessage;
-import com.example.fantasyclient.json.ShopResultMessage;
-import com.example.fantasyclient.model.Soldier;
-import com.example.fantasyclient.model.Territory;
-import com.example.fantasyclient.model.VirtualPosition;
+import com.example.fantasyclient.json.*;
+import com.example.fantasyclient.model.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,14 +43,13 @@ public class MainActivity extends BaseActivity {
     static final int INVENTORY = 4;//request code for inventory
     static final int CENTER = 64;//center of the map
     SimpleLocation location;//used to track current location
-    VirtualPosition vPosition = new VirtualPosition(0,0);
+    WorldCoord currCoord = new WorldCoord(0,0);
     Territory currTerr;
     ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
+    List<ImageAdapter> adapterList = new ArrayList<>();
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
     SendTimerHandler sendTimerHandler;//handler to send location periodically
     boolean ifPause = false;//flag to stop threads
-    List<Soldier> soldiers = new ArrayList<>();
-    HashSet<Territory> cachedMap = new HashSet<>();//cached map which has been found
     TextView textLocation, textVLocation;
     Button btnBag;
 
@@ -85,7 +75,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 while (socketService == null) {
                 }
-                sendTimerHandler = new SendTimerHandler(vPosition, location, socketService.sender);
+                sendTimerHandler = new SendTimerHandler(currCoord, location, adapterList, socketService.sender);
                 sendTimerHandler.handleTask(0,1000);
             }
         }.start();
@@ -183,21 +173,20 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
-        //set background to be base type
+        /*//set background to be base type
         terrainAdapter.initImage(R.drawable.base00);
         unitAdapter.initImage(R.drawable.transparent);
         buildingAdapter.initImage(R.drawable.transparent);
+
         //set cached territory
         for(Territory t : cachedMap){
             updateTerritory(t);
-        }
+        }*/
+
         //update new territories
         List<Territory> terrArray = m.getTerritoryArray();
         for(Territory t : terrArray){
             updateTerritory(t);
-            updateTerritory(t);
-            //add new territory to map cache
-            cachedMap.add(t);
         }
         //update UI
         runOnUiThread(new Runnable() {
@@ -249,30 +238,26 @@ public class MainActivity extends BaseActivity {
      * @param t: target territory
      */
     protected void updateTerritory(Territory t){
-        int dx = (t.getX()-vPosition.getX());
-        int dy = (t.getY()-vPosition.getY());
-        if(dx>=-4 && dx<=5 && dy>=-8 && dy<=6) {
-            int position = CENTER+dx-10*dy;
-            if(dx == 0 && dy == 0){
-                currTerr = t;
-            }
-            //update terrain layer
-            terrainAdapter.maybeUpdateImageByCoords(dx,dy,getImageID(this,t.getTerrain().getType()));
-            //update monster layer
-            if(!t.getMonsters().isEmpty()) {
-                unitAdapter.updateImage(position,getImageID(this,t.getMonsters().get(0).getType()));
-            }
-            else{
-                unitAdapter.updateImage(position,R.drawable.transparent);
-            }
-            //update building layer
-            if(t.getBuilding()!=null){
-                buildingAdapter.updateImage(position,getImageID(this,t.getBuilding().getName()));
-            }
-            else{
-                buildingAdapter.updateImage(position,R.drawable.transparent);
-            }
-
+        int x = t.getX();
+        int y = t.getY();
+        if(x == currCoord.getX() && y == currCoord.getY()){
+            currTerr = t;
+        }
+        //update terrain layer
+        terrainAdapter.updateImageByCoords(x,y,getImageID(this,t.getTerrain().getType()));
+        //update monster layer
+        if(!t.getMonsters().isEmpty()) {
+            unitAdapter.updateImageByCoords(x,y,getImageID(this,t.getMonsters().get(0).getType()));
+        }
+        else{
+            unitAdapter.updateImageByCoords(x,y,R.drawable.transparent);
+        }
+        //update building layer
+        if(t.getBuilding()!=null){
+            buildingAdapter.updateImageByCoords(x,y,getImageID(this,t.getBuilding().getName()));
+        }
+        else{
+            buildingAdapter.updateImageByCoords(x,y,R.drawable.transparent);
         }
     }
 
@@ -303,10 +288,10 @@ public class MainActivity extends BaseActivity {
         //check the previous activity
         switch(requestCode){
             case BATTLE:
-                //check the result of battle
+                /*//check the result of battle
                 if(resultCode == RESULT_WIN){
                     unitAdapter.updateImage(CENTER, R.drawable.transparent);
-                }
+                }*/
                 break;
             case SHOP:
                 //check the result of purchase
@@ -334,6 +319,9 @@ public class MainActivity extends BaseActivity {
         terrainAdapter = new ImageAdapter(this);
         unitAdapter = new ImageAdapter(this);
         buildingAdapter = new ImageAdapter(this);
+        adapterList.add(terrainAdapter);
+        adapterList.add(unitAdapter);
+        adapterList.add(buildingAdapter);
         terrainAdapter.initImage(R.drawable.base00);
         unitAdapter.initImage(R.drawable.transparent);
         buildingAdapter.initImage(R.drawable.transparent);

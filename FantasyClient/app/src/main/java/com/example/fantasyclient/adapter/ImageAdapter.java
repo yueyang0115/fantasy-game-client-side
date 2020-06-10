@@ -9,18 +9,25 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.example.fantasyclient.R;
+import com.example.fantasyclient.model.WorldCoord;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    // Keep all Images in array
-    private Integer[] ImageArray = {R.drawable.transparent};
+    private static final int WIDTH = 10;
+    private static final int HEIGHT = 15;
+    private static final int CENTER = 64;
     private static String TAG = "ImageHelper";
     //Change this: to have (1) current virtual coordinate
     //and (2) HashMap<VirtualCoord, Territory>
-
-
+    private Integer initImageID;
+    private WorldCoord currCoord;
+    private HashMap<WorldCoord,Integer> imageMap = new HashMap<>();
+    private List<WorldCoord> queriedCoords = new ArrayList<>();
 
     // Constructor
     public ImageAdapter(Context c) {
@@ -28,11 +35,13 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return ImageArray.length;
+        return imageMap.size();
     }
 
     public Integer getItem(int position) {
-        return ImageArray[position];
+        int dx = position % WIDTH;
+        int dy = position / WIDTH;
+        return imageMap.get(new WorldCoord(dx,dy));
     }
 
     public long getItemId(int position) {
@@ -41,6 +50,8 @@ public class ImageAdapter extends BaseAdapter {
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
+        int dx = position % WIDTH;
+        int dy = position / WIDTH;
         //position turn it into dx + dy
         //look up current + (dx,dy) -> territory -> image -> return it
         //   if not found ? "unexplored"  (remember in a list) -> send to server (eslewhere) "TerrQueryMesg: [{x:1,y:2},{x:1,y:3},...]]
@@ -56,39 +67,38 @@ public class ImageAdapter extends BaseAdapter {
         {
             imageView = (ImageView) convertView;
         }
-        imageView.setImageResource(ImageArray[position]);
+        WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
+        Integer imageID = imageMap.get(coord);
+        if(imageID!=null) {
+            imageView.setImageResource(imageID);
+            queriedCoords.remove(coord);
+        }
+        else{
+            imageView.setImageResource(initImageID);
+            queriedCoords.add(coord);
+        }
         return imageView;
     }
 
     public void initImage(int source){
-        ImageArray = new Integer[150];
-        Arrays.fill(ImageArray,source);
+        initImageID = source;
     }
 
-    public void updateImage(int pos, int source){
-        try {
-            ImageArray[pos] = source;
-        } catch (Exception e) {
-            Log.e(TAG,"UpdateImage fails");
-            e.printStackTrace();
-        }
+    public void updateCurrCoord(WorldCoord coord){
+        currCoord = coord;
     }
 
     /**
-     * * Updates the image at x,y if they are in range.  Otherwise do nothing.
-     * @param x the x coordinate (0,0) is center of screen
-     * @param y the y coordinate (0,0) is center of screen
+     * * Cache virtual coordinates into map
+     * @param x the x virtual coordinate
+     * @param y the y virtual coordinate
      * @param source the image id
      */
-    public void maybeUpdateImageByCoords(int x, int y, int source) {
+    public void updateImageByCoords(int x, int y, int source) {
+        imageMap.put(new WorldCoord(x, y), source);
+    }
 
-        int pos = 64 + x - 10 * y ;
-        if (pos >= 0 && pos < ImageArray.length) {
-           // Log.d("ImgAdapter", "update ("+x+","+y+"=>"+pos+") to" + source);
-            ImageArray[pos]  = source;
-        }
-        else {
-        //Log.d("ImgAdapter", "ignore out of range: ("+x+","+y+"=>"+pos+") to" + source);
-        }
+    public List<WorldCoord> getQueriedCoords(){
+        return queriedCoords;
     }
 }
