@@ -86,6 +86,13 @@ public class ImageAdapter extends BaseAdapter {
 
     public void updateCurrCoord(WorldCoord coord){
         currCoord = coord;
+        if(imageMap.size()==0){
+            for(int i=-4; i<=5; i++){
+                for(int j=-8; j<=6; j++){
+                    queriedCoords.add(new WorldCoord(currCoord.getX()+i,currCoord.getY()+j));
+                }
+            }
+        }
     }
 
     /**
