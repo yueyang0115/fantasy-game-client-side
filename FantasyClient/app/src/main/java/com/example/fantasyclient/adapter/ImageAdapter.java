@@ -66,4 +66,22 @@ public class ImageAdapter extends BaseAdapter {
             e.printStackTrace();
         }
     }
+
+    /**
+     * * Updates the image at x,y if they are in range.  Otherwise do nothing.
+     * @param x the x coordinate (0,0) is center of screen
+     * @param y the y coordinate (0,0) is center of screen
+     * @param source the image id
+     */
+    public void maybeUpdateImageByCoords(int x, int y, int source) {
+
+        int pos = 64 + x - 10 * y ;
+        if (pos >= 0 && pos < ImageArray.length) {
+           // Log.d("ImgAdapter", "update ("+x+","+y+"=>"+pos+") to" + source);
+            ImageArray[pos]  = source;
+        }
+        else {
+        //Log.d("ImgAdapter", "ignore out of range: ("+x+","+y+"=>"+pos+") to" + source);
+        }
+    }
 }

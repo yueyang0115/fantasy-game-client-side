@@ -248,15 +248,15 @@ public class MainActivity extends BaseActivity {
      * @param t: target territory
      */
     protected void updateTerritory(Territory t){
-        int dx = (t.getX()-vPosition.getX())/10;
-        int dy = (t.getY()-vPosition.getY())/10;
+        int dx = (t.getX()-vPosition.getX());
+        int dy = (t.getY()-vPosition.getY());
         if(dx>=-4 && dx<=5 && dy>=-8 && dy<=6) {
             int position = CENTER+dx-10*dy;
-            if(position == CENTER){
+            if(dx == 0 && dy == 0){
                 currTerr = t;
             }
             //update terrain layer
-            terrainAdapter.updateImage(position,getImageID(this,t.getTerrain().getType()));
+            terrainAdapter.maybeUpdateImageByCoords(dx,dy,getImageID(this,t.getTerrain().getType()));
             //update monster layer
             if(!t.getMonsters().isEmpty()) {
                 unitAdapter.updateImage(position,getImageID(this,t.getMonsters().get(0).getType()));
