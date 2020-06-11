@@ -14,6 +14,7 @@ import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,15 +23,15 @@ import java.util.List;
 @SuppressLint("Registered")
 public class BattleActivity extends BaseActivity{
     Button attackBtn, itemBtn, escapeBtn;
+    HashMap<Integer,Unit> unitMap = new HashMap<>();
     List<Unit> soldierList = new ArrayList<>();
     List<Unit> monsterList = new ArrayList<>();
     List<Unit> seqList = new ArrayList<>();
-    Soldier currSoldier;//current attacker
-    Monster currMonster;//current attackee
+    Unit currSoldier, currMonster;//current attacker and attackee
     UnitArrayAdapter soldierAdapter, monsterAdapter;
     UnitImageAdapter seqAdapter;
     ListView soldierListView, monsterListView, seqListView;
-    int terrID, monsterID, soldierID;
+    int terrID;
     boolean ifStop = false;
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
@@ -49,19 +50,6 @@ public class BattleActivity extends BaseActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        //Thread to receive feedback from server
-        new Thread() {
-            @Override
-            public void run() {
-                while (socketService == null) {
-                }
-                while(!ifStop){
-                    if(!socketService.receiver.isEmpty()){
-                        handleRecvMessage(socketService.receiver.dequeue());
-                    }
-                }
-            }
-        }.start();
     }
 
     @Override
@@ -102,14 +90,15 @@ public class BattleActivity extends BaseActivity{
                     Log.e(TAG,"Battle has already ends");
                 }
                 else{
-                    if(monsterID == 0){
-                        monsterID = monsterList.get(0).getId();
+                    if(currMonster == null){
+                        currMonster = monsterList.get(0);
                     }
-                    if(soldierID == 0){
-                        soldierID = soldierList.get(0).getId();
+                    if(currSoldier == null){
+                        currSoldier = soldierList.get(0);
                     }
                     socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,"attack",
-                            new BattleAction(soldierID,monsterID,"normal"))));
+                            new BattleAction(currSoldier,currMonster,"normal"))));
+                    handleRecvMessage(socketService.dequeue());
                 }
 
             }
@@ -121,6 +110,7 @@ public class BattleActivity extends BaseActivity{
             public void onClick(View v) {
                 // TODO
                 socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
+                handleRecvMessage(socketService.dequeue());
             }
         });
 
@@ -128,6 +118,7 @@ public class BattleActivity extends BaseActivity{
             @Override
             public void onClick(View v) {
                 socketService.enqueue(new MessagesC2S(new BattleRequestMessage("escape")));
+                handleRecvMessage(socketService.dequeue());
             }
         });
 
@@ -154,13 +145,24 @@ public class BattleActivity extends BaseActivity{
     @SuppressLint("SetTextI18n")
     @Override
     protected void checkBattleResult(final BattleResultMessage m){
-        if (m.getResult().equals("continue")) {
-            //battle continues
-            //List<subType> cannot be cast to List<baseType> directly
-            soldierList = new ArrayList<Unit>(m.getSoldiers());
-            monsterList = new ArrayList<Unit>(m.getMonsters());
-            seqList = m.getUnits();
-
+        if(!m.getResult().equals("escaped")) {
+            BattleInitInfo initInfo = m.getBattleInitInfo();
+            if (initInfo != null) {
+                //At the start of battle, store initial units data into map
+                soldierList = new ArrayList<Unit>(initInfo.getSoldiers());
+                for (Unit u : soldierList) {
+                    unitMap.put(u.getId(), u);
+                }
+                monsterList = new ArrayList<Unit>(initInfo.getMonsters());
+                for (Unit u : monsterList) {
+                    unitMap.put(u.getId(), u);
+                }
+            } else {
+                //battle has already begun, handle received battle actions
+                for (BattleAction action : m.getActions()) {
+                    handleBattleAction(action);
+                }
+            }
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -175,26 +177,83 @@ public class BattleActivity extends BaseActivity{
                     seqAdapter.notifyDataSetChanged();
                 }
             });
-        } else {
-            //battle ends
-            doUnbindService();
-            ifStop = true;
-            Intent intent = new Intent();
-            switch (m.getResult()) {
-                case "escaped":
-                    setResult(RESULT_ESCAPED, intent);
-                    break;
-                case "win":
-                    setResult(RESULT_WIN, intent);
-                    break;
-                case "lose":
-                    setResult(RESULT_LOSE, intent);
-                    break;
-                default:
-                    Log.e(TAG, "Invalid battle result received");
-                    break;
+            //after animations are done
+            //if battle ends, finish activity
+            if(!m.getResult().equals("continue")){
+                finishActivity(m.getResult());
             }
-            finish();//finishing activity
         }
+        else{
+            //escaped, finish activity
+            finishActivity(m.getResult());
+        }
+    }
+
+    protected void finishActivity(String result){
+        doUnbindService();
+        ifStop = true;
+        Intent intent = new Intent();
+        switch (result) {
+            case "escaped":
+                setResult(RESULT_ESCAPED, intent);
+                break;
+            case "win":
+                setResult(RESULT_WIN, intent);
+                break;
+            case "lose":
+                setResult(RESULT_LOSE, intent);
+                break;
+            default:
+                Log.e(TAG, "Invalid battle result received");
+                break;
+        }
+        finish();//finishing activity
+    }
+
+    /**
+     * This method handles one battle action which contains attacker, attackee and action type
+     * it updates cached information about related units
+     * @param action BattleAction to be handled
+     */
+    protected void handleBattleAction(BattleAction action){
+        Unit attacker = action.getAttacker();
+        Unit attackee = action.getAttackee();
+        //update unit map
+        unitMap.put(attacker.getId(),attacker);
+        unitMap.put(attackee.getId(),attackee);
+        //update sequence list
+        seqList.clear();
+        for(Integer i : action.getUnits()){
+            seqList.add(unitMap.get(i));
+        }
+        //update soldier and monster list
+        updateUnitInfo(attacker);
+        updateUnitInfo(attackee);
+        //do animations
+        animateActions();
+    }
+
+    /**
+     * This method do animations of target battle action
+     */
+    protected void animateActions(){}
+
+    /**
+     * This method update unit list, which is shown by adapters, based on unit type
+     * @param unit
+     */
+    protected void updateUnitInfo(Unit unit){
+        if(unit instanceof Soldier){
+            updateUnitList(unit,soldierList);
+        }
+        else if(unit instanceof Monster){
+            updateUnitList(unit,monsterList);
+        }
+    }
+
+    protected void updateUnitList(Unit unit, List<Unit> unitList){
+        int index = unitList.indexOf(unit);
+        unitList.remove(unit);
+        unitList.add(index,unit);
     }
 }

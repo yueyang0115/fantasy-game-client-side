@@ -79,4 +79,19 @@ public class Unit implements Serializable {
     public void setEquipment(List<Equipment> equipment) {
         this.equipment = equipment;
     }
+
+    @Override
+    public boolean equals(Object e) {
+        if ( e instanceof Unit &&
+                this.id == ((Unit)e).getId())
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public int hashCode() {
+        Integer tempID = id;
+        return tempID.hashCode();
+    }
 }
