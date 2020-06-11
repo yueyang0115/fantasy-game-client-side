@@ -6,6 +6,9 @@ import android.os.Looper;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * This class use a handler to do AsyncTask periodically
+ */
 public class TimerHandler {
     private Timer timer;
     TimerTask doAsyncTask;

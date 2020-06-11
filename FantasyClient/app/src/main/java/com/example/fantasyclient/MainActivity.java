@@ -240,6 +240,7 @@ public class MainActivity extends BaseActivity {
     protected void updateTerritory(Territory t){
         int x = t.getX();
         int y = t.getY();
+        //check if this territory is current territory
         if(x == currCoord.getX() && y == currCoord.getY()){
             currTerr = t;
         }
@@ -249,15 +250,9 @@ public class MainActivity extends BaseActivity {
         if(!t.getMonsters().isEmpty()) {
             unitAdapter.updateImageByCoords(x,y,getImageID(this,t.getMonsters().get(0).getType()));
         }
-        else{
-            unitAdapter.updateImageByCoords(x,y,R.drawable.transparent);
-        }
         //update building layer
         if(t.getBuilding()!=null){
             buildingAdapter.updateImageByCoords(x,y,getImageID(this,t.getBuilding().getName()));
-        }
-        else{
-            buildingAdapter.updateImageByCoords(x,y,R.drawable.transparent);
         }
     }
 
