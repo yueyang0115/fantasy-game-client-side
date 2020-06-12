@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.GridView;
 
 import com.example.fantasyclient.adapter.ImageAdapter;
+import com.example.fantasyclient.model.WorldCoord;
 
 public class BackgroundTestActivity extends BaseActivity {
 
@@ -23,10 +24,9 @@ public class BackgroundTestActivity extends BaseActivity {
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*terrainAdapter.updateImage(10,R.drawable.river);
+                terrainAdapter.updateCurrCoord(new WorldCoord(0,0));
+                terrainAdapter.updateImageByCoords(0,-1,R.drawable.tree_e);
                 terrainAdapter.notifyDataSetChanged();
-                unitAdapter.updateImage(100,R.drawable.wolf);
-                unitAdapter.notifyDataSetChanged();*/
             }
         });
 

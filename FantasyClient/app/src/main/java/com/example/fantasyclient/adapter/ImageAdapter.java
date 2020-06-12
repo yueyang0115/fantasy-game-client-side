@@ -11,7 +11,9 @@ import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
@@ -34,9 +36,9 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public Integer getItem(int position) {
-        int dx = position % WIDTH;
-        int dy = position / WIDTH;
-        return imageMap.get(new WorldCoord(dx,dy));
+        int dx = position % WIDTH - WIDTH / 2;
+        int dy = HEIGHT / 2 - position / WIDTH;
+        return imageMap.get(new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY()));
     }
 
     public long getItemId(int position) {
@@ -47,14 +49,14 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //change position to relative coordinates to center
-        int dx = position % WIDTH;
-        int dy = position / WIDTH;
+        int dx = position % WIDTH - WIDTH / 2;
+        int dy = HEIGHT / 2 - position / WIDTH;
 
         ImageView imageView;
 
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(110, 165));
+            imageView.setLayoutParams(new GridView.LayoutParams(110, 110));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         }
@@ -69,13 +71,12 @@ public class ImageAdapter extends BaseAdapter {
         if(imageID!=null) {
             //already cached, no need to query again
             imageView.setImageResource(imageID);
-            queriedCoords.remove(coord);
         }
         else{
             //not cached yet, need to query
             imageMap.put(coord,initImageID);
             imageView.setImageResource(initImageID);
-            queriedCoords.add(coord);
+            addQueriedCoord(coord);
         }
         return imageView;
     }
@@ -97,9 +98,9 @@ public class ImageAdapter extends BaseAdapter {
         //check if it is the begin of a game
         if(imageMap.size()==0){
             //no cached map, query for the whole screen
-            for(int i=-4; i<=5; i++){
-                for(int j=-8; j<=6; j++){
-                    queriedCoords.add(new WorldCoord(currCoord.getX()+i,currCoord.getY()+j));
+            for(int i = - WIDTH / 2; i <= WIDTH / 2; i++){
+                for(int j = - HEIGHT / 2; j <= HEIGHT / 2; j++){
+                    addQueriedCoord(new WorldCoord(currCoord.getX()+i,currCoord.getY()+j));
                 }
             }
         }
@@ -112,7 +113,15 @@ public class ImageAdapter extends BaseAdapter {
      * @param source the image id
      */
     public void updateImageByCoords(int x, int y, int source) {
-        imageMap.put(new WorldCoord(x, y), source);
+        WorldCoord coord = new WorldCoord(x,y);
+        imageMap.put(coord, source);
+        queriedCoords.remove(coord);
+    }
+
+    private void addQueriedCoord(WorldCoord coord){
+        if(!queriedCoords.contains(coord)) {
+            queriedCoords.add(coord);
+        }
     }
 
     public List<WorldCoord> getQueriedCoords(){

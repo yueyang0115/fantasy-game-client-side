@@ -173,16 +173,6 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
-        /*//set background to be base type
-        terrainAdapter.initImage(R.drawable.base00);
-        unitAdapter.initImage(R.drawable.transparent);
-        buildingAdapter.initImage(R.drawable.transparent);
-
-        //set cached territory
-        for(Territory t : cachedMap){
-            updateTerritory(t);
-        }*/
-
         //update new territories
         List<Territory> terrArray = m.getTerritoryArray();
         for(Territory t : terrArray){
@@ -317,7 +307,7 @@ public class MainActivity extends BaseActivity {
         adapterList.add(terrainAdapter);
         adapterList.add(unitAdapter);
         adapterList.add(buildingAdapter);
-        terrainAdapter.initImage(R.drawable.base00);
+        terrainAdapter.initImage(R.drawable.base01);
         unitAdapter.initImage(R.drawable.transparent);
         buildingAdapter.initImage(R.drawable.transparent);
         terrainGridView.setAdapter(terrainAdapter);
