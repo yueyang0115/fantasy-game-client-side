@@ -67,16 +67,13 @@ public class ImageAdapter extends BaseAdapter {
 
         //check if current coordinate has been cached in map
         WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
-        Integer imageID = imageMap.get(coord);
-        if(imageID!=null) {
-            //already cached, no need to query again
-            imageView.setImageResource(imageID);
+        if(imageMap.containsKey(coord)) {
+            //already cached, show the cached image
+            imageView.setImageResource(imageMap.get(coord));
         }
         else{
-            //not cached yet, need to query
-            imageMap.put(coord,initImageID);
+            //not cached yet, show initial image
             imageView.setImageResource(initImageID);
-            addQueriedCoord(coord);
         }
         return imageView;
     }
@@ -95,13 +92,10 @@ public class ImageAdapter extends BaseAdapter {
      */
     public void updateCurrCoord(WorldCoord coord){
         currCoord = coord;
-        //check if it is the begin of a game
-        if(imageMap.size()==0){
-            //no cached map, query for the whole screen
-            for(int i = - WIDTH / 2; i <= WIDTH / 2; i++){
-                for(int j = - HEIGHT / 2; j <= HEIGHT / 2; j++){
-                    addQueriedCoord(new WorldCoord(currCoord.getX()+i,currCoord.getY()+j));
-                }
+        //query for the territories if not cached
+        for(int i = - WIDTH / 2; i <= WIDTH / 2; i++){
+            for(int j = - HEIGHT / 2; j <= HEIGHT / 2; j++){
+                addQueriedCoord(new WorldCoord(currCoord.getX()+i,currCoord.getY()+j));
             }
         }
     }
@@ -119,8 +113,13 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     private void addQueriedCoord(WorldCoord coord){
-        if(!queriedCoords.contains(coord)) {
-            queriedCoords.add(coord);
+        //check if coordinate has been cached
+        if(!imageMap.containsKey(coord)) {
+            //coordinate not cached yet
+            //check if it has been added to queryList
+            if (!queriedCoords.contains(coord)) {
+                queriedCoords.add(coord);
+            }
         }
     }
 
