@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,6 +19,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.fantasyclient.adapter.ImageAdapter;
 import com.example.fantasyclient.handler.SendTimerHandler;
+import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
@@ -69,14 +71,25 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         //Thread to update location and send to server
         new Thread() {
             @Override
             public void run() {
                 while (socketService == null) {
                 }
-                sendTimerHandler = new SendTimerHandler(currCoord, location, adapterList, socketService.sender);
-                sendTimerHandler.handleTask(0,1000);
+                //send location request when players start the game after login
+                //location.beginUpdates() needs looper
+                Looper.prepare();
+                sendLocationRequest();
+                //send location request when players change their location
+                location.setListener(new SimpleLocation.Listener() {
+                    @Override
+                    public void onPositionChanged() {
+                        sendLocationRequest();
+                    }
+                });
+                Looper.loop();
             }
         }.start();
         //Thread to receive feedback from server
@@ -142,6 +155,30 @@ public class MainActivity extends BaseActivity {
         } else {
             // Permission has already been granted
             location.beginUpdates();
+        }
+    }
+
+    /**
+     * This method update current location and send request message of required terrain data to server
+     */
+    protected void sendLocationRequest(){
+        //update current location
+        updateLocation();
+        //convert location data to virtual coordinate
+        WorldCoord tempCoord = new WorldCoord();
+        PositionHelper.convertVPosition(tempCoord,location.getLatitude(),location.getLongitude());
+        //check if current location has changed
+        if(!tempCoord.equals(currCoord)) {
+            //update current coordinate of all layers of map, and queryList as well
+            currCoord = tempCoord;
+            for (ImageAdapter adapter : adapterList) {
+                adapter.updateCurrCoord(currCoord);
+            }
+            //get the coordinates which need to be queried from server
+            List<WorldCoord> queriedCoords = adapterList.get(0).getQueriedCoords();
+            //enqueue query message in order to send to server
+            PositionRequestMessage p = new PositionRequestMessage(queriedCoords);
+            socketService.enqueue(new MessagesC2S(p));
         }
     }
 
