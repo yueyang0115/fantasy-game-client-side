@@ -8,25 +8,17 @@ import java.util.List;
 
 public class Item implements Serializable {
 
-    private int id;
-
     private String name;
 
     private int cost;
 
-    @JsonBackReference
-    private List<Shop> shop_list = new ArrayList<>();
+    private int amount;
+
+
 
     public Item() {
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -42,18 +34,6 @@ public class Item implements Serializable {
 
     public void setCost(int cost) {
         this.cost = cost;
-    }
-
-    public List<Shop> getShop_list() {
-        return shop_list;
-    }
-
-    public void setShop_list(List<Shop> shop_list) {
-        this.shop_list = shop_list;
-    }
-
-    public void addShop(Shop shop){
-        shop_list.add(shop);
     }
 
     public Item(String name, int cost) {
