@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class ShopRequestMessage {
     private int shopID;
-    private Map<Integer,Integer> itemMap;//Map<itemPackID, amount to buy>
+    private Map<Integer,Integer> itemMap;//Map<inventoryID, amount to buy>
     private String action;//"list""buy""sell"
 
     public ShopRequestMessage() {

@@ -3,7 +3,6 @@ package com.example.fantasyclient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -11,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.fantasyclient.adapter.ItemArrayAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
-import com.example.fantasyclient.model.ItemPack;
+import com.example.fantasyclient.model.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public class ItemActivity extends BaseActivity {
 
     Button btn_cancel;
     TextView text_money;
-    List<ItemPack> inventoryItemList = new ArrayList<>();
+    List<Inventory> inventoryItemList = new ArrayList<>();
     ItemArrayAdapter inventoryAdapter;
     ListView inventoryListView;
     InventoryResultMessage inventoryResultMessage;

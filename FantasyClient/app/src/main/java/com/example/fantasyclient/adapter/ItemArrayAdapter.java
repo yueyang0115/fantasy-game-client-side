@@ -11,14 +11,13 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.model.Item;
-import com.example.fantasyclient.model.ItemPack;
+import com.example.fantasyclient.model.Inventory;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemArrayAdapter extends ArrayAdapter<Item> {
+public class ItemArrayAdapter extends ArrayAdapter<Inventory> {
 
     //Map to store numbers of items to act on
     private Map<Integer,Integer> itemMap = new HashMap<>();
@@ -30,7 +29,7 @@ public class ItemArrayAdapter extends ArrayAdapter<Item> {
         NumberPicker itemNumPicker;
     }
 
-    public ItemArrayAdapter(Context context, List<Item> objects) {
+    public ItemArrayAdapter(Context context, List<Inventory> objects) {
         super(context, 0, objects);
     }
 
@@ -38,7 +37,7 @@ public class ItemArrayAdapter extends ArrayAdapter<Item> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        final Item item = getItem(position);
+        final Inventory inventory = getItem(position);
         final ViewHolder viewHolder;
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -57,17 +56,17 @@ public class ItemArrayAdapter extends ArrayAdapter<Item> {
         }
 
         // Populate the data into the template view using the data object
-        assert item != null;
-        viewHolder.itemName.setText("Name:"+item.getItem().getName());
-        viewHolder.itemCost.setText("Cost: "+ item.getItem().getCost());
-        viewHolder.itemAmount.setText("Amount: "+ item.getAmount());
-        viewHolder.itemNumPicker.setMaxValue(item.getAmount());
+        assert inventory != null;
+        viewHolder.itemName.setText("Name:"+inventory.getDBItem().getName());
+        viewHolder.itemCost.setText("Cost: "+ inventory.getDBItem().getCost());
+        viewHolder.itemAmount.setText("Amount: "+ inventory.getAmount());
+        viewHolder.itemNumPicker.setMaxValue(inventory.getAmount());
         viewHolder.itemNumPicker.setMinValue(0);
         viewHolder.itemNumPicker.setValue(0);
         viewHolder.itemNumPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                itemMap.put(item.getId(),viewHolder.itemNumPicker.getValue());
+                itemMap.put(inventory.getId(),viewHolder.itemNumPicker.getValue());
             }
         });
         // Return the completed view to render on screen

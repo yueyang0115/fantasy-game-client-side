@@ -21,7 +21,7 @@ public class InventoryActivity extends ItemActivity {
     Button btn_use, btn_drop;//button to use and drop item
     List<Unit> soldierList = new ArrayList<>();
     Soldier currSoldier;//current soldier to use item
-    ItemPack currItemPack;//current item to use
+    Inventory currInventory;//current item to use
     UnitArrayAdapter soldierAdapter;
     ListView soldierListView;
     AttributeResultMessage attributeResultMessage;
@@ -74,14 +74,14 @@ public class InventoryActivity extends ItemActivity {
                     socketService.errorAlert("No soldier to use on");
                 }
                 else {
-                    if(currItemPack == null) {
-                        currItemPack = inventoryItemList.get(0);
+                    if(currInventory == null) {
+                        currInventory = inventoryItemList.get(0);
                     }
                     if(currSoldier == null){
                         currSoldier = (Soldier) soldierList.get(0);
                     }
                     socketService.clearQueue();
-                    socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currItemPack.getId(), currSoldier.getId())));
+                    socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currInventory.getId(), currSoldier.getId())));
                     handleRecvMessage(socketService.dequeue());
                 }
             }
@@ -101,7 +101,7 @@ public class InventoryActivity extends ItemActivity {
         inventoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currItemPack = (ItemPack) parent.getItemAtPosition(position);
+                currInventory = (Inventory) parent.getItemAtPosition(position);
             }
         });
     }

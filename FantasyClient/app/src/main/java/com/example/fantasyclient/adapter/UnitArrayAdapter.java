@@ -21,7 +21,7 @@ public class UnitArrayAdapter extends ArrayAdapter<Unit> {
 
     //View lookup cache
     private static class ViewHolder{
-        TextView unitID, unitHp, unitAtk;
+        TextView unitID, unitHp, unitAtk, unitSpeed;
         ImageView unitImg;
     }
 
@@ -43,6 +43,7 @@ public class UnitArrayAdapter extends ArrayAdapter<Unit> {
             viewHolder.unitID = (TextView) convertView.findViewById(R.id.unitID);
             viewHolder.unitHp = (TextView) convertView.findViewById(R.id.unitHp);
             viewHolder.unitAtk = (TextView) convertView.findViewById(R.id.unitAtk);
+            viewHolder.unitSpeed = (TextView) convertView.findViewById(R.id.unitSpeed);
             viewHolder.unitImg = (ImageView) convertView.findViewById(R.id.unitImg);
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);

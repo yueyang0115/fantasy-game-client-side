@@ -7,13 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.fantasyclient.adapter.ItemArrayAdapter;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
-import com.example.fantasyclient.model.ItemPack;
+import com.example.fantasyclient.model.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class ShopActivity extends ItemActivity {
 
     Button btn_buy, btn_sell;
     int terrID, shopID;
-    List<ItemPack> shopItemList = new ArrayList<>();
+    List<Inventory> shopInventoryList = new ArrayList<>();
     ItemArrayAdapter shopAdapter;
     ListView shopListView;
     ShopResultMessage shopResultMessage;
@@ -53,7 +52,7 @@ public class ShopActivity extends ItemActivity {
     @Override
     protected void initView(){
         super.initView();
-        shopAdapter = new ItemArrayAdapter(this, shopItemList);
+        shopAdapter = new ItemArrayAdapter(this, shopInventoryList);
         shopListView.setAdapter(shopAdapter);
     }
 
@@ -75,7 +74,7 @@ public class ShopActivity extends ItemActivity {
             @Override
             public void onClick(View v) {
                 //send shop request
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, shopAdapter.getItemMap(),"buy")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,shopAdapter.getItemMap(),"buy")));
                 handleRecvMessage(socketService.dequeue());
                 shopAdapter.clearMap();
             }
@@ -83,7 +82,7 @@ public class ShopActivity extends ItemActivity {
         btn_sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, inventoryAdapter.getItemMap(),"sell")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,inventoryAdapter.getItemMap(),"sell")));
                 handleRecvMessage(socketService.dequeue());
                 inventoryAdapter.clearMap();
             }
@@ -101,12 +100,12 @@ public class ShopActivity extends ItemActivity {
         if (m.getResult().equals("valid")) {
             //action is valid, updateUI
             Log.d(TAG,"checkShopResult");
-            shopItemList = m.getItems();
+            shopInventoryList = m.getItems();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     shopAdapter.clear();
-                    shopAdapter.addAll(shopItemList);
+                    shopAdapter.addAll(shopInventoryList);
                     shopAdapter.notifyDataSetChanged();
                 }
             });

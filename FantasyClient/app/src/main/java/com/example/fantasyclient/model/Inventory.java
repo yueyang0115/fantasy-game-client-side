@@ -1,8 +1,6 @@
 package com.example.fantasyclient.model;
 
-import java.util.Objects;
-
-public abstract class Inventory {
+public class Inventory {
     private int id;
 
     private DBItem item;
@@ -41,5 +39,4 @@ public abstract class Inventory {
         this.amount = amount;
     }
 
-    public abstract int getOwnerID();
 }

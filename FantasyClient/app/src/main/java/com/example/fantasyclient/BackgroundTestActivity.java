@@ -25,7 +25,7 @@ public class BackgroundTestActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 terrainAdapter.updateCurrCoord(new WorldCoord(0,0));
-                terrainAdapter.updateImageByCoords(0,-1,R.drawable.tree_e);
+                terrainAdapter.updateImageByCoords(new WorldCoord(0,-1),R.drawable.tree_e);
                 terrainAdapter.notifyDataSetChanged();
             }
         });

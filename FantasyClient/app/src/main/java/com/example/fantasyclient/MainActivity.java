@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity {
 
     //map data
     SimpleLocation location;//used to track current location
-    Territory currTerr = new Territory();//used to track current territory
+    Territory currTerr = new Territory(new WorldCoord(0,0));//used to track current territory
     Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data
 
     //fields to show map

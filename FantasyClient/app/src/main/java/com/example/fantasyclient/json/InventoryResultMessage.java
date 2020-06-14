@@ -1,8 +1,6 @@
 package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Inventory;
-import com.example.fantasyclient.model.Item;
-import com.example.fantasyclient.model.ItemPack;
 
 import java.io.Serializable;
 import java.util.ArrayList;

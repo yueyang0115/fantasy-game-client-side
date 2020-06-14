@@ -10,10 +10,10 @@ public class Unit implements Serializable {
     private String type;
     private int hp;
     private int atk;
-    private Territory territory;
+    //private Territory territory;
     private int speed;
 
-    private List<Equipment> equipment = new ArrayList<>();
+    //private List<Equipment> equipment = new ArrayList<>();
 
     public Unit(){
     }
@@ -64,7 +64,7 @@ public class Unit implements Serializable {
         this.speed = speed;
     }
 
-    public Territory getTerritory() {
+    /*public Territory getTerritory() {
         return territory;
     }
 
@@ -78,7 +78,7 @@ public class Unit implements Serializable {
 
     public void setEquipment(List<Equipment> equipment) {
         this.equipment = equipment;
-    }
+    }*/
 
     @Override
     public boolean equals(Object e) {
