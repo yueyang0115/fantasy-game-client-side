@@ -31,7 +31,7 @@ public class BattleActivity extends BaseActivity{
     UnitArrayAdapter soldierAdapter, monsterAdapter;
     UnitImageAdapter seqAdapter;
     ListView soldierListView, monsterListView, seqListView;
-    int terrID;
+    WorldCoord territoryCoord;
     boolean ifStop = false;
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
@@ -78,7 +78,7 @@ public class BattleActivity extends BaseActivity{
         battleResultMessage = (BattleResultMessage) intent.getSerializableExtra("BattleResultMessage");
         assert battleResultMessage != null;
         checkBattleResult(battleResultMessage);
-        terrID = intent.getIntExtra("territoryID",0);
+        territoryCoord = (WorldCoord) intent.getSerializableExtra("territoryCoord");
     }
 
     @Override
@@ -96,7 +96,7 @@ public class BattleActivity extends BaseActivity{
                     if(currSoldier == null){
                         currSoldier = soldierList.get(0);
                     }
-                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(terrID,"attack",
+                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(territoryCoord,"attack",
                             new BattleAction(currSoldier,currMonster,"normal"))));
                     handleRecvMessage(socketService.dequeue());
                 }

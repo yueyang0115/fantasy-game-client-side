@@ -1,8 +1,10 @@
 package com.example.fantasyclient.json;
 
+import com.example.fantasyclient.model.WorldCoord;
+
 public class BattleRequestMessage {
 
-    private int territoryID;
+    private WorldCoord territoryCoord;
     private String action;//"attack","escape","start"
     private BattleAction battleAction; //include attackerID, attackeeID, action("normal, magical")
 
@@ -10,8 +12,8 @@ public class BattleRequestMessage {
     }
 
     //constructor for "start"
-    public BattleRequestMessage(int territoryID, String action) {
-        this.territoryID = territoryID;
+    public BattleRequestMessage(WorldCoord territoryCoord, String action) {
+        this.territoryCoord = territoryCoord;
         this.action = action;
     }
 
@@ -21,18 +23,18 @@ public class BattleRequestMessage {
     }
 
     //constructor for "attack"
-    public BattleRequestMessage(int territoryID, String action, BattleAction battleAction) {
-        this.territoryID = territoryID;
+    public BattleRequestMessage(WorldCoord territoryCoord, String action, BattleAction battleAction) {
+        this.territoryCoord = territoryCoord;
         this.action = action;
         this.battleAction = battleAction;
     }
 
-    public int getTerritoryID() {
-        return territoryID;
+    public WorldCoord getTerritoryCoord() {
+        return territoryCoord;
     }
 
-    public void setTerritoryID(int territoryID) {
-        this.territoryID = territoryID;
+    public void setTerritoryCoord(WorldCoord territoryCoord) {
+        this.territoryCoord = territoryCoord;
     }
 
     public String getAction() {

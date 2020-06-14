@@ -20,12 +20,22 @@ import androidx.core.content.ContextCompat;
 import com.example.fantasyclient.adapter.ImageAdapter;
 import com.example.fantasyclient.handler.SendTimerHandler;
 import com.example.fantasyclient.helper.PositionHelper;
-import com.example.fantasyclient.json.*;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.json.BattleRequestMessage;
+import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.PositionRequestMessage;
+import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.ShopRequestMessage;
+import com.example.fantasyclient.json.ShopResultMessage;
+import com.example.fantasyclient.model.Monster;
+import com.example.fantasyclient.model.Territory;
+import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -38,18 +48,26 @@ import im.delight.android.location.SimpleLocation;
  */
 public class MainActivity extends BaseActivity {
 
+    //final constant
     static final String TAG = "MainActivity";//tag for log
+    static final int TERRAIN_INIT = R.drawable.base01;
+    static final int UNIT_INIT = R.drawable.transparent;
     static final int PERMISSIONS_REQUEST_LOCATION = 1;//request code for location permission
     static final int BATTLE = 2;//request code for battle
     static final int SHOP = 3;//request code for shop
     static final int INVENTORY = 4;//request code for inventory
     static final int CENTER = 64;//center of the map
+
+    //map data
     SimpleLocation location;//used to track current location
-    WorldCoord currCoord = new WorldCoord(0,0);
-    Territory currTerr;
+    Territory currTerr = new Territory();//used to track current territory
+    Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data
+
+    //fields to show map
     ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
     List<ImageAdapter> adapterList = new ArrayList<>();
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
+
     SendTimerHandler sendTimerHandler;//handler to send location periodically
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
@@ -168,11 +186,11 @@ public class MainActivity extends BaseActivity {
         WorldCoord tempCoord = new WorldCoord();
         PositionHelper.convertVPosition(tempCoord,location.getLatitude(),location.getLongitude());
         //check if current location has changed
-        if(!tempCoord.equals(currCoord)) {
+        if(!tempCoord.equals(currTerr.getCoord())) {
             //update current coordinate of all layers of map, and queryList as well
-            currCoord = tempCoord;
+            currTerr.setCoord(tempCoord);
             for (ImageAdapter adapter : adapterList) {
-                adapter.updateCurrCoord(currCoord);
+                adapter.updateCurrCoord(currTerr.getCoord());
             }
             //get the coordinates which need to be queried from server
             List<WorldCoord> queriedCoords = adapterList.get(0).getQueriedCoords();
@@ -211,9 +229,12 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
         //update new territories
-        List<Territory> terrArray = m.getTerritoryArray();
-        for(Territory t : terrArray){
+        for(Territory t : m.getTerritoryArray()) {
             updateTerritory(t);
+        }
+        //update new monsters
+        for(Monster monster : m.getMonsterArray()){
+            updateMonster(monster);
         }
         //update UI
         runOnUiThread(new Runnable() {
@@ -237,7 +258,7 @@ public class MainActivity extends BaseActivity {
         if (m.getResult().equals("valid")) {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
-            intent.putExtra("territoryID", currTerr.getId());
+            intent.putExtra("territoryCoord", currTerr.getCoord());
             intent.putExtra("ShopID", currTerr.getBuilding().getId());
             startActivityForResult(intent, SHOP);
         }
@@ -254,33 +275,45 @@ public class MainActivity extends BaseActivity {
         if(m.getResult().equals("continue")){
             Intent intent = new Intent(this,BattleActivity.class);
             intent.putExtra("BattleResultMessage", m);
-            intent.putExtra("territoryID", currTerr.getId());
+            intent.putExtra("territoryCoord", currTerr.getCoord());
             startActivityForResult(intent,BATTLE);
         }
     }
 
     /**
-     * This method change the source file array in several adapters for corresponding map layers
+     * This method changes the source file array in several adapters for corresponding map layers
+     * mainly including layers that are unlikely to change: terrain, building
      * UI will be updated when adapter.notifyDataSetChanged() is called on UI thread
      * @param t: target territory
      */
     protected void updateTerritory(Territory t){
-        int x = t.getX();
-        int y = t.getY();
+        WorldCoord targetCoord = t.getCoord();
         //check if this territory is current territory
-        if(x == currCoord.getX() && y == currCoord.getY()){
+        if(targetCoord == currTerr.getCoord()){
             currTerr = t;
         }
         //update terrain layer
-        terrainAdapter.updateImageByCoords(x,y,getImageID(this,t.getTerrain().getType()));
-        //update monster layer
-        if(!t.getMonsters().isEmpty()) {
-            unitAdapter.updateImageByCoords(x,y,getImageID(this,t.getMonsters().get(0).getType()));
-        }
+        terrainAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getTerrainType()));
         //update building layer
         if(t.getBuilding()!=null){
-            buildingAdapter.updateImageByCoords(x,y,getImageID(this,t.getBuilding().getName()));
+            buildingAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getBuilding().getName()));
         }
+    }
+
+    /**
+     * This method changes unit adapters with the following steps:
+     * 1. Check if the unit with this id has been cached before, if so, remove it
+     * 2. Update its new coordinate and add it the cache
+     */
+    protected void updateMonster(Monster m){
+        int monsterID = m.getId();
+        //remove from cache if cached
+        if(monsterMap.containsKey(monsterID)){
+            unitAdapter.updateImageByCoords(monsterMap.get(monsterID),UNIT_INIT);
+        }
+        //update coordinate and cache it
+        unitAdapter.updateImageByCoords(m.getCoord(),getImageID(this,m.getType()));
+        monsterMap.put(monsterID,m.getCoord());
     }
 
     /**
@@ -310,10 +343,10 @@ public class MainActivity extends BaseActivity {
         //check the previous activity
         switch(requestCode){
             case BATTLE:
-                /*//check the result of battle
+                //check the result of battle
                 if(resultCode == RESULT_WIN){
-                    unitAdapter.updateImage(CENTER, R.drawable.transparent);
-                }*/
+                    unitAdapter.updateImageByCoords(currTerr.getCoord(), UNIT_INIT);
+                }
                 break;
             case SHOP:
                 //check the result of purchase
@@ -344,9 +377,9 @@ public class MainActivity extends BaseActivity {
         adapterList.add(terrainAdapter);
         adapterList.add(unitAdapter);
         adapterList.add(buildingAdapter);
-        terrainAdapter.initImage(R.drawable.base01);
-        unitAdapter.initImage(R.drawable.transparent);
-        buildingAdapter.initImage(R.drawable.transparent);
+        terrainAdapter.initImage(TERRAIN_INIT);
+        unitAdapter.initImage(UNIT_INIT);
+        buildingAdapter.initImage(UNIT_INIT);
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
@@ -358,12 +391,13 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position==CENTER){
-                    if(!currTerr.getMonsters().isEmpty())
+                    if(monsterMap.containsValue(currTerr.getCoord())) {
                         socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currTerr.getId(), "start")));
+                                new BattleRequestMessage(currTerr.getCoord(), "start")));
+                    }
                     else if(currTerr.getBuilding()!=null){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),"list")));
+                                new ShopRequestMessage(currTerr.getBuilding().getId(),"list")));
                     }
                 }
             }

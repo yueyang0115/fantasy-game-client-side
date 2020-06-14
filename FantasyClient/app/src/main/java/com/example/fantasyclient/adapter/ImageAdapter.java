@@ -20,7 +20,7 @@ public class ImageAdapter extends BaseAdapter {
     private static final int WIDTH = 10;
     private static final int HEIGHT = 15;
     private static final int CENTER = 64;
-    private static String TAG = "ImageHelper";
+    private static String TAG = "ImageAdapter";
     private Integer initImageID;
     private WorldCoord currCoord;//current virtual coordinate
     private HashMap<WorldCoord,Integer> imageMap = new HashMap<>();//HashMap<VirtualCoord, TerritoryImage>
@@ -102,12 +102,10 @@ public class ImageAdapter extends BaseAdapter {
 
     /**
      * Cache virtual coordinates into map
-     * @param x the x virtual coordinate
-     * @param y the y virtual coordinate
+     * @param coord target coordinate to update
      * @param source the image id
      */
-    public void updateImageByCoords(int x, int y, int source) {
-        WorldCoord coord = new WorldCoord(x,y);
+    public void updateImageByCoords(WorldCoord coord, int source) {
         imageMap.put(coord, source);
         queriedCoords.remove(coord);
     }
