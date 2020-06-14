@@ -45,7 +45,7 @@ public class WorldCoord implements Serializable{
     public boolean equals(Object o) {
         if (o.getClass().equals(WorldCoord.class)) {
             WorldCoord wc = (WorldCoord) o;
-            return x==wc.x && y==wc.y && wid == wc.wid;
+            return x==wc.x && y==wc.y;
         }
         return false;
     }
@@ -55,7 +55,7 @@ public class WorldCoord implements Serializable{
     }
     @Override
     public String toString(){
-        return (wid + ":" + x + "," + y);
+        return (x + "," + y);
     }
 
 }
