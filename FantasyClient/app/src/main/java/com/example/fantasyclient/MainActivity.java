@@ -68,7 +68,6 @@ public class MainActivity extends BaseActivity {
     List<ImageAdapter> adapterList = new ArrayList<>();
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
 
-    SendTimerHandler sendTimerHandler;//handler to send location periodically
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
     Button btnBag;
@@ -100,13 +99,15 @@ public class MainActivity extends BaseActivity {
                 //location.beginUpdates() needs looper
                 Looper.prepare();
                 sendLocationRequest();
-                //send location request when players change their location
-                location.setListener(new SimpleLocation.Listener() {
-                    @Override
-                    public void onPositionChanged() {
-                        sendLocationRequest();
-                    }
-                });
+                while(!ifPause) {
+                    //send location request when players change their location
+                    location.setListener(new SimpleLocation.Listener() {
+                        @Override
+                        public void onPositionChanged() {
+                            sendLocationRequest();
+                        }
+                    });
+                }
                 Looper.loop();
             }
         }.start();
@@ -131,7 +132,6 @@ public class MainActivity extends BaseActivity {
         super.onPause();
         //stop location updates and background threads
         location.endUpdates();
-        sendTimerHandler.cancelTask();
         ifPause = true;
     }
 
