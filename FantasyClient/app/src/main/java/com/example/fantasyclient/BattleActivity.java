@@ -91,10 +91,10 @@ public class BattleActivity extends BaseActivity{
                 }
                 else{
                     if(currMonster == null){
-                        currMonster = monsterList.get(0);
+                        currMonster = new Unit(monsterList.get(0));
                     }
                     if(currSoldier == null){
-                        currSoldier = soldierList.get(0);
+                        currSoldier = new Unit(soldierList.get(0));
                     }
                     socketService.enqueue(new MessagesC2S(new BattleRequestMessage(territoryCoord,"attack",
                             new BattleAction(currSoldier,currMonster,"normal"))));
@@ -125,14 +125,14 @@ public class BattleActivity extends BaseActivity{
         soldierListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currSoldier = (Soldier) parent.getItemAtPosition(position);
+                currSoldier = new Unit((Unit) parent.getItemAtPosition(position));
             }
         });
 
         monsterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currMonster = (Monster) parent.getItemAtPosition(position);
+                currMonster = new Unit((Unit) parent.getItemAtPosition(position));
             }
         });
     }

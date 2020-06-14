@@ -10,10 +10,7 @@ public class Unit implements Serializable {
     private String type;
     private int hp;
     private int atk;
-    //private Territory territory;
     private int speed;
-
-    //private List<Equipment> equipment = new ArrayList<>();
 
     public Unit(){
     }
@@ -22,6 +19,14 @@ public class Unit implements Serializable {
         this.type = type;
         this.hp = hp;
         this.atk = atk;
+    }
+
+    public Unit(Unit unit){
+        this.id = unit.getId();
+        this.type = unit.getType();
+        this.hp = unit.getHp();
+        this.atk = unit.getAtk();
+        this.speed = unit.getSpeed();
     }
 
     public int getId() {
@@ -63,22 +68,6 @@ public class Unit implements Serializable {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
-
-    /*public Territory getTerritory() {
-        return territory;
-    }
-
-    public void setTerritory(Territory territory) {
-        this.territory = territory;
-    }
-
-    public List<Equipment> getEquipment() {
-        return equipment;
-    }
-
-    public void setEquipment(List<Equipment> equipment) {
-        this.equipment = equipment;
-    }*/
 
     @Override
     public boolean equals(Object e) {

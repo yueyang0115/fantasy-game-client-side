@@ -103,9 +103,7 @@ public class MainActivity extends BaseActivity {
                 location.setListener(new SimpleLocation.Listener() {
                     @Override
                     public void onPositionChanged() {
-                        if(!ifPause) {
-                            sendLocationRequest();
-                        }
+                        sendLocationRequest();
                     }
                 });
                 Looper.loop();
