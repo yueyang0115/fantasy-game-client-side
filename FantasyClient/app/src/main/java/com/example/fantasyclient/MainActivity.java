@@ -99,15 +99,15 @@ public class MainActivity extends BaseActivity {
                 //location.beginUpdates() needs looper
                 Looper.prepare();
                 sendLocationRequest();
-                while(!ifPause) {
                     //send location request when players change their location
-                    location.setListener(new SimpleLocation.Listener() {
-                        @Override
-                        public void onPositionChanged() {
+                location.setListener(new SimpleLocation.Listener() {
+                    @Override
+                    public void onPositionChanged() {
+                        if(!ifPause) {
                             sendLocationRequest();
                         }
-                    });
-                }
+                    }
+                });
                 Looper.loop();
             }
         }.start();
