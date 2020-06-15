@@ -14,7 +14,7 @@
 
         <GridView
             android:id="@+id/terrainGridView"
-            android:numColumns="10"
+            android:numColumns="5"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:verticalSpacing="0dp"
@@ -23,7 +23,7 @@
 
         <GridView
             android:id="@+id/buildingGridView"
-            android:numColumns="10"
+            android:numColumns="5"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:verticalSpacing="0dp"
@@ -32,7 +32,7 @@
 
         <GridView
             android:id="@+id/unitGridView"
-            android:numColumns="10"
+            android:numColumns="5"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:verticalSpacing="0dp"

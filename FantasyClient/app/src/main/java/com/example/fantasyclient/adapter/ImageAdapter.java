@@ -21,9 +21,9 @@ import java.util.Set;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private static final int WIDTH = 10;
-    private static final int HEIGHT = 15;
-    private static final int CENTER = 64;
+    private static final int WIDTH = 5;
+    private static final int HEIGHT = 7;
+    private static final int CENTER = 17;
     private static String TAG = "ImageAdapter";
     private Integer initImageID;
     private WorldCoord currCoord;//current virtual coordinate
@@ -60,7 +60,7 @@ public class ImageAdapter extends BaseAdapter {
 
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(110, 110));
+            imageView.setLayoutParams(new GridView.LayoutParams(220, 220));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         }

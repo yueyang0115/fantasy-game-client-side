@@ -56,7 +56,7 @@ public class MainActivity extends BaseActivity {
     static final int BATTLE = 2;//request code for battle
     static final int SHOP = 3;//request code for shop
     static final int INVENTORY = 4;//request code for inventory
-    static final int CENTER = 64;//center of the map
+    static final int CENTER = 17;//center of the map
 
     //map data
     SimpleLocation location;//used to track current location
