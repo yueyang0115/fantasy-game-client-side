@@ -18,7 +18,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.fantasyclient.adapter.ImageAdapter;
-import com.example.fantasyclient.handler.SendTimerHandler;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
@@ -28,6 +27,7 @@ import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
+import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
@@ -226,13 +226,17 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
-        //update new territories
+        //update new terrains
         for(Territory t : m.getTerritoryArray()) {
-            updateTerritory(t);
+            updateTerrain(t);
         }
         //update new monsters
         for(Monster monster : m.getMonsterArray()){
             updateMonster(monster);
+        }
+        //update new buildings
+        for(Building b : m.getBuildingArray()){
+            updateBuilding(b);
         }
         //update UI
         runOnUiThread(new Runnable() {
@@ -257,7 +261,7 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
             intent.putExtra("territoryCoord", currTerr.getCoord());
-            intent.putExtra("ShopID", currTerr.getBuilding().getId());
+            /*intent.putExtra("ShopID", currTerr.getBuilding().getId());*/
             startActivityForResult(intent, SHOP);
         }
     }
@@ -284,7 +288,7 @@ public class MainActivity extends BaseActivity {
      * UI will be updated when adapter.notifyDataSetChanged() is called on UI thread
      * @param t: target territory
      */
-    protected void updateTerritory(Territory t){
+    protected void updateTerrain(Territory t){
         WorldCoord targetCoord = t.getCoord();
         //check if this territory is current territory
         if(targetCoord == currTerr.getCoord()){
@@ -292,10 +296,6 @@ public class MainActivity extends BaseActivity {
         }
         //update terrain layer
         terrainAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getTerrainType()));
-        //update building layer
-        if(t.getBuilding()!=null){
-            buildingAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getBuilding().getName()));
-        }
     }
 
     /**
@@ -312,6 +312,10 @@ public class MainActivity extends BaseActivity {
         //update coordinate and cache it
         unitAdapter.updateImageByCoords(m.getCoord(),getImageID(this,m.getName()));
         monsterMap.put(monsterID,m.getCoord());
+    }
+
+    protected void updateBuilding(Building b){
+        buildingAdapter.updateImageByCoords(b.getCoord(),getImageID(this,b.getName()));
     }
 
     /**
@@ -393,10 +397,10 @@ public class MainActivity extends BaseActivity {
                         socketService.enqueue(new MessagesC2S(
                                 new BattleRequestMessage(currTerr.getCoord(), "start")));
                     }
-                    else if(currTerr.getBuilding()!=null){
+                    /*else if(currTerr.getBuilding()!=null){
                         socketService.enqueue(new MessagesC2S(
                                 new ShopRequestMessage(currTerr.getBuilding().getId(),"list")));
-                    }
+                    }*/
                 }
             }
         });

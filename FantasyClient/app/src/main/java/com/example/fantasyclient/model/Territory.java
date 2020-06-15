@@ -12,21 +12,11 @@ public class Territory implements Serializable {
 
     private String terrainType;
 
-    private Building building;
-
     public Territory(){
     }
 
     public Territory(WorldCoord coord){
         this.coord = coord;
-    }
-
-    public Building getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(Building building) {
-        this.building = building;
     }
 
     @Override

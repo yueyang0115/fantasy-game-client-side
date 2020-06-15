@@ -1,12 +1,16 @@
 package com.example.fantasyclient.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.example.fantasyclient.R;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
@@ -69,11 +73,31 @@ public class ImageAdapter extends BaseAdapter {
         WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
         if(imageMap.containsKey(coord)) {
             //already cached, show the cached image
-            imageView.setImageResource(imageMap.get(coord));
+            if(position == CENTER){
+                Resources r = mContext.getResources();
+                Drawable[] layers = new Drawable[2];
+                layers[0] = r.getDrawable(imageMap.get(coord));
+                layers[1] = r.getDrawable(R.drawable.green_frame);
+                LayerDrawable layerDrawable = new LayerDrawable(layers);
+                imageView.setImageDrawable(layerDrawable);
+            }
+            else {
+                imageView.setImageResource(imageMap.get(coord));
+            }
         }
         else{
-            //not cached yet, show initial image
-            imageView.setImageResource(initImageID);
+            if(position == CENTER){
+                Resources r = mContext.getResources();
+                Drawable[] layers = new Drawable[2];
+                layers[0] = r.getDrawable(initImageID);
+                layers[1] = r.getDrawable(R.drawable.green_frame);
+                LayerDrawable layerDrawable = new LayerDrawable(layers);
+                imageView.setImageDrawable(layerDrawable);
+            }
+            else {
+                //not cached yet, show initial image
+                imageView.setImageResource(initImageID);
+            }
         }
         return imageView;
     }
