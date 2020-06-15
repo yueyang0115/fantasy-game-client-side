@@ -50,7 +50,7 @@ public class UnitImageAdapter extends ArrayAdapter<Unit> {
 
         // Populate the data into the template view using the data object
         assert unit != null;
-        viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getType()));
+        viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getName()));
         // Return the completed view to render on screen
         return convertView;
     }
