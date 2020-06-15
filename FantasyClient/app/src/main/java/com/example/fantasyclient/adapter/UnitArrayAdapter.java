@@ -57,7 +57,7 @@ public class UnitArrayAdapter extends ArrayAdapter<Unit> {
         viewHolder.unitID.setText("ID: "+ unit.getId());
         viewHolder.unitHp.setText("HP: "+ unit.getHp());
         viewHolder.unitAtk.setText("ATK: "+ unit.getAtk());
-        viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getType()));
+        viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getName()));
         // Return the completed view to render on screen
         return convertView;
     }

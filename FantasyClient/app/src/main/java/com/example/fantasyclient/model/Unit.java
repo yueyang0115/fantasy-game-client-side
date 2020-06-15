@@ -8,6 +8,7 @@ public class Unit implements Serializable {
 
     private int id;
     private String type;
+    private String name;
     private int hp;
     private int atk;
     private int speed;
@@ -15,15 +16,22 @@ public class Unit implements Serializable {
     public Unit(){
     }
 
-    public Unit(String type,int hp,int atk){
+    public Unit(String type, String name, int hp, int atk, int speed){
         this.type = type;
+        this.name = name;
         this.hp = hp;
         this.atk = atk;
+        this.speed = speed;
     }
 
     public Unit(Unit unit){
+        setFields(unit);
+    }
+
+    public void setFields(Unit unit){
         this.id = unit.getId();
         this.type = unit.getType();
+        this.name = unit.getName();
         this.hp = unit.getHp();
         this.atk = unit.getAtk();
         this.speed = unit.getSpeed();
@@ -43,6 +51,14 @@ public class Unit implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getHp() {

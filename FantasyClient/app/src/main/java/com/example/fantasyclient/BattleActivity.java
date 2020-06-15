@@ -243,17 +243,16 @@ public class BattleActivity extends BaseActivity{
      * @param unit
      */
     protected void updateUnitInfo(Unit unit){
-        if(unit instanceof Soldier){
+        if(unit.getType().equals("soldier")){
             updateUnitList(unit,soldierList);
         }
-        else if(unit instanceof Monster){
+        else if(unit.getType().equals("monster")){
             updateUnitList(unit,monsterList);
         }
     }
 
     protected void updateUnitList(Unit unit, List<Unit> unitList){
         int index = unitList.indexOf(unit);
-        unitList.remove(unit);
-        unitList.add(index,unit);
+        unitList.get(index).setFields(unit);
     }
 }

@@ -310,7 +310,7 @@ public class MainActivity extends BaseActivity {
             unitAdapter.updateImageByCoords(monsterMap.get(monsterID),UNIT_INIT);
         }
         //update coordinate and cache it
-        unitAdapter.updateImageByCoords(m.getCoord(),getImageID(this,m.getType()));
+        unitAdapter.updateImageByCoords(m.getCoord(),getImageID(this,m.getName()));
         monsterMap.put(monsterID,m.getCoord());
     }
 
