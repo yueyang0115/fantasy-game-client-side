@@ -13,9 +13,7 @@ public class Building implements Serializable {
 
     private String name;
 
-    @JsonBackReference
-//    @JsonIgnore
-    private Territory territory;
+    private WorldCoord coord;
 
     public Building() {
     }
@@ -40,12 +38,12 @@ public class Building implements Serializable {
         this.name = name;
     }
 
-    public Territory getTerritory() {
-        return territory;
+    public WorldCoord getCoord() {
+        return coord;
     }
 
-    public void setTerritory(Territory territory) {
-        this.territory = territory;
+    public void setCoord(WorldCoord coord) {
+        this.coord = coord;
     }
 }
 
