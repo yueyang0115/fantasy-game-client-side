@@ -23,7 +23,7 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private static final int WIDTH = 5;
     private static final int HEIGHT = 7;
-    private static final int CENTER = 17;
+    private static final int CENTER = WIDTH * HEIGHT / 2;
     private static String TAG = "ImageAdapter";
     private Integer initImageID;
     private WorldCoord currCoord;//current virtual coordinate
@@ -70,7 +70,7 @@ public class ImageAdapter extends BaseAdapter {
 
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(220, 220));
+            imageView.setLayoutParams(new GridView.LayoutParams(1100/WIDTH, 1100/WIDTH));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         }

@@ -157,6 +157,10 @@ public class BattleActivity extends BaseActivity{
                 for (Unit u : monsterList) {
                     unitMap.put(u.getId(), u);
                 }
+                seqList.clear();
+                for(Integer i : initInfo.getUnits()){
+                    seqList.add(new Unit(unitMap.get(i)));
+                }
             } else {
                 //battle has already begun, handle received battle actions
                 for (BattleAction action : m.getActions()) {
@@ -224,7 +228,7 @@ public class BattleActivity extends BaseActivity{
         //update sequence list
         seqList.clear();
         for(Integer i : action.getUnits()){
-            seqList.add(unitMap.get(i));
+            seqList.add(new Unit(unitMap.get(i)));
         }
         //update soldier and monster list
         updateUnitInfo(attacker);

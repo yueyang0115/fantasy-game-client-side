@@ -13,6 +13,7 @@ import com.example.fantasyclient.MainActivity;
 import com.example.fantasyclient.R;
 import com.example.fantasyclient.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UnitImageAdapter extends ArrayAdapter<Unit> {
@@ -26,7 +27,7 @@ public class UnitImageAdapter extends ArrayAdapter<Unit> {
     }
 
     public UnitImageAdapter(Context context, List<Unit> objects) {
-        super(context, 0, objects);
+        super(context, 0, new ArrayList<>(objects));
     }
 
     @SuppressLint("SetTextI18n")

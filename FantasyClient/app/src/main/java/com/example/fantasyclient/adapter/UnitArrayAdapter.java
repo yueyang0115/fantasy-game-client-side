@@ -13,6 +13,7 @@ import com.example.fantasyclient.MainActivity;
 import com.example.fantasyclient.R;
 import com.example.fantasyclient.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UnitArrayAdapter extends ArrayAdapter<Unit> {
@@ -26,7 +27,7 @@ public class UnitArrayAdapter extends ArrayAdapter<Unit> {
     }
 
     public UnitArrayAdapter(Context context, List<Unit> objects) {
-        super(context, 0, objects);
+        super(context, 0, new ArrayList<>(objects));
     }
 
     @SuppressLint("SetTextI18n")
@@ -57,6 +58,7 @@ public class UnitArrayAdapter extends ArrayAdapter<Unit> {
         viewHolder.unitID.setText("ID: "+ unit.getId());
         viewHolder.unitHp.setText("HP: "+ unit.getHp());
         viewHolder.unitAtk.setText("ATK: "+ unit.getAtk());
+        viewHolder.unitSpeed.setText("SPD: "+ unit.getSpeed());
         viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getName()));
         // Return the completed view to render on screen
         return convertView;
