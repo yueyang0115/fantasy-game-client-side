@@ -3,6 +3,7 @@ package com.example.fantasyclient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,6 +14,7 @@ import com.example.fantasyclient.adapter.*;
 import com.example.fantasyclient.json.*;
 import com.example.fantasyclient.model.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +29,7 @@ public class BattleActivity extends BaseActivity{
     List<Unit> soldierList = new ArrayList<>();
     List<Unit> monsterList = new ArrayList<>();
     List<Unit> seqList = new ArrayList<>();
+    List<Integer> defeatedMonsters = new ArrayList<>();//List to store defeated monsters
     Unit currSoldier, currMonster;//current attacker and attackee
     UnitArrayAdapter soldierAdapter, monsterAdapter;
     UnitImageAdapter seqAdapter;
@@ -203,6 +206,7 @@ public class BattleActivity extends BaseActivity{
                 break;
             case "win":
                 setResult(RESULT_WIN, intent);
+                intent.putIntegerArrayListExtra("defeatedMonsters", (ArrayList<Integer>) defeatedMonsters);
                 break;
             case "lose":
                 setResult(RESULT_LOSE, intent);
@@ -257,6 +261,12 @@ public class BattleActivity extends BaseActivity{
 
     protected void updateUnitList(Unit unit, List<Unit> unitList){
         int index = unitList.indexOf(unit);
-        unitList.get(index).setFields(unit);
+        if(unit.getHp() > 0) {
+            unitList.get(index).setFields(unit);
+        }
+        else{
+            unitList.remove(unit);
+            defeatedMonsters.add(unit.getId());
+        }
     }
 }

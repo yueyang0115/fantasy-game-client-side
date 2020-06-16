@@ -363,6 +363,10 @@ public class MainActivity extends BaseActivity {
                 //check the result of battle
                 if(resultCode == RESULT_WIN){
                     unitAdapter.updateImageByCoords(currTerr.getCoord(), UNIT_INIT);
+                    List<Integer> defeatedMonsters = data.getIntegerArrayListExtra("defeatedMonsters");
+                    for(Integer i : defeatedMonsters){
+                        monsterMap.remove(i);
+                    }
                 }
                 break;
             case SHOP:
