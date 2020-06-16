@@ -3,7 +3,7 @@ package com.example.fantasyclient.json;
 public class InventoryRequestMessage {
 
     private String action;//"list" "use" "drop"
-    private int itemPackID;
+    private int inventoryID;
     private int unitID;
 
     public InventoryRequestMessage() {
@@ -13,9 +13,9 @@ public class InventoryRequestMessage {
         this.action = action;
     }
 
-    public InventoryRequestMessage(String action, int itemPackID, int unitID) {
+    public InventoryRequestMessage(String action, int inventoryID, int unitID) {
         this.action = action;
-        this.itemPackID = itemPackID;
+        this.inventoryID = inventoryID;
         this.unitID = unitID;
     }
 
@@ -27,12 +27,12 @@ public class InventoryRequestMessage {
         this.action = action;
     }
 
-    public int getItemPackID() {
-        return itemPackID;
+    public int getInventoryID() {
+        return inventoryID;
     }
 
-    public void setItemPackID(int itemPackID) {
-        this.itemPackID = itemPackID;
+    public void setInventoryID(int inventoryID) {
+        this.inventoryID = inventoryID;
     }
 
     public int getUnitID() {

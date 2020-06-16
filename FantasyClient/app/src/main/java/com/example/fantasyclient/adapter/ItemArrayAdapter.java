@@ -13,6 +13,9 @@ import android.widget.TextView;
 import com.example.fantasyclient.R;
 import com.example.fantasyclient.model.Inventory;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +60,21 @@ public class ItemArrayAdapter extends ArrayAdapter<Inventory> {
 
         // Populate the data into the template view using the data object
         assert inventory != null;
-        viewHolder.itemName.setText("Name:"+inventory.getDBItem().getName());
-        viewHolder.itemCost.setText("Cost: "+ inventory.getDBItem().getCost());
+
+        //get inventory properties from inventory.getDBItem().getItem_properties()
+        JSONObject jsonObject;
+        String name = "";
+        int cost = 0;
+        try {
+            jsonObject = new JSONObject(inventory.getDBItem().getItem_properties());
+            name = jsonObject.getString("name");
+            cost = jsonObject.getInt("cost");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        viewHolder.itemName.setText("Name:"+name);
+        viewHolder.itemCost.setText("Cost: "+ cost);
         viewHolder.itemAmount.setText("Amount: "+ inventory.getAmount());
         viewHolder.itemNumPicker.setMaxValue(inventory.getAmount());
         viewHolder.itemNumPicker.setMinValue(0);

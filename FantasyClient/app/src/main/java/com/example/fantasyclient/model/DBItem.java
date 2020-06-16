@@ -45,28 +45,6 @@ public class DBItem implements Serializable {
         this.item_properties = item_properties;
     }
 
-    public String getName(){
-        String name = "";
-        try {
-            JSONObject jsonObject = new JSONObject(item_properties);
-            name = jsonObject.getString("name");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return name;
-    }
-
-    public int getCost(){
-        int cost = 0;
-        try {
-            JSONObject jsonObject = new JSONObject(item_properties);
-            cost = jsonObject.getInt("cost");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return cost;
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public boolean equals(Object o) {
