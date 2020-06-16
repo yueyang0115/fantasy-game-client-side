@@ -266,7 +266,7 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
             intent.putExtra("territoryCoord", currTerr.getCoord());
-            /*intent.putExtra("ShopID", currTerr.getBuilding().getId());*/
+            intent.putExtra("ShopID", buildingMap.get(currTerr.getCoord()));
             startActivityForResult(intent, SHOP);
         }
     }
