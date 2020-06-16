@@ -95,9 +95,11 @@ public class BattleActivity extends BaseActivity{
                 else{
                     if(currMonster == null || currMonster.getHp() <= 0){
                         currMonster = monsterList.get(0);
+                        selectMonster(0);
                     }
                     if(currSoldier == null || currSoldier.getHp() <= 0){
                         currSoldier = soldierList.get(0);
+                        selectSoldier(0);
                     }
                     socketService.enqueue(new MessagesC2S(new BattleRequestMessage(territoryCoord,"attack",
                             new BattleAction(new Unit(currSoldier),new Unit(currMonster),"normal"))));
@@ -128,14 +130,44 @@ public class BattleActivity extends BaseActivity{
         soldierListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currSoldier = new Unit((Unit) parent.getItemAtPosition(position));
+                currSoldier = (Unit) parent.getItemAtPosition(position);
+                selectSoldier(position);
             }
         });
 
         monsterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currMonster = new Unit((Unit) parent.getItemAtPosition(position));
+                currMonster = (Unit) parent.getItemAtPosition(position);
+                selectMonster(position);
+            }
+        });
+    }
+
+    /**
+     * These two methods select specific unit in list and update UI to show it
+     * @param position selected position
+     */
+    private void selectSoldier(int position){
+        soldierAdapter.setCurrPosition(position);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                soldierAdapter.clear();
+                soldierAdapter.addAll(soldierList);
+                soldierAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void selectMonster(int position){
+        monsterAdapter.setCurrPosition(position);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                monsterAdapter.clear();
+                monsterAdapter.addAll(monsterList);
+                monsterAdapter.notifyDataSetChanged();
             }
         });
     }

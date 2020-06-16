@@ -2,6 +2,9 @@ package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import java.util.List;
 public class UnitArrayAdapter extends ArrayAdapter<Unit> {
 
     private static final String TAG = "SoldierArrayAdapter";
+    private int currPosition = 0;
 
     //View lookup cache
     private static class ViewHolder{
@@ -59,8 +63,43 @@ public class UnitArrayAdapter extends ArrayAdapter<Unit> {
         viewHolder.unitHp.setText("HP: "+ unit.getHp());
         viewHolder.unitAtk.setText("ATK: "+ unit.getAtk());
         viewHolder.unitSpeed.setText("SPD: "+ unit.getSpeed());
-        viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getName()));
+        setImageByPosition(viewHolder.unitImg, position, MainActivity.getImageID(getContext(),unit.getName()));
+        //viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getName()));
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    /**
+     * This method distinguish specific territories from others:
+     * 1. center territory
+     * @param imageView target image view to set
+     * @param position position of the image view
+     * @param imageID image resource to set
+     */
+    private void setImageByPosition(ImageView imageView, int position, int imageID){
+        if(position == currPosition){
+            imageView.setImageDrawable(getCenterDrawable(imageID));
+        }
+        else {
+            imageView.setImageResource(imageID);
+        }
+    }
+
+    /**
+     * This method generate a multi-layer drawable, which is used to:
+     * 1. put a green frame in the center of the map to show the current location
+     * @param imageID background image ID
+     * @return multi-layer drawable
+     */
+    private LayerDrawable getCenterDrawable(int imageID){
+        Resources r = this.getContext().getResources();
+        Drawable[] layers = new Drawable[2];
+        layers[0] = r.getDrawable(imageID);
+        layers[1] = r.getDrawable(R.drawable.green_frame);
+        return new LayerDrawable(layers);
+    }
+
+    public void setCurrPosition(int position){
+        currPosition = position;
     }
 }
