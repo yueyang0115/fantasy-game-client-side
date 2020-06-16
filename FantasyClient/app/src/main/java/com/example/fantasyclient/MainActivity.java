@@ -61,7 +61,8 @@ public class MainActivity extends BaseActivity {
     //map data
     SimpleLocation location;//used to track current location
     Territory currTerr = new Territory(new WorldCoord(0,0));//used to track current territory
-    Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data
+    Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data, Integer to Coord because need to check monsters' ID when receiving monster data
+    Map<WorldCoord, Integer> buildingMap = new HashMap<>();//cached building data, Coord to Integer because need to check building coordinates when receiving building data
 
     //fields to show map
     ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
@@ -99,7 +100,7 @@ public class MainActivity extends BaseActivity {
                 //location.beginUpdates() needs looper
                 Looper.prepare();
                 sendLocationRequest();
-                    //send location request when players change their location
+                //send location request when players change their location
                 location.setListener(new SimpleLocation.Listener() {
                     @Override
                     public void onPositionChanged() {
@@ -239,6 +240,10 @@ public class MainActivity extends BaseActivity {
             updateBuilding(b);
         }
         //update UI
+        updateMapLayers();
+    }
+
+    protected void updateMapLayers(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -291,9 +296,12 @@ public class MainActivity extends BaseActivity {
     protected void updateTerrain(Territory t){
         WorldCoord targetCoord = t.getCoord();
         //check if this territory is current territory
+
+        //FIX
         if(targetCoord == currTerr.getCoord()){
             currTerr = t;
         }
+
         //update terrain layer
         terrainAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getTerrainType()));
     }
@@ -314,8 +322,15 @@ public class MainActivity extends BaseActivity {
         monsterMap.put(monsterID,m.getCoord());
     }
 
+    /**
+     * This method cache building data and update building layer
+     * Since building is unlikely to change territory, receiving new buildings does not require
+     * check existing building cache
+     * @param b
+     */
     protected void updateBuilding(Building b){
         buildingAdapter.updateImageByCoords(b.getCoord(),getImageID(this,b.getName()));
+        buildingMap.put(b.getCoord(),b.getId());
     }
 
     /**
@@ -376,12 +391,15 @@ public class MainActivity extends BaseActivity {
         terrainAdapter = new ImageAdapter(this, currTerr.getCoord());
         unitAdapter = new ImageAdapter(this, currTerr.getCoord());
         buildingAdapter = new ImageAdapter(this, currTerr.getCoord());
+
         adapterList.add(terrainAdapter);
         adapterList.add(unitAdapter);
         adapterList.add(buildingAdapter);
+
         terrainAdapter.initImage(TERRAIN_INIT);
         unitAdapter.initImage(UNIT_INIT);
         buildingAdapter.initImage(UNIT_INIT);
+
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
@@ -392,15 +410,18 @@ public class MainActivity extends BaseActivity {
         unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //check if click on the center territory
                 if(position==CENTER){
+                    //check if current territory has monsters
                     if(monsterMap.containsValue(currTerr.getCoord())) {
                         socketService.enqueue(new MessagesC2S(
                                 new BattleRequestMessage(currTerr.getCoord(), "start")));
                     }
-                    /*else if(currTerr.getBuilding()!=null){
+                    //check if current territory has buildings
+                    else if(buildingMap.containsKey(currTerr.getCoord())){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(currTerr.getBuilding().getId(),"list")));
-                    }*/
+                                new ShopRequestMessage(buildingMap.get(currTerr.getCoord()),"list")));
+                    }
                 }
             }
         });

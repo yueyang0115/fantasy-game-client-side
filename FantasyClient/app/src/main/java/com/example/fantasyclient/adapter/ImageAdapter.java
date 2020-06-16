@@ -37,13 +37,22 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return imageMap.size();
+        return WIDTH * HEIGHT;
     }
 
     public Integer getItem(int position) {
         int dx = position % WIDTH - WIDTH / 2;
         int dy = HEIGHT / 2 - position / WIDTH;
         return imageMap.get(new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY()));
+
+        /*WorldCoord tempCoord = new WorldCoord(dx + currCoord.getX(), dy + currCoord.getY());
+        Integer imageID = imageMap.get(tempCoord);
+        if(imageID == null){
+            return initImageID;
+        }
+        else{
+            return imageID;
+        }*/
     }
 
     public long getItemId(int position) {
