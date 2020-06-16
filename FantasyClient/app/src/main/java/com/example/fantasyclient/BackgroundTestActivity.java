@@ -11,8 +11,8 @@ import com.example.fantasyclient.model.WorldCoord;
 public class BackgroundTestActivity extends BaseActivity {
 
     Button btnTest;
-    ImageAdapter terrainAdapter = new ImageAdapter(this);
-    ImageAdapter unitAdapter = new ImageAdapter(this);
+    ImageAdapter terrainAdapter = new ImageAdapter(this, new WorldCoord());
+    ImageAdapter unitAdapter = new ImageAdapter(this, new WorldCoord());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

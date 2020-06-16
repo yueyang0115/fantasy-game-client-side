@@ -50,6 +50,11 @@ public class Territory implements Serializable {
         this.coord = coord;
     }
 
+    public void updateCoord(WorldCoord coord){
+        this.coord.setY(coord.getY());
+        this.coord.setX(coord.getX());
+    }
+
     public String getTerrainType() {
         return terrainType;
     }

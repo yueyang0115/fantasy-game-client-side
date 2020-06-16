@@ -31,8 +31,9 @@ public class ImageAdapter extends BaseAdapter {
     private List<WorldCoord> queriedCoords = new ArrayList<>();//coordinates to ask from server
 
     // Constructor
-    public ImageAdapter(Context c) {
+    public ImageAdapter(Context c, WorldCoord coord) {
         mContext = c;
+        currCoord = coord;
     }
 
     public int getCount() {
@@ -71,35 +72,43 @@ public class ImageAdapter extends BaseAdapter {
 
         //check if current coordinate has been cached in map
         WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
+        int imageID = initImageID;
         if(imageMap.containsKey(coord)) {
             //already cached, show the cached image
-            if(position == CENTER){
-                Resources r = mContext.getResources();
-                Drawable[] layers = new Drawable[2];
-                layers[0] = r.getDrawable(imageMap.get(coord));
-                layers[1] = r.getDrawable(R.drawable.green_frame);
-                LayerDrawable layerDrawable = new LayerDrawable(layers);
-                imageView.setImageDrawable(layerDrawable);
-            }
-            else {
-                imageView.setImageResource(imageMap.get(coord));
-            }
+            imageID = imageMap.get(coord);
         }
-        else{
-            if(position == CENTER){
-                Resources r = mContext.getResources();
-                Drawable[] layers = new Drawable[2];
-                layers[0] = r.getDrawable(initImageID);
-                layers[1] = r.getDrawable(R.drawable.green_frame);
-                LayerDrawable layerDrawable = new LayerDrawable(layers);
-                imageView.setImageDrawable(layerDrawable);
-            }
-            else {
-                //not cached yet, show initial image
-                imageView.setImageResource(initImageID);
-            }
-        }
+        setImageByPosition(imageView,position,imageID);
         return imageView;
+    }
+
+    /**
+     * This method distinguish specific territories from others:
+     * 1. center territory
+     * @param imageView target image view to set
+     * @param position position of the image view
+     * @param imageID image resource to set
+     */
+    private void setImageByPosition(ImageView imageView, int position, int imageID){
+        if(position == CENTER){
+            imageView.setImageDrawable(getCenterDrawable(imageID));
+        }
+        else {
+            imageView.setImageResource(imageID);
+        }
+    }
+
+    /**
+     * This method generate a multi-layer drawable, which is used to:
+     * 1. put a green frame in the center of the map to show the current location
+     * @param imageID background image ID
+     * @return multi-layer drawable
+     */
+    private LayerDrawable getCenterDrawable(int imageID){
+        Resources r = mContext.getResources();
+        Drawable[] layers = new Drawable[2];
+        layers[0] = r.getDrawable(imageID);
+        layers[1] = r.getDrawable(R.drawable.green_frame);
+        return new LayerDrawable(layers);
     }
 
     /**
@@ -115,7 +124,8 @@ public class ImageAdapter extends BaseAdapter {
      * @param coord current coordinate
      */
     public void updateCurrCoord(WorldCoord coord){
-        currCoord = coord;
+        currCoord.setX(coord.getX());
+        currCoord.setY(coord.getY());
         //query for the territories if not cached
         for(int i = - WIDTH / 2; i <= WIDTH / 2; i++){
             for(int j = - HEIGHT / 2; j <= HEIGHT / 2; j++){

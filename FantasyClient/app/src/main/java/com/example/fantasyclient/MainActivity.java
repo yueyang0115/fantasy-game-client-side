@@ -186,7 +186,7 @@ public class MainActivity extends BaseActivity {
         //check if current location has changed
         if(!tempCoord.equals(currTerr.getCoord())) {
             //update current coordinate of all layers of map, and queryList as well
-            currTerr.setCoord(tempCoord);
+            currTerr.updateCoord(tempCoord);
             for (ImageAdapter adapter : adapterList) {
                 adapter.updateCurrCoord(currTerr.getCoord());
             }
@@ -373,9 +373,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        terrainAdapter = new ImageAdapter(this);
-        unitAdapter = new ImageAdapter(this);
-        buildingAdapter = new ImageAdapter(this);
+        terrainAdapter = new ImageAdapter(this, currTerr.getCoord());
+        unitAdapter = new ImageAdapter(this, currTerr.getCoord());
+        buildingAdapter = new ImageAdapter(this, currTerr.getCoord());
         adapterList.add(terrainAdapter);
         adapterList.add(unitAdapter);
         adapterList.add(buildingAdapter);
