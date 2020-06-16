@@ -13,9 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class DBItem {
+public class DBItem implements Serializable {
     private String item_class;
     private String item_properties;
 

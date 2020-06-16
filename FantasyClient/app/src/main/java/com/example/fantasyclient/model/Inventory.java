@@ -1,6 +1,8 @@
 package com.example.fantasyclient.model;
 
-public class Inventory {
+import java.io.Serializable;
+
+public class Inventory implements Serializable {
     private int id;
 
     private DBItem item;

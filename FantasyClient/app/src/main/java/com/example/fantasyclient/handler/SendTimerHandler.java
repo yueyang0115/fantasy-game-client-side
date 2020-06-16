@@ -5,10 +5,8 @@ import com.example.fantasyclient.helper.MessageSender;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
-import com.example.fantasyclient.model.VirtualPosition;
 import com.example.fantasyclient.model.WorldCoord;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 

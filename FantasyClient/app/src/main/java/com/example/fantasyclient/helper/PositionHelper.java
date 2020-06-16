@@ -1,6 +1,5 @@
 package com.example.fantasyclient.helper;
 
-import com.example.fantasyclient.model.VirtualPosition;
 import com.example.fantasyclient.model.WorldCoord;
 
 public class PositionHelper {
