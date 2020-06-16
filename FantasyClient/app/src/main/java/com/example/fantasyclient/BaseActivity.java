@@ -39,6 +39,10 @@ public class BaseActivity extends Activity {
     static final int RESULT_ESCAPED = RESULT_CANCELED;
     static final int RESULT_WIN = RESULT_OK;
     static final int RESULT_LOSE = RESULT_FIRST_USER;
+    static final int BATTLE = 2;//request code for battle
+    static final int SHOP = 3;//request code for shop
+    static final int INVENTORY = 4;//request code for inventory
+    static final int CENTER = 17;//center of the map
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -20,20 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemArrayAdapter extends ArrayAdapter<Inventory> {
+public class ItemArrayAdapter extends InventoryAdapter {
 
     //Map to store numbers of items to act on
     private Map<Integer,Integer> itemMap = new HashMap<>();
     private static final String TAG = "ItemArrayAdapter";
 
-    //View lookup cache
-    private static class ViewHolder{
-        TextView itemName, itemCost, itemAmount;
-        NumberPicker itemNumPicker;
-    }
-
     public ItemArrayAdapter(Context context, List<Inventory> objects) {
-        super(context, 0, objects);
+        super(context, objects);
     }
 
     @SuppressLint("SetTextI18n")

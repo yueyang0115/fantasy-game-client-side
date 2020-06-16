@@ -11,6 +11,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.example.fantasyclient.R;
+import com.example.fantasyclient.helper.AdapterHelper;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
@@ -98,26 +99,7 @@ public class ImageAdapter extends BaseAdapter {
      * @param imageID image resource to set
      */
     private void setImageByPosition(ImageView imageView, int position, int imageID){
-        if(position == CENTER){
-            imageView.setImageDrawable(getCenterDrawable(imageID));
-        }
-        else {
-            imageView.setImageResource(imageID);
-        }
-    }
-
-    /**
-     * This method generate a multi-layer drawable, which is used to:
-     * 1. put a green frame in the center of the map to show the current location
-     * @param imageID background image ID
-     * @return multi-layer drawable
-     */
-    private LayerDrawable getCenterDrawable(int imageID){
-        Resources r = mContext.getResources();
-        Drawable[] layers = new Drawable[2];
-        layers[0] = r.getDrawable(imageID);
-        layers[1] = r.getDrawable(R.drawable.green_frame);
-        return new LayerDrawable(layers);
+        AdapterHelper.setImageByPosition(mContext, imageView, position, imageID, CENTER);
     }
 
     /**

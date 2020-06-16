@@ -172,6 +172,23 @@ public class BattleActivity extends BaseActivity{
         });
     }
 
+    private void updateEntireUI(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                soldierAdapter.clear();
+                soldierAdapter.addAll(soldierList);
+                soldierAdapter.notifyDataSetChanged();
+                monsterAdapter.clear();
+                monsterAdapter.addAll(monsterList);
+                monsterAdapter.notifyDataSetChanged();
+                seqAdapter.clear();
+                seqAdapter.addAll(seqList);
+                seqAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
     /**
      * This method is called after a MessageS2C with BattleResultMessage is received from server
      * UI and cached map will be updated based on the received message
@@ -202,20 +219,7 @@ public class BattleActivity extends BaseActivity{
                     handleBattleAction(action);
                 }
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    soldierAdapter.clear();
-                    soldierAdapter.addAll(soldierList);
-                    soldierAdapter.notifyDataSetChanged();
-                    monsterAdapter.clear();
-                    monsterAdapter.addAll(monsterList);
-                    monsterAdapter.notifyDataSetChanged();
-                    seqAdapter.clear();
-                    seqAdapter.addAll(seqList);
-                    seqAdapter.notifyDataSetChanged();
-                }
-            });
+            updateEntireUI();
             //after animations are done
             //if battle ends, finish activity
             if(!m.getResult().equals("continue")){
@@ -304,5 +308,39 @@ public class BattleActivity extends BaseActivity{
                 defeatedMonsters.add(unit.getId());
             }
         }
+    }
+
+    /**
+     * This method is called after returning from inventory activity
+     */
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //check the previous activity
+        switch(requestCode){
+            case BATTLE:
+            case SHOP:
+                break;
+            case INVENTORY:
+                socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("list")));
+                handleRecvMessage(socketService.dequeue());
+                break;
+            default:
+                Log.e(TAG,"Invalid request code");
+        }
+    }
+
+    @Override
+    protected void checkAttributeResult(AttributeResultMessage m){
+        soldierList = new ArrayList<Unit>(m.getSoldiers());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                soldierAdapter.clear();
+                soldierAdapter.addAll(soldierList);
+                soldierAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }
