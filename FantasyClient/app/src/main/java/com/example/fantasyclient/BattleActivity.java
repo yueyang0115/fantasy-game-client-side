@@ -93,14 +93,14 @@ public class BattleActivity extends BaseActivity{
                     Log.e(TAG,"Battle has already ends");
                 }
                 else{
-                    if(currMonster == null){
-                        currMonster = new Unit(monsterList.get(0));
+                    if(currMonster == null || currMonster.getHp() <= 0){
+                        currMonster = monsterList.get(0);
                     }
-                    if(currSoldier == null){
-                        currSoldier = new Unit(soldierList.get(0));
+                    if(currSoldier == null || currSoldier.getHp() <= 0){
+                        currSoldier = soldierList.get(0);
                     }
                     socketService.enqueue(new MessagesC2S(new BattleRequestMessage(territoryCoord,"attack",
-                            new BattleAction(currSoldier,currMonster,"normal"))));
+                            new BattleAction(new Unit(currSoldier),new Unit(currMonster),"normal"))));
                     handleRecvMessage(socketService.dequeue());
                 }
 
@@ -260,13 +260,17 @@ public class BattleActivity extends BaseActivity{
     }
 
     protected void updateUnitList(Unit unit, List<Unit> unitList){
+        //find original index of this unit
         int index = unitList.indexOf(unit);
-        if(unit.getHp() > 0) {
-            unitList.get(index).setFields(unit);
-        }
-        else{
+        //update its fields
+        unitList.get(index).setFields(unit);
+        //check if it dies in battle
+        if(unit.getHp() <= 0) {
             unitList.remove(unit);
-            defeatedMonsters.add(unit.getId());
+            //if monsters are defeated, store in list and return back to main activity
+            if(unit.getType().equals("monster")) {
+                defeatedMonsters.add(unit.getId());
+            }
         }
     }
 }

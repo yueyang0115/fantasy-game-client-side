@@ -367,6 +367,7 @@ public class MainActivity extends BaseActivity {
                     for(Integer i : defeatedMonsters){
                         monsterMap.remove(i);
                     }
+                    updateMapLayers();
                 }
                 break;
             case SHOP:
