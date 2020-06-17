@@ -14,12 +14,6 @@ import java.util.List;
 
 public abstract class UnitAdapter extends HighlightAdapter<Unit> {
 
-    //View lookup cache
-    static class UnitViewHolder {
-        TextView unitID, unitHp, unitAtk, unitSpeed;
-        ImageView unitImg;
-    }
-
     UnitAdapter(Context context, List<Unit> objects) {
         super(context, objects);
     }

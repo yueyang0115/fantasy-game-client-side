@@ -2,12 +2,13 @@ package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.model.Unit;
+import com.example.fantasyclient.model.*;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class UnitArrayAdapter extends UnitAdapter {
         viewHolder.unitHp.setText("HP: "+ unit.getHp());
         viewHolder.unitAtk.setText("ATK: "+ unit.getAtk());
         viewHolder.unitSpeed.setText("SPD: "+ unit.getSpeed());
-        setImageByPosition(viewHolder.unitImg, position, getImageID(unit.getName()), currPosition);
+        setImageByPosition(viewHolder.unitImg, position, new Drawable[]{getDrawableByName(unit.getName())}, currPosition);
     }
 
 }

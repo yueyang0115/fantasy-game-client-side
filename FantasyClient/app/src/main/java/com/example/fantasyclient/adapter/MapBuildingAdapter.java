@@ -1,6 +1,8 @@
 package com.example.fantasyclient.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.WorldCoord;
@@ -15,7 +17,9 @@ public class MapBuildingAdapter extends MapAdapter<Building> {
     }
 
     @Override
-    protected int getCachedImageID(WorldCoord coord) {
-        return getImageID(imageMap.get(coord).getName());
+    protected Drawable[] getImageDrawables(ImageView imageView, int position, Building building) {
+        return new Drawable[]{
+                getDrawableByName(building.getName())
+        };
     }
 }

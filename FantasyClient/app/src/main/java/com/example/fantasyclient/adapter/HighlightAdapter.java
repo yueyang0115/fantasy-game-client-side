@@ -6,6 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 
 import com.example.fantasyclient.R;
 
@@ -14,9 +16,25 @@ import java.util.List;
 
 public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
 
-    protected int currPosition = 0;
+    int currPosition = 0;
 
-    public HighlightAdapter(Context context, List<T> objects) {
+    //View lookup cache
+    static class UnitViewHolder {
+        TextView unitID, unitHp, unitAtk, unitSpeed;
+        ImageView unitImg;
+    }
+
+    static class InventoryViewHolder {
+        TextView itemName, itemCost, itemAmount;
+        NumberPicker itemNumPicker;
+    }
+
+    static class CustomViewHolder {
+        TextView textView;
+        ImageView imageView;
+    }
+
+    HighlightAdapter(Context context, List<T> objects) {
         super(context, 0, new ArrayList<>(objects));
     }
 
@@ -29,8 +47,9 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
      * @param ImageName
      * @return: Image ID
      */
-    protected int getImageID(String ImageName){
-        return getContext().getResources().getIdentifier(ImageName, "drawable", getContext().getPackageName());
+    Drawable getDrawableByName(String ImageName){
+        Resources resources = getContext().getResources();
+        return resources.getDrawable(resources.getIdentifier(ImageName, "drawable", getContext().getPackageName()));
     }
 
     /**
@@ -38,28 +57,30 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
      * 1. center territory
      * @param imageView target image view to set
      * @param position position of the image view
-     * @param imageID image resource to set
+     * @param drawables background images
      */
-    protected void setImageByPosition(ImageView imageView, int position, int imageID, int currPosition){
+    void setImageByPosition(ImageView imageView, int position, Drawable[] drawables, int currPosition){
         if(position == currPosition){
-            imageView.setImageDrawable(getCenterDrawable(getContext(), imageID));
+            imageView.setImageDrawable(getFrameLayerDrawable(drawables));
         }
         else {
-            imageView.setImageResource(imageID);
+            imageView.setImageDrawable(new LayerDrawable(drawables));
         }
     }
 
     /**
      * This method generate a multi-layer drawable, which is used to:
      * 1. put a green frame in the center of the map to show the current location
-     * @param imageID background image ID
+     * @param drawables background images
      * @return multi-layer drawable
      */
-    private LayerDrawable getCenterDrawable(Context context, int imageID){
-        Resources r = context.getResources();
-        Drawable[] layers = new Drawable[2];
-        layers[0] = r.getDrawable(imageID);
-        layers[1] = r.getDrawable(R.drawable.green_frame);
+    private LayerDrawable getFrameLayerDrawable(Drawable[] drawables){
+        Resources r = getContext().getResources();
+        Drawable[] layers = new Drawable[drawables.length+1];
+        for(int i=0; i<drawables.length; i++){
+            layers[i] = drawables[i];
+        }
+        layers[drawables.length] = r.getDrawable(R.drawable.green_frame);
         return new LayerDrawable(layers);
     }
 }

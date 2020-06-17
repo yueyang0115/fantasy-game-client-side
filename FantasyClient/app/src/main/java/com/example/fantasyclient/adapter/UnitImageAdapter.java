@@ -2,12 +2,13 @@ package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.fantasyclient.MainActivity;
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.model.Unit;
+import com.example.fantasyclient.model.*;
 
 import java.util.List;
 
@@ -29,6 +30,6 @@ public class UnitImageAdapter extends UnitAdapter {
     @SuppressLint("SetTextI18n")
     protected void setView(UnitViewHolder viewHolder, Unit unit, int position){
         // Populate the data into the template view using the data object
-        viewHolder.unitImg.setImageResource(MainActivity.getImageID(getContext(),unit.getName()));
+        viewHolder.unitImg.setImageDrawable(getDrawableByName(unit.getName()));
     }
 }

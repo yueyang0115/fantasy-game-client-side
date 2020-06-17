@@ -59,7 +59,8 @@ public class MainActivity extends BaseActivity {
 
     //map data
     SimpleLocation location;//used to track current location
-    Territory currTerr = new Territory(new WorldCoord(0,0));//used to track current territory
+
+    WorldCoord currCoord = new WorldCoord(0,0);
     Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data, Integer to Coord because need to check monsters' ID when receiving monster data
     Map<WorldCoord, Integer> buildingMap = new HashMap<>();//cached building data, Coord to Integer because need to check building coordinates when receiving building data
 
@@ -186,14 +187,14 @@ public class MainActivity extends BaseActivity {
         WorldCoord tempCoord = new WorldCoord();
         PositionHelper.convertVPosition(tempCoord,location.getLatitude(),location.getLongitude());
         //check if current location has changed
-        if(!tempCoord.equals(currTerr.getCoord())) {
+        if(!tempCoord.equals(currCoord)) {
             //update current coordinate of all layers of map, and queryList as well
-            currTerr.updateCoord(tempCoord);
+            currCoord = tempCoord;
             for (MapAdapter adapter : adapterList) {
-                adapter.updateCurrCoord(currTerr.getCoord());
+                adapter.updateCurrCoord(currCoord);
             }
             //get the coordinates which need to be queried from server
-            List<WorldCoord> queriedCoords = adapterList.get(0).getQueriedCoords();
+            List<WorldCoord> queriedCoords = territoryAdapter.getQueriedCoords();
             //enqueue query message in order to send to server
             PositionRequestMessage p = new PositionRequestMessage(queriedCoords);
             socketService.enqueue(new MessagesC2S(p));
@@ -266,8 +267,8 @@ public class MainActivity extends BaseActivity {
         if (m.getResult().equals("valid")) {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
-            intent.putExtra("territoryCoord", currTerr.getCoord());
-            intent.putExtra("ShopID", buildingMap.get(currTerr.getCoord()));
+            intent.putExtra("territoryCoord", currCoord);
+            intent.putExtra("ShopID", buildingMap.get(currCoord));
             startActivityForResult(intent, SHOP);
         }
     }
@@ -283,7 +284,7 @@ public class MainActivity extends BaseActivity {
         if(m.getResult().equals("continue")){
             Intent intent = new Intent(this,BattleActivity.class);
             intent.putExtra("BattleResultMessage", m);
-            intent.putExtra("territoryCoord", currTerr.getCoord());
+            intent.putExtra("territoryCoord", currCoord);
             startActivityForResult(intent,BATTLE);
         }
     }
@@ -296,12 +297,11 @@ public class MainActivity extends BaseActivity {
      */
     protected void updateTerrain(Territory t){
         WorldCoord targetCoord = t.getCoord();
-        //check if this territory is current territory
 
-        //FIX
-        if(targetCoord == currTerr.getCoord()){
+        /*//check if this territory is current territory
+        if(targetCoord == currCoord){
             currTerr = t;
-        }
+        }*/
 
         //update terrain layer
         territoryAdapter.addToCacheByCoords(targetCoord,t);
@@ -335,15 +335,6 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * This method convert image file name to image ID
-     * @param ImageName
-     * @return: Image ID
-     */
-    public static int getImageID(Context context, String ImageName){
-        return context.getResources().getIdentifier(ImageName, "drawable", context.getPackageName());
-    }
-
-    /**
      * This method is called after "startActivityForResult" is finished
      * It handles different results returned from another activity based on:
      * @param requestCode: determine what the activity is: BATTLE, SHOP
@@ -363,7 +354,7 @@ public class MainActivity extends BaseActivity {
             case BATTLE:
                 //check the result of battle
                 if(resultCode == RESULT_WIN){
-                    unitAdapter.removeFromCacheByCoords(currTerr.getCoord());
+                    unitAdapter.removeFromCacheByCoords(currCoord);
                     List<Integer> defeatedMonsters = data.getIntegerArrayListExtra("defeatedMonsters");
                     for(Integer i : defeatedMonsters){
                         monsterMap.remove(i);
@@ -394,9 +385,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        territoryAdapter = new MapTerritoryAdapter(this, currTerr.getCoord());
-        unitAdapter = new MapUnitAdapter(this, currTerr.getCoord());
-        buildingAdapter = new MapBuildingAdapter(this, currTerr.getCoord());
+        territoryAdapter = new MapTerritoryAdapter(this, currCoord);
+        unitAdapter = new MapUnitAdapter(this, currCoord);
+        buildingAdapter = new MapBuildingAdapter(this, currCoord);
 
         adapterList.add(territoryAdapter);
         adapterList.add(unitAdapter);
@@ -419,14 +410,14 @@ public class MainActivity extends BaseActivity {
                 //check if click on the center territory
                 if(position==CENTER){
                     //check if current territory has monsters
-                    if(monsterMap.containsValue(currTerr.getCoord())) {
+                    if(monsterMap.containsValue(currCoord)) {
                         socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currTerr.getCoord(), "start")));
+                                new BattleRequestMessage(currCoord, "start")));
                     }
                     //check if current territory has buildings
-                    else if(buildingMap.containsKey(currTerr.getCoord())){
+                    else if(buildingMap.containsKey(currCoord)){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(buildingMap.get(currTerr.getCoord()),"list")));
+                                new ShopRequestMessage(buildingMap.get(currCoord),"list")));
                     }
                 }
             }

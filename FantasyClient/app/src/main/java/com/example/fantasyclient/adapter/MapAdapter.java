@@ -1,6 +1,7 @@
 package com.example.fantasyclient.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -12,11 +13,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapAdapter<T> extends HighlightAdapter<T> {
+public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private static final int WIDTH = 5;
     private static final int HEIGHT = 7;
-    private static final int CENTER = WIDTH * HEIGHT / 2;
-    private Integer initImageID;
+    static final int CENTER = WIDTH * HEIGHT / 2;
+    Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
     HashMap<WorldCoord,T> imageMap = new HashMap<>();//HashMap<VirtualCoord, TerritoryImage>
     private List<WorldCoord> queriedCoords = new ArrayList<>();//coordinates to ask from server
@@ -62,17 +63,26 @@ public class MapAdapter<T> extends HighlightAdapter<T> {
 
         //check if current coordinate has been cached in map
         WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
-        int imageID = initImageID;
+        T currT = null;
+        Drawable[] drawables;
         if(imageMap.containsKey(coord)) {
             //already cached, show the cached image
-            imageID = getCachedImageID(coord);
+            currT = getCachedTarget(coord);
+            drawables = getImageDrawables(imageView, position, currT);
         }
-        setImageByPosition(imageView, position, imageID, CENTER);
+        else{
+
+            drawables = new Drawable[]{initImage};
+        }
+
+        setImageByPosition(imageView, position, drawables, CENTER);
         return imageView;
     }
 
-    protected int getCachedImageID(WorldCoord coord){
-        return 0;
+    protected abstract Drawable[] getImageDrawables(ImageView imageView, int position, T t);
+
+    protected T getCachedTarget(WorldCoord coord){
+        return imageMap.get(coord);
     }
 
     /**
@@ -80,7 +90,7 @@ public class MapAdapter<T> extends HighlightAdapter<T> {
      * @param source image ID
      */
     public void initImage(int source){
-        initImageID = source;
+        initImage = getContext().getResources().getDrawable(source);
     }
 
     /**

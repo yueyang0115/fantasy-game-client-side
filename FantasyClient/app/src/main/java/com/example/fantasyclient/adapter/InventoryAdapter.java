@@ -15,11 +15,6 @@ import java.util.List;
 
 public abstract class InventoryAdapter extends HighlightAdapter<Inventory> {
 
-    static class InventoryViewHolder {
-        TextView itemName, itemCost, itemAmount;
-        NumberPicker itemNumPicker;
-    }
-
     InventoryAdapter(Context context, List<Inventory> objects) {
         super(context, objects);
     }
