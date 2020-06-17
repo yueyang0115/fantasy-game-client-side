@@ -17,7 +17,10 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.adapter.ImageAdapter;
+import com.example.fantasyclient.adapter.MapAdapter;
+import com.example.fantasyclient.adapter.MapBuildingAdapter;
+import com.example.fantasyclient.adapter.MapTerritoryAdapter;
+import com.example.fantasyclient.adapter.MapUnitAdapter;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
@@ -61,8 +64,10 @@ public class MainActivity extends BaseActivity {
     Map<WorldCoord, Integer> buildingMap = new HashMap<>();//cached building data, Coord to Integer because need to check building coordinates when receiving building data
 
     //fields to show map
-    ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
-    List<ImageAdapter> adapterList = new ArrayList<>();
+    MapTerritoryAdapter territoryAdapter;
+    MapUnitAdapter unitAdapter;
+    MapBuildingAdapter buildingAdapter;//Adapters for map
+    List<MapAdapter> adapterList = new ArrayList<>();
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
 
     boolean ifPause = false;//flag to stop threads
@@ -184,7 +189,7 @@ public class MainActivity extends BaseActivity {
         if(!tempCoord.equals(currTerr.getCoord())) {
             //update current coordinate of all layers of map, and queryList as well
             currTerr.updateCoord(tempCoord);
-            for (ImageAdapter adapter : adapterList) {
+            for (MapAdapter adapter : adapterList) {
                 adapter.updateCurrCoord(currTerr.getCoord());
             }
             //get the coordinates which need to be queried from server
@@ -243,7 +248,7 @@ public class MainActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                terrainAdapter.notifyDataSetChanged();
+                territoryAdapter.notifyDataSetChanged();
                 unitAdapter.notifyDataSetChanged();
                 buildingAdapter.notifyDataSetChanged();
             }
@@ -299,7 +304,7 @@ public class MainActivity extends BaseActivity {
         }
 
         //update terrain layer
-        terrainAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getTerrainType()));
+        territoryAdapter.addToCacheByCoords(targetCoord,t);
     }
 
     /**
@@ -311,10 +316,10 @@ public class MainActivity extends BaseActivity {
         int monsterID = m.getId();
         //remove from cache if cached
         if(monsterMap.containsKey(monsterID)){
-            unitAdapter.updateImageByCoords(monsterMap.get(monsterID),UNIT_INIT);
+            unitAdapter.removeFromCacheByCoords(monsterMap.get(monsterID));
         }
         //update coordinate and cache it
-        unitAdapter.updateImageByCoords(m.getCoord(),getImageID(this,m.getName()));
+        unitAdapter.addToCacheByCoords(m.getCoord(),m);
         monsterMap.put(monsterID,m.getCoord());
     }
 
@@ -325,7 +330,7 @@ public class MainActivity extends BaseActivity {
      * @param b
      */
     protected void updateBuilding(Building b){
-        buildingAdapter.updateImageByCoords(b.getCoord(),getImageID(this,b.getName()));
+        buildingAdapter.addToCacheByCoords(b.getCoord(),b);
         buildingMap.put(b.getCoord(),b.getId());
     }
 
@@ -358,7 +363,7 @@ public class MainActivity extends BaseActivity {
             case BATTLE:
                 //check the result of battle
                 if(resultCode == RESULT_WIN){
-                    unitAdapter.updateImageByCoords(currTerr.getCoord(), UNIT_INIT);
+                    unitAdapter.removeFromCacheByCoords(currTerr.getCoord());
                     List<Integer> defeatedMonsters = data.getIntegerArrayListExtra("defeatedMonsters");
                     for(Integer i : defeatedMonsters){
                         monsterMap.remove(i);
@@ -389,19 +394,19 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        terrainAdapter = new ImageAdapter(this, currTerr.getCoord());
-        unitAdapter = new ImageAdapter(this, currTerr.getCoord());
-        buildingAdapter = new ImageAdapter(this, currTerr.getCoord());
+        territoryAdapter = new MapTerritoryAdapter(this, currTerr.getCoord());
+        unitAdapter = new MapUnitAdapter(this, currTerr.getCoord());
+        buildingAdapter = new MapBuildingAdapter(this, currTerr.getCoord());
 
-        adapterList.add(terrainAdapter);
+        adapterList.add(territoryAdapter);
         adapterList.add(unitAdapter);
         adapterList.add(buildingAdapter);
 
-        terrainAdapter.initImage(TERRAIN_INIT);
+        territoryAdapter.initImage(TERRAIN_INIT);
         unitAdapter.initImage(UNIT_INIT);
         buildingAdapter.initImage(UNIT_INIT);
 
-        terrainGridView.setAdapter(terrainAdapter);
+        terrainGridView.setAdapter(territoryAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
     }

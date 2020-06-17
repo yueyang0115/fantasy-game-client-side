@@ -1,6 +1,6 @@
 package com.example.fantasyclient.handler;
 
-import com.example.fantasyclient.adapter.ImageAdapter;
+import com.example.fantasyclient.adapter.MapTerritoryAdapter;
 import com.example.fantasyclient.helper.MessageSender;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.MessagesC2S;
@@ -17,7 +17,7 @@ import im.delight.android.location.SimpleLocation;
  */
 public class SendTimerHandler extends TimerHandler {
 
-    public SendTimerHandler(final WorldCoord currCoord, final SimpleLocation location, final List<ImageAdapter> adapterList, final MessageSender messageSender) {
+    public SendTimerHandler(final WorldCoord currCoord, final SimpleLocation location, final List<MapTerritoryAdapter> adapterList, final MessageSender messageSender) {
         super();
         doAsyncTask = new TimerTask() {
             @Override
@@ -30,7 +30,7 @@ public class SendTimerHandler extends TimerHandler {
                         //convert location data to virtual coordinate
                         PositionHelper.convertVPosition(currCoord,location.getLatitude(),location.getLongitude());
                         //update current coordinate of all layers of map
-                        for(ImageAdapter adapter : adapterList){
+                        for(MapTerritoryAdapter adapter : adapterList){
                             adapter.updateCurrCoord(currCoord);
                         }
                         //get the coordinates which need to be queried from server

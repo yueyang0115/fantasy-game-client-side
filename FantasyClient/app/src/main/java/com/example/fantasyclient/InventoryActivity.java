@@ -30,7 +30,7 @@ public class InventoryActivity extends BaseActivity {
     List<Unit> soldierList = new ArrayList<>();
 
     //Adapters to show ListView
-    ItemArrayAdapter inventoryAdapter;
+    InventoryArrayAdapter inventoryAdapter;
     UnitArrayAdapter soldierAdapter;
 
     ListView soldierListView, inventoryListView;
@@ -71,7 +71,7 @@ public class InventoryActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        inventoryAdapter = new ItemArrayAdapter(this, inventoryItemList);
+        inventoryAdapter = new InventoryArrayAdapter(this, inventoryItemList);
         inventoryListView.setAdapter(inventoryAdapter);
         soldierAdapter = new UnitArrayAdapter(this, soldierList);
         soldierListView.setAdapter(soldierAdapter);

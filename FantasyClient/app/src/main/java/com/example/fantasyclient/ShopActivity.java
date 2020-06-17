@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.adapter.ItemArrayAdapter;
+import com.example.fantasyclient.adapter.InventoryArrayAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
@@ -33,7 +33,7 @@ public class ShopActivity extends BaseActivity {
     List<Inventory> inventoryItemList = new ArrayList<>();
 
     //Adapters to show ListView
-    ItemArrayAdapter shopAdapter, inventoryAdapter;
+    InventoryArrayAdapter shopAdapter, inventoryAdapter;
     ListView shopListView, inventoryListView;
 
     //Cached messages passed by other activities
@@ -69,9 +69,9 @@ public class ShopActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        inventoryAdapter = new ItemArrayAdapter(this, inventoryItemList);
+        inventoryAdapter = new InventoryArrayAdapter(this, inventoryItemList);
         inventoryListView.setAdapter(inventoryAdapter);
-        shopAdapter = new ItemArrayAdapter(this, shopInventoryList);
+        shopAdapter = new InventoryArrayAdapter(this, shopInventoryList);
         shopListView.setAdapter(shopAdapter);
     }
 
