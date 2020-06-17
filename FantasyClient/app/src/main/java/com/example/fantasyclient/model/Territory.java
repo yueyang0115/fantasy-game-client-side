@@ -6,42 +6,23 @@ import java.util.List;
 
 public class Territory implements Serializable {
 
-    private int id;
-    private int wid;
-    private int x;
-    private int y;
+    private WorldCoord coord;
+
     private String status;
 
-//    @JsonManagedReference
-    private List<Monster> monsters = new ArrayList<>();
-
-    private Terrain terrain;
-
-//    @JsonManagedReference
-    private Building building;
-
-    public Building getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(Building building) {
-        this.building = building;
-    }
+    private String terrainType;
 
     public Territory(){
     }
 
-    public Territory(int wid,int x,int y, String status){
-        this.wid = wid;
-        this.x = x;
-        this.y = y;
-        this.status = status;
+    public Territory(WorldCoord coord){
+        this.coord = coord;
     }
 
     @Override
     public boolean equals(Object e) {
         if ( e instanceof Territory &&
-                this.id == ((Territory)e).getId())
+                this.coord == ((Territory)e).getCoord())
             return true;
         else
             return false;
@@ -49,40 +30,8 @@ public class Territory implements Serializable {
 
     @Override
     public int hashCode() {
-        Integer tempID = id;
+        Integer tempID = this.coord.getWid();
         return tempID.hashCode();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getWid() {
-        return wid;
-    }
-
-    public void setWid(int wid) {
-        this.wid = wid;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public String getStatus() {
@@ -93,19 +42,24 @@ public class Territory implements Serializable {
         this.status = status;
     }
 
-    public List<Monster> getMonsters() {
-        return monsters;
+    public WorldCoord getCoord() {
+        return coord;
     }
 
-    public void setMonsters(List<Monster> monsters) {
-        this.monsters = monsters;
+    public void setCoord(WorldCoord coord) {
+        this.coord = coord;
     }
 
-    public Terrain getTerrain() {
-        return terrain;
+    public void updateCoord(WorldCoord coord){
+        this.coord.setY(coord.getY());
+        this.coord.setX(coord.getX());
     }
 
-    public void setTerrain(Terrain terrain) {
-        this.terrain = terrain;
+    public String getTerrainType() {
+        return terrainType;
+    }
+
+    public void setTerrainType(String terrainType) {
+        this.terrainType = terrainType;
     }
 }

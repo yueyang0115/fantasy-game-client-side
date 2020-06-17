@@ -21,113 +21,11 @@
             android:layout_height="match_parent"
             android:baselineAligned="false"
             tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/monster2_bar"
-                android:layout_weight="1"
+            <ListView
+                android:id="@+id/monster_list"
                 android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/monster2_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/wolf_battle" />
-
-                <LinearLayout
-                    android:id="@+id/monster2_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/monster2_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/monster2_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/monster1_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/monster1_view"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    app:srcCompat="@drawable/wolf_battle" />
-
-                <LinearLayout
-                    android:id="@+id/monster1_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/monster1_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/monster1_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/monster3_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/monster3_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/wolf_battle" />
-
-                <LinearLayout
-                    android:id="@+id/monster3_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/monster3_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/monster3_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
+                android:layout_height="wrap_content" >
+            </ListView>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/soldier_bar"
@@ -137,112 +35,11 @@
             android:layout_height="match_parent"
             android:baselineAligned="false"
             tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/soldier2_bar"
-                android:layout_weight="1"
+            <ListView
+                android:id="@+id/soldier_list"
                 android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/soldier2_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-
-                <LinearLayout
-                    android:id="@+id/soldier2_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/soldier2_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/soldier2_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/soldier1_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-
-                <ImageView
-                    android:id="@+id/soldier1_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-
-                <LinearLayout
-                    android:id="@+id/soldier1_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/soldier1_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/soldier1_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/soldier3_bar"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-                <ImageView
-                    android:id="@+id/soldier3_view"
-                    android:layout_width="150dp"
-                    android:layout_gravity="right"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-
-                <LinearLayout
-                    android:id="@+id/soldier3_attribute_bar"
-                    android:layout_width="85dp"
-                    android:layout_height="match_parent"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    tools:ignore="NestedWeights">
-
-                    <TextView
-                        android:id="@+id/soldier3_hp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="" />
-
-                    <TextView
-                        android:id="@+id/soldier3_atk"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-
-                </LinearLayout>
-            </FrameLayout>
+                android:layout_height="wrap_content" >
+            </ListView>
 
         </LinearLayout>
     </LinearLayout>
@@ -334,59 +131,11 @@
             android:layout_height="match_parent"
             android:baselineAligned="false"
             tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/sequence1"
-                android:layout_weight="1"
+            <ListView
+                android:id="@+id/sequence_list"
                 android:layout_width="match_parent"
-                android:layout_height="0dp">
-
-                <ImageView
-                    android:id="@+id/sequence1_view"
-                    android:layout_width="50dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/sequence2"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-
-                <ImageView
-                    android:id="@+id/sequence2_view"
-                    android:layout_width="50dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/wolf_battle" />
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/sequence3"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-
-                <ImageView
-                    android:id="@+id/sequence3_view"
-                    android:layout_width="50dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/pichachu_battle" />
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/sequence4"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-
-                <ImageView
-                    android:id="@+id/sequence4_view"
-                    android:layout_width="50dp"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/wolf_battle" />
-            </FrameLayout>
-
+                android:layout_height="wrap_content" >
+            </ListView>
         </LinearLayout>
     </LinearLayout>
 

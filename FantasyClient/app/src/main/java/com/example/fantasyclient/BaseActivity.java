@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
@@ -18,6 +19,10 @@ import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
+
+import java.util.Objects;
+
+import static com.example.fantasyclient.MainActivity.INVENTORY;
 
 /**
  * This is base activity which contains several basic methods for all activities:
@@ -34,6 +39,10 @@ public class BaseActivity extends Activity {
     static final int RESULT_ESCAPED = RESULT_CANCELED;
     static final int RESULT_WIN = RESULT_OK;
     static final int RESULT_LOSE = RESULT_FIRST_USER;
+    static final int BATTLE = 2;//request code for battle
+    static final int SHOP = 3;//request code for shop
+    static final int INVENTORY = 4;//request code for inventory
+    static final int CENTER = 17;//center of the map
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +152,24 @@ public class BaseActivity extends Activity {
 
     protected void checkShopResult(ShopResultMessage m){}
 
-    protected void checkInventoryResult(InventoryResultMessage m){}
+    /**
+     * This method is called after a MessageS2C with InventoryResultMessage is received from server
+     * After ShopResultMessage is also received, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
+    protected void checkInventoryResult(InventoryResultMessage m){
+        if (m.getResult().equals("valid")) {
+            Intent intent = new Intent(this, InventoryActivity.class);
+            intent.putExtra("InventoryResultMessage", m);
+            startActivityForResult(intent, INVENTORY);
+        }
+    }
+
+    protected void updateAdapter(ArrayAdapter a, Object object){
+        a.clear();
+        a.addAll(object);
+        a.notifyDataSetChanged();
+    }
 
     /**
      * these methods are for service

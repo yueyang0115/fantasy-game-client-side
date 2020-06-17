@@ -17,7 +17,7 @@
             android:numColumns="10"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:verticalSpacing="-23dp"
+            android:verticalSpacing="0dp"
             android:horizontalSpacing="0dp"
             android:adjustViewBounds="true" />
 
@@ -26,7 +26,7 @@
             android:numColumns="10"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:verticalSpacing="-23dp"
+            android:verticalSpacing="0dp"
             android:horizontalSpacing="0dp"
             android:adjustViewBounds="true" />
 

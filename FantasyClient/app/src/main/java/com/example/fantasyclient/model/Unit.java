@@ -1,23 +1,40 @@
 package com.example.fantasyclient.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Unit implements Serializable {
 
     private int id;
     private String type;
+    private String name;
     private int hp;
     private int atk;
-    private Territory territory;
     private int speed;
 
     public Unit(){
     }
 
-    public Unit(String type,int hp,int atk){
+    public Unit(String type, String name, int hp, int atk, int speed){
         this.type = type;
+        this.name = name;
         this.hp = hp;
         this.atk = atk;
+        this.speed = speed;
+    }
+
+    public Unit(Unit unit){
+        setFields(unit);
+    }
+
+    public void setFields(Unit unit){
+        this.id = unit.getId();
+        this.type = unit.getType();
+        this.name = unit.getName();
+        this.hp = unit.getHp();
+        this.atk = unit.getAtk();
+        this.speed = unit.getSpeed();
     }
 
     public int getId() {
@@ -34,6 +51,14 @@ public class Unit implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getHp() {
@@ -60,11 +85,18 @@ public class Unit implements Serializable {
         this.speed = speed;
     }
 
-    public Territory getTerritory() {
-        return territory;
+    @Override
+    public boolean equals(Object e) {
+        if ( e instanceof Unit &&
+                this.id == ((Unit)e).getId())
+            return true;
+        else
+            return false;
     }
 
-    public void setTerritory(Territory territory) {
-        this.territory = territory;
+    @Override
+    public int hashCode() {
+        Integer tempID = id;
+        return tempID.hashCode();
     }
 }

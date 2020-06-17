@@ -1,4 +1,4 @@
-package com.example.fantasyclient.helper;
+package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -6,38 +6,34 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.model.ItemPack;
+import com.example.fantasyclient.model.Inventory;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemArrayAdapter extends ArrayAdapter<ItemPack> {
+public class ItemArrayAdapter extends InventoryAdapter {
 
     //Map to store numbers of items to act on
-    Map<Integer,Integer> itemMap = new HashMap<>();
-    static final String TAG = "ItemArrayAdapter";
+    private Map<Integer,Integer> itemMap = new HashMap<>();
+    private static final String TAG = "ItemArrayAdapter";
 
-    //View lookup cache
-    private static class ViewHolder{
-        TextView itemName, itemCost, itemAmount;
-        NumberPicker itemNumPicker;
-    }
-
-    public ItemArrayAdapter(Context context, List<ItemPack> objects) {
-        super(context, 0, objects);
+    public ItemArrayAdapter(Context context, List<Inventory> objects) {
+        super(context, objects);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        final ItemPack itemPack = getItem(position);
+        final Inventory inventory = getItem(position);
         final ViewHolder viewHolder;
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -56,17 +52,30 @@ public class ItemArrayAdapter extends ArrayAdapter<ItemPack> {
         }
 
         // Populate the data into the template view using the data object
-        assert itemPack != null;
-        viewHolder.itemName.setText(itemPack.getItem().getName());
-        viewHolder.itemCost.setText(Integer.toString(itemPack.getItem().getCost()));
-        viewHolder.itemAmount.setText(Integer.toString(itemPack.getAmount()));
-        viewHolder.itemNumPicker.setMaxValue(itemPack.getAmount());
+        assert inventory != null;
+
+        //get inventory properties from inventory.getDBItem().getItem_properties()
+        JSONObject jsonObject;
+        String name = "";
+        int cost = 0;
+        try {
+            jsonObject = new JSONObject(inventory.getDBItem().getItem_properties());
+            name = jsonObject.getString("name");
+            cost = jsonObject.getInt("cost");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        viewHolder.itemName.setText("Name:"+name);
+        viewHolder.itemCost.setText("Cost: "+ cost);
+        viewHolder.itemAmount.setText("Amount: "+ inventory.getAmount());
+        viewHolder.itemNumPicker.setMaxValue(inventory.getAmount());
         viewHolder.itemNumPicker.setMinValue(0);
         viewHolder.itemNumPicker.setValue(0);
         viewHolder.itemNumPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                itemMap.put(itemPack.getId(),viewHolder.itemNumPicker.getValue());
+                itemMap.put(inventory.getId(),viewHolder.itemNumPicker.getValue());
             }
         });
         // Return the completed view to render on screen

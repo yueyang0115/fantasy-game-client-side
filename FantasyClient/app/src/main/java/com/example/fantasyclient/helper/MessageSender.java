@@ -30,4 +30,8 @@ public class MessageSender {
             }
         }
     }
+
+    public void clear(){
+        queue.clear();
+    }
 }

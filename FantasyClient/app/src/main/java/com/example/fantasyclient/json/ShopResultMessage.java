@@ -1,6 +1,6 @@
 package com.example.fantasyclient.json;
 
-import com.example.fantasyclient.model.ItemPack;
+import com.example.fantasyclient.model.Inventory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 public class ShopResultMessage implements Serializable {
 
     private InventoryResultMessage inventoryResultMessage;
-    private List<ItemPack> items = new ArrayList<>(); //all items in the territory
+    private List<Inventory> items = new ArrayList<>(); //all items in the territory
     private String result; //status: "valid","invalid"
 
     public ShopResultMessage() {
@@ -23,11 +23,11 @@ public class ShopResultMessage implements Serializable {
         this.inventoryResultMessage = inventoryResultMessage;
     }
 
-    public List<ItemPack> getItems() {
+    public List<Inventory> getItems() {
         return items;
     }
 
-    public void setItems(List<ItemPack> items) {
+    public void setItems(List<Inventory> items) {
         this.items = items;
     }
 

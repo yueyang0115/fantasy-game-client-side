@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
     <ImageView
-        android:id="@+id/soldierImg"
-        app:srcCompat="@drawable/pichachu_battle"
-        android:layout_weight="1"
+        android:id="@+id/unitImg"
+        app:srcCompat="@drawable/soldier"
         android:layout_height="100dp"
-        android:layout_width="wrap_content" />
+        android:layout_width="100dp" />
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_weight="4">
+        android:layout_width="wrap_content"
+        android:layout_height="100dp">
         <TextView
-            android:id="@+id/soldierID"
+            android:id="@+id/unitID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ID"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            tools:ignore="NestedWeights" />
         <TextView
-            android:id="@+id/soldierHp"
+            android:id="@+id/unitHp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hp"
             android:layout_weight="1"/>
         <TextView
-            android:id="@+id/soldierAtk"
+            android:id="@+id/unitAtk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Atk"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/unitSpeed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Speed"
             android:layout_weight="1"/>
     </LinearLayout>
 

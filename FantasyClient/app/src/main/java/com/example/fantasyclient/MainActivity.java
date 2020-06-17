@@ -2,9 +2,11 @@ package com.example.fantasyclient;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,24 +17,25 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.helper.ImageAdapter;
-import com.example.fantasyclient.helper.SendTimerHandler;
+import com.example.fantasyclient.adapter.ImageAdapter;
+import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
-import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
-import com.example.fantasyclient.model.Soldier;
+import com.example.fantasyclient.model.Building;
+import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
-import com.example.fantasyclient.model.VirtualPosition;
+import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -45,21 +48,24 @@ import im.delight.android.location.SimpleLocation;
  */
 public class MainActivity extends BaseActivity {
 
+    //final constant
     static final String TAG = "MainActivity";//tag for log
+    static final int TERRAIN_INIT = R.drawable.base01;
+    static final int UNIT_INIT = R.drawable.transparent;
     static final int PERMISSIONS_REQUEST_LOCATION = 1;//request code for location permission
-    static final int BATTLE = 2;//request code for battle
-    static final int SHOP = 3;//request code for shop
-    static final int INVENTORY = 4;//request code for inventory
-    static final int CENTER = 64;//center of the map
+
+    //map data
     SimpleLocation location;//used to track current location
-    VirtualPosition vPosition = new VirtualPosition(0,0);
-    Territory currTerr;
+    Territory currTerr = new Territory(new WorldCoord(0,0));//used to track current territory
+    Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data, Integer to Coord because need to check monsters' ID when receiving monster data
+    Map<WorldCoord, Integer> buildingMap = new HashMap<>();//cached building data, Coord to Integer because need to check building coordinates when receiving building data
+
+    //fields to show map
     ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
+    List<ImageAdapter> adapterList = new ArrayList<>();
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
-    SendTimerHandler sendTimerHandler;//handler to send location periodically
+
     boolean ifPause = false;//flag to stop threads
-    List<Soldier> soldiers = new ArrayList<>();
-    HashSet<Territory> cachedMap = new HashSet<>();//cached map which has been found
     TextView textLocation, textVLocation;
     Button btnBag;
 
@@ -79,14 +85,25 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         //Thread to update location and send to server
         new Thread() {
             @Override
             public void run() {
                 while (socketService == null) {
                 }
-                sendTimerHandler = new SendTimerHandler(vPosition, location, socketService.sender);
-                sendTimerHandler.handleTask(0,1000);
+                //send location request when players start the game after login
+                //location.beginUpdates() needs looper
+                Looper.prepare();
+                sendLocationRequest();
+                //send location request when players change their location
+                location.setListener(new SimpleLocation.Listener() {
+                    @Override
+                    public void onPositionChanged() {
+                        sendLocationRequest();
+                    }
+                });
+                Looper.loop();
             }
         }.start();
         //Thread to receive feedback from server
@@ -95,6 +112,7 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 while (socketService == null) {
                 }
+                socketService.clearQueue();
                 while(!ifPause){
                     if(!socketService.receiver.isEmpty()){
                         handleRecvMessage(socketService.receiver.dequeue());
@@ -109,7 +127,6 @@ public class MainActivity extends BaseActivity {
         super.onPause();
         //stop location updates and background threads
         location.endUpdates();
-        sendTimerHandler.cancelTask();
         ifPause = true;
     }
 
@@ -154,6 +171,30 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * This method update current location and send request message of required terrain data to server
+     */
+    protected void sendLocationRequest(){
+        //update current location
+        updateLocation();
+        //convert location data to virtual coordinate
+        WorldCoord tempCoord = new WorldCoord();
+        PositionHelper.convertVPosition(tempCoord,location.getLatitude(),location.getLongitude());
+        //check if current location has changed
+        if(!tempCoord.equals(currTerr.getCoord())) {
+            //update current coordinate of all layers of map, and queryList as well
+            currTerr.updateCoord(tempCoord);
+            for (ImageAdapter adapter : adapterList) {
+                adapter.updateCurrCoord(currTerr.getCoord());
+            }
+            //get the coordinates which need to be queried from server
+            List<WorldCoord> queriedCoords = adapterList.get(0).getQueriedCoords();
+            //enqueue query message in order to send to server
+            PositionRequestMessage p = new PositionRequestMessage(queriedCoords);
+            socketService.enqueue(new MessagesC2S(p));
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
@@ -182,22 +223,23 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
-        //set background to be base type
-        terrainAdapter.initMap(R.drawable.base00);
-        unitAdapter.initMap(R.drawable.transparent);
-        buildingAdapter.initMap(R.drawable.transparent);
-        //set cached territory
-        for(Territory t : cachedMap){
-            updateTerritory(t);
+        //update new terrains
+        for(Territory t : m.getTerritoryArray()) {
+            updateTerrain(t);
         }
-        //update new territories
-        List<Territory> terrArray = m.getTerritoryArray();
-        for(Territory t : terrArray){
-            updateTerritory(t);
-            //add new territory to map cache
-            cachedMap.add(t);
+        //update new monsters
+        for(Monster monster : m.getMonsterArray()){
+            updateMonster(monster);
+        }
+        //update new buildings
+        for(Building b : m.getBuildingArray()){
+            updateBuilding(b);
         }
         //update UI
+        updateMapLayers();
+    }
+
+    protected void updateMapLayers(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -219,23 +261,9 @@ public class MainActivity extends BaseActivity {
         if (m.getResult().equals("valid")) {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
-            intent.putExtra("territoryID", currTerr.getId());
-            intent.putExtra("ShopID", currTerr.getBuilding().getId());
+            intent.putExtra("territoryCoord", currTerr.getCoord());
+            intent.putExtra("ShopID", buildingMap.get(currTerr.getCoord()));
             startActivityForResult(intent, SHOP);
-        }
-    }
-
-    /**
-     * This method is called after a MessageS2C with InventoryResultMessage is received from server
-     * After ShopResultMessage is also received, ShopActivity will be launched
-     * @param m: received ShopResultMessage
-     */
-    @Override
-    protected void checkInventoryResult(InventoryResultMessage m){
-        if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this, InventoryActivity.class);
-            intent.putExtra("InventoryResultMessage", m);
-            startActivityForResult(intent, INVENTORY);
         }
     }
 
@@ -250,56 +278,64 @@ public class MainActivity extends BaseActivity {
         if(m.getResult().equals("continue")){
             Intent intent = new Intent(this,BattleActivity.class);
             intent.putExtra("BattleResultMessage", m);
-            intent.putExtra("territoryID", currTerr.getId());
+            intent.putExtra("territoryCoord", currTerr.getCoord());
             startActivityForResult(intent,BATTLE);
         }
     }
 
     /**
-     * This method change the source file array in several adapters for corresponding map layers
+     * This method changes the source file array in several adapters for corresponding map layers
+     * mainly including layers that are unlikely to change: terrain, building
      * UI will be updated when adapter.notifyDataSetChanged() is called on UI thread
      * @param t: target territory
      */
-    protected void updateTerritory(Territory t){
-        int dx = (t.getX()-vPosition.getX())/10;
-        int dy = (t.getY()-vPosition.getY())/10;
-        if(dx>=-4 && dx<=5 && dy>=-7 && dy<=7) {
-            int position = CENTER+dx-10*dy;
-            if(position == CENTER){
-                currTerr = t;
-            }
-            //update terrain layer
-            switch (t.getTerrain().getType()) {
-                case "grass":
-                    terrainAdapter.updateImage(position, R.drawable.plains00);
-                    break;
-                case "mountain":
-                    terrainAdapter.updateImage(position, R.drawable.mountain00);
-                    break;
-                case "river":
-                    terrainAdapter.updateImage(position, R.drawable.ocean00);
-                    break;
-            }
-            //update monster layer
-            if(!t.getMonsters().isEmpty()) {
-                switch (t.getMonsters().get(0).getType()) {
-                    case "wolf":
-                        unitAdapter.updateImage(position, R.drawable.wolf);
-                        break;
-                    default:
-                }
-            }
-            //update building layer
-            if(t.getBuilding()!=null){
-                switch(t.getBuilding().getName()){
-                    case "shop":
-                        buildingAdapter.updateImage(position,R.drawable.dirt_village00);
-                        break;
-                    default:
-                }
-            }
+    protected void updateTerrain(Territory t){
+        WorldCoord targetCoord = t.getCoord();
+        //check if this territory is current territory
 
+        //FIX
+        if(targetCoord == currTerr.getCoord()){
+            currTerr = t;
         }
+
+        //update terrain layer
+        terrainAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getTerrainType()));
+    }
+
+    /**
+     * This method changes unit adapters with the following steps:
+     * 1. Check if the unit with this id has been cached before, if so, remove it
+     * 2. Update its new coordinate and add it the cache
+     */
+    protected void updateMonster(Monster m){
+        int monsterID = m.getId();
+        //remove from cache if cached
+        if(monsterMap.containsKey(monsterID)){
+            unitAdapter.updateImageByCoords(monsterMap.get(monsterID),UNIT_INIT);
+        }
+        //update coordinate and cache it
+        unitAdapter.updateImageByCoords(m.getCoord(),getImageID(this,m.getName()));
+        monsterMap.put(monsterID,m.getCoord());
+    }
+
+    /**
+     * This method cache building data and update building layer
+     * Since building is unlikely to change territory, receiving new buildings does not require
+     * check existing building cache
+     * @param b
+     */
+    protected void updateBuilding(Building b){
+        buildingAdapter.updateImageByCoords(b.getCoord(),getImageID(this,b.getName()));
+        buildingMap.put(b.getCoord(),b.getId());
+    }
+
+    /**
+     * This method convert image file name to image ID
+     * @param ImageName
+     * @return: Image ID
+     */
+    public static int getImageID(Context context, String ImageName){
+        return context.getResources().getIdentifier(ImageName, "drawable", context.getPackageName());
     }
 
     /**
@@ -321,30 +357,22 @@ public class MainActivity extends BaseActivity {
         switch(requestCode){
             case BATTLE:
                 //check the result of battle
-                switch(resultCode){
-                    case RESULT_WIN:
-                        unitAdapter.updateImage(CENTER, R.drawable.transparent);
-                        break;
-                    case RESULT_LOSE:
-                    case RESULT_ESCAPED:
-                        break;
-                    default:
-                        Log.e(TAG,"Invalid result code for battle");
-                        break;
+                if(resultCode == RESULT_WIN){
+                    unitAdapter.updateImageByCoords(currTerr.getCoord(), UNIT_INIT);
+                    List<Integer> defeatedMonsters = data.getIntegerArrayListExtra("defeatedMonsters");
+                    for(Integer i : defeatedMonsters){
+                        monsterMap.remove(i);
+                    }
+                    updateMapLayers();
                 }
                 break;
             case SHOP:
                 //check the result of purchase
-                switch (resultCode){
-                    case RESULT_CANCELED:
-                        break;
-                    default:
-                        Log.e(TAG, "Invalid result code for shop");
-                        break;
-                }
+                break;
+            case INVENTORY:
+                break;
             default:
                 Log.e(TAG,"Invalid request code");
-                break;
         }
     }
 
@@ -361,12 +389,18 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        terrainAdapter = new ImageAdapter(this);
-        unitAdapter = new ImageAdapter(this);
-        buildingAdapter = new ImageAdapter(this);
-        terrainAdapter.initMap(R.drawable.base00);
-        unitAdapter.initMap(R.drawable.transparent);
-        buildingAdapter.initMap(R.drawable.transparent);
+        terrainAdapter = new ImageAdapter(this, currTerr.getCoord());
+        unitAdapter = new ImageAdapter(this, currTerr.getCoord());
+        buildingAdapter = new ImageAdapter(this, currTerr.getCoord());
+
+        adapterList.add(terrainAdapter);
+        adapterList.add(unitAdapter);
+        adapterList.add(buildingAdapter);
+
+        terrainAdapter.initImage(TERRAIN_INIT);
+        unitAdapter.initImage(UNIT_INIT);
+        buildingAdapter.initImage(UNIT_INIT);
+
         terrainGridView.setAdapter(terrainAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
@@ -374,16 +408,20 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void setOnClickListener(){
-        buildingGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //check if click on the center territory
                 if(position==CENTER){
-                    if(!currTerr.getMonsters().isEmpty())
+                    //check if current territory has monsters
+                    if(monsterMap.containsValue(currTerr.getCoord())) {
                         socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currTerr.getId(), 0, 0, "start")));
-                    else if(currTerr.getBuilding()!=null){
+                                new BattleRequestMessage(currTerr.getCoord(), "start")));
+                    }
+                    //check if current territory has buildings
+                    else if(buildingMap.containsKey(currTerr.getCoord())){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(currTerr.getBuilding().getId(),currTerr.getId(),"list")));
+                                new ShopRequestMessage(buildingMap.get(currTerr.getCoord()),"list")));
                     }
                 }
             }

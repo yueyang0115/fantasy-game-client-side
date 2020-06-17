@@ -1,44 +1,40 @@
 package com.example.fantasyclient.json;
 
+import com.example.fantasyclient.model.WorldCoord;
+
 public class BattleRequestMessage {
 
-    private int territoryID;
-    private int attackeeID;
-    private int attackerID;
+    private WorldCoord territoryCoord;
     private String action;//"attack","escape","start"
+    private BattleAction battleAction; //include attackerID, attackeeID, action("normal, magical")
 
     public BattleRequestMessage() {
     }
 
-    public BattleRequestMessage(int territoryID, int attackeeID, int attackerID, String action) {
-        this.territoryID = territoryID;
-        this.attackeeID = attackeeID;
-        this.attackerID = attackerID;
+    //constructor for "start"
+    public BattleRequestMessage(WorldCoord territoryCoord, String action) {
+        this.territoryCoord = territoryCoord;
         this.action = action;
     }
 
-    public int getTerritoryID() {
-        return territoryID;
+    //constructor for "escape"
+    public BattleRequestMessage(String action) {
+        this.action = action;
     }
 
-    public void setTerritoryID(int territoryID) {
-        this.territoryID = territoryID;
+    //constructor for "attack"
+    public BattleRequestMessage(WorldCoord territoryCoord, String action, BattleAction battleAction) {
+        this.territoryCoord = territoryCoord;
+        this.action = action;
+        this.battleAction = battleAction;
     }
 
-    public int getAttackeeID() {
-        return attackeeID;
+    public WorldCoord getTerritoryCoord() {
+        return territoryCoord;
     }
 
-    public void setAttackeeID(int attackeeID) {
-        this.attackeeID = attackeeID;
-    }
-
-    public int getAttackerID() {
-        return attackerID;
-    }
-
-    public void setAttackerID(int attackerID) {
-        this.attackerID = attackerID;
+    public void setTerritoryCoord(WorldCoord territoryCoord) {
+        this.territoryCoord = territoryCoord;
     }
 
     public String getAction() {
@@ -48,4 +44,8 @@ public class BattleRequestMessage {
     public void setAction(String action) {
         this.action = action;
     }
+
+    public BattleAction getBattleAction() { return battleAction; }
+
+    public void setBattleAction(BattleAction battleAction) { this.battleAction = battleAction; }
 }

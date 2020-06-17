@@ -7,13 +7,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import com.example.fantasyclient.helper.ItemArrayAdapter;
+import com.example.fantasyclient.adapter.ItemArrayAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
-import com.example.fantasyclient.model.ItemPack;
+import com.example.fantasyclient.model.Inventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +22,25 @@ import java.util.List;
 /**
  * This is an activity of shopping, which maintains two item lists of both shop and inventory
  */
-public class ShopActivity extends ItemActivity {
+public class ShopActivity extends BaseActivity {
 
-    Button btn_buy, btn_sell;
-    int terrID, shopID;
-    List<ItemPack> shopItemList = new ArrayList<>();
-    ItemArrayAdapter shopAdapter;
-    ListView shopListView;
+    //Buttons and TextViews
+    Button btn_buy, btn_sell, btn_cancel;
+    TextView text_money;
+
+    //Lists to construct adapters
+    List<Inventory> shopInventoryList = new ArrayList<>();
+    List<Inventory> inventoryItemList = new ArrayList<>();
+
+    //Adapters to show ListView
+    ItemArrayAdapter shopAdapter, inventoryAdapter;
+    ListView shopListView, inventoryListView;
+
+    //Cached messages passed by other activities
     ShopResultMessage shopResultMessage;
+    InventoryResultMessage inventoryResultMessage;
+    int terrID, shopID;
+
     final static String TAG = "ShopActivity";
 
     @Override
@@ -44,16 +56,22 @@ public class ShopActivity extends ItemActivity {
 
     @Override
     protected void findView(){
-        super.findView();
+        //Buttons
         btn_buy = findViewById(R.id.btn_buy);
         btn_sell = findViewById(R.id.btn_sell);
+        btn_cancel = findViewById(R.id.btn_cancel);
+        //TextViews
+        text_money = findViewById(R.id.text_money);
+        //ListViews
+        inventoryListView = findViewById(R.id.inventory_item_list);
         shopListView = findViewById(R.id.shop_item_list);
     }
 
     @Override
     protected void initView(){
-        super.initView();
-        shopAdapter = new ItemArrayAdapter(this, shopItemList);
+        inventoryAdapter = new ItemArrayAdapter(this, inventoryItemList);
+        inventoryListView.setAdapter(inventoryAdapter);
+        shopAdapter = new ItemArrayAdapter(this, shopInventoryList);
         shopListView.setAdapter(shopAdapter);
     }
 
@@ -70,12 +88,11 @@ public class ShopActivity extends ItemActivity {
 
     @Override
     protected void setOnClickListener(){
-        super.setOnClickListener();
         btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //send shop request
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, shopAdapter.getItemMap(),"buy")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,shopAdapter.getItemMap(),"buy")));
                 handleRecvMessage(socketService.dequeue());
                 shopAdapter.clearMap();
             }
@@ -83,9 +100,18 @@ public class ShopActivity extends ItemActivity {
         btn_sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,terrID, inventoryAdapter.getItemMap(),"sell")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,inventoryAdapter.getItemMap(),"sell")));
                 handleRecvMessage(socketService.dequeue());
                 inventoryAdapter.clearMap();
+            }
+        });
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doUnbindService();
+                Intent intent = new Intent();
+                setResult(RESULT_CANCELED,intent);
+                finish();
             }
         });
     }
@@ -99,18 +125,43 @@ public class ShopActivity extends ItemActivity {
     @Override
     protected void checkShopResult(final ShopResultMessage m) {
         if (m.getResult().equals("valid")) {
-            //shop starts
+            //action is valid, updateUI
             Log.d(TAG,"checkShopResult");
-            shopItemList = m.getItems();
+            shopInventoryList = m.getItems();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     shopAdapter.clear();
-                    shopAdapter.addAll(shopItemList);
+                    shopAdapter.addAll(shopInventoryList);
                     shopAdapter.notifyDataSetChanged();
                 }
             });
             checkInventoryResult(m.getInventoryResultMessage());
+        }
+        else{
+            //action is invalid, show error message
+            socketService.errorAlert(m.getResult());
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    protected void checkInventoryResult(final InventoryResultMessage m){
+        if (m.getResult().equals("valid")) {
+            //action is valid, update UI
+            inventoryItemList = m.getItems();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    inventoryAdapter.clear();
+                    inventoryAdapter.addAll(inventoryItemList);
+                    inventoryAdapter.notifyDataSetChanged();
+                }
+            });
+            text_money.setText(Integer.toString(m.getMoney()));
+        }
+        else{
+            //action is invalid, show error message
+            socketService.errorAlert(m.getResult());
         }
     }
 }

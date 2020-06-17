@@ -4,22 +4,19 @@ import java.util.Map;
 
 public class ShopRequestMessage {
     private int shopID;
-    private int territoryID;
-    private Map<Integer,Integer> itemMap;//Map<itemPackID, amount to buy>
+    private Map<Integer,Integer> itemMap;//Map<inventoryID, amount to buy>
     private String action;//"list""buy""sell"
 
     public ShopRequestMessage() {
     }
 
-    public ShopRequestMessage(int shopID, int territoryID, String action) {
+    public ShopRequestMessage(int shopID, String action) {
         this.shopID = shopID;
-        this.territoryID = territoryID;
         this.action = action;
     }
 
-    public ShopRequestMessage(int shopID, int territoryID, Map<Integer,Integer> itemMap, String action) {
+    public ShopRequestMessage(int shopID, Map<Integer,Integer> itemMap, String action) {
         this.shopID = shopID;
-        this.territoryID = territoryID;
         this.itemMap = itemMap;
         this.action = action;
     }
@@ -30,14 +27,6 @@ public class ShopRequestMessage {
 
     public void setShopID(int shopID) {
         this.shopID = shopID;
-    }
-
-    public int getTerritoryID() {
-        return territoryID;
-    }
-
-    public void setTerritoryID(int territoryID) {
-        this.territoryID = territoryID;
     }
 
     public Map<Integer, Integer> getItemMap() {

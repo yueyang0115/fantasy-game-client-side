@@ -35,4 +35,8 @@ public class MessageReceiver {
             queue.add(c.recvMsg());
         }
     }
+
+    public void clear(){
+        queue.clear();
+    }
 }
