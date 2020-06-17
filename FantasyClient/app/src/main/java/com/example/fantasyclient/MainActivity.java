@@ -193,11 +193,7 @@ public class MainActivity extends BaseActivity {
             for (MapAdapter adapter : adapterList) {
                 adapter.updateCurrCoord(currCoord);
             }
-            //get the coordinates which need to be queried from server
-            List<WorldCoord> queriedCoords = territoryAdapter.getQueriedCoords();
-            //enqueue query message in order to send to server
-            PositionRequestMessage p = new PositionRequestMessage(queriedCoords);
-            socketService.enqueue(new MessagesC2S(p));
+            enqueuePositionRequest();
         }
     }
 
@@ -370,6 +366,17 @@ public class MainActivity extends BaseActivity {
             default:
                 Log.e(TAG,"Invalid request code");
         }
+        //inform server that the player has switch to the map
+        enqueuePositionRequest();
+    }
+
+
+    protected void enqueuePositionRequest(){
+        //get the coordinates which need to be queried from server
+        List<WorldCoord> queriedCoords = territoryAdapter.getQueriedCoords();
+        //enqueue query message in order to send to server
+        PositionRequestMessage p = new PositionRequestMessage(queriedCoords, currCoord);
+        socketService.enqueue(new MessagesC2S(p));
     }
 
     @Override

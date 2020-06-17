@@ -9,6 +9,7 @@ import java.util.List;
 public class PositionResultMessage {
     private List<Territory> territoryArray;
     private List<Monster> monsterArray;
+    private List<Building> buildingArray;
 
     public List<Monster> getMonsterArray() {
         return monsterArray;
@@ -25,8 +26,6 @@ public class PositionResultMessage {
     public void setTerritoryArray(List<Territory> territoryArray) {
         this.territoryArray = territoryArray;
     }
-
-    private List<Building> buildingArray;
 
     public List<Building> getBuildingArray() {
         return buildingArray;
