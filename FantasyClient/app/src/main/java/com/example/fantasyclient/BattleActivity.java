@@ -3,18 +3,25 @@ package com.example.fantasyclient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.fantasyclient.adapter.*;
-import com.example.fantasyclient.json.*;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.adapter.UnitArrayAdapter;
+import com.example.fantasyclient.adapter.UnitImageAdapter;
+import com.example.fantasyclient.json.AttributeRequestMessage;
+import com.example.fantasyclient.json.AttributeResultMessage;
+import com.example.fantasyclient.json.BattleAction;
+import com.example.fantasyclient.json.BattleInitInfo;
+import com.example.fantasyclient.json.BattleRequestMessage;
+import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.model.Unit;
+import com.example.fantasyclient.model.WorldCoord;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,9 +160,7 @@ public class BattleActivity extends BaseActivity{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                soldierAdapter.clear();
-                soldierAdapter.addAll(soldierList);
-                soldierAdapter.notifyDataSetChanged();
+                updateAdapter(soldierAdapter,soldierList);
             }
         });
     }
@@ -165,9 +170,7 @@ public class BattleActivity extends BaseActivity{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                monsterAdapter.clear();
-                monsterAdapter.addAll(monsterList);
-                monsterAdapter.notifyDataSetChanged();
+                updateAdapter(monsterAdapter,monsterList);
             }
         });
     }
@@ -176,15 +179,9 @@ public class BattleActivity extends BaseActivity{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                soldierAdapter.clear();
-                soldierAdapter.addAll(soldierList);
-                soldierAdapter.notifyDataSetChanged();
-                monsterAdapter.clear();
-                monsterAdapter.addAll(monsterList);
-                monsterAdapter.notifyDataSetChanged();
-                seqAdapter.clear();
-                seqAdapter.addAll(seqList);
-                seqAdapter.notifyDataSetChanged();
+                updateAdapter(soldierAdapter,soldierList);
+                updateAdapter(monsterAdapter,monsterList);
+                updateAdapter(seqAdapter,seqList);
             }
         });
     }
@@ -337,9 +334,7 @@ public class BattleActivity extends BaseActivity{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                soldierAdapter.clear();
-                soldierAdapter.addAll(soldierList);
-                soldierAdapter.notifyDataSetChanged();
+                updateAdapter(soldierAdapter,soldierList);
             }
         });
     }

@@ -131,9 +131,7 @@ public class ShopActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    shopAdapter.clear();
-                    shopAdapter.addAll(shopInventoryList);
-                    shopAdapter.notifyDataSetChanged();
+                    updateAdapter(shopAdapter,shopInventoryList);
                 }
             });
             checkInventoryResult(m.getInventoryResultMessage());
@@ -152,9 +150,7 @@ public class ShopActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    inventoryAdapter.clear();
-                    inventoryAdapter.addAll(inventoryItemList);
-                    inventoryAdapter.notifyDataSetChanged();
+                    updateAdapter(inventoryAdapter,inventoryItemList);
                 }
             });
             text_money.setText(Integer.toString(m.getMoney()));

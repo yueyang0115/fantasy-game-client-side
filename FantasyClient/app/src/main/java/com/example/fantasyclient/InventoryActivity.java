@@ -9,9 +9,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.adapter.*;
-import com.example.fantasyclient.json.*;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.adapter.InventoryArrayAdapter;
+import com.example.fantasyclient.adapter.UnitArrayAdapter;
+import com.example.fantasyclient.json.AttributeResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.model.Inventory;
+import com.example.fantasyclient.model.Soldier;
+import com.example.fantasyclient.model.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -191,9 +197,7 @@ public class InventoryActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                soldierAdapter.clear();
-                soldierAdapter.addAll(soldierList);
-                soldierAdapter.notifyDataSetChanged();
+                updateAdapter(soldierAdapter, soldierList);
             }
         });
     }
@@ -202,9 +206,7 @@ public class InventoryActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                inventoryAdapter.clear();
-                inventoryAdapter.addAll(inventoryItemList);
-                inventoryAdapter.notifyDataSetChanged();
+                updateAdapter(inventoryAdapter,inventoryItemList);
             }
         });
     }

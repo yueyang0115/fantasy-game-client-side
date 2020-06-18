@@ -2,13 +2,11 @@ package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.fantasyclient.MainActivity;
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.model.Unit;
 
 import java.util.List;
 

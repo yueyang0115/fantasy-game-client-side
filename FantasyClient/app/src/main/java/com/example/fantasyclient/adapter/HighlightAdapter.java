@@ -25,8 +25,14 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
     }
 
     static class InventoryViewHolder {
-        TextView itemName, itemCost, itemAmount;
-        NumberPicker itemNumPicker;
+        TextView inventoryName, inventoryCost, inventoryAmount;
+        ImageView inventoryImg;
+        NumberPicker inventoryNumPicker;
+    }
+
+    static class BuildingViewHolder {
+        TextView buildingName, buildingCost;
+        ImageView buildingImg;
     }
 
     static class CustomViewHolder {

@@ -1,12 +1,7 @@
 package com.example.fantasyclient.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
 
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Building implements Serializable {
 
     private int id;

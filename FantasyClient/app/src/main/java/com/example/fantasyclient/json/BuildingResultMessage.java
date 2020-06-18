@@ -6,18 +6,19 @@ import java.util.List;
 
 public class BuildingResultMessage {
 
-    private List<String> buildingList;
+    private List<Building> buildingList;
     private String result;
+    private String action;
     private Building building;
 
     public BuildingResultMessage() {
     }
 
-    public List<String> getBuildingList() {
+    public List<Building> getBuildingList() {
         return buildingList;
     }
 
-    public void setBuildingList(List<String> buildingList) {
+    public void setBuildingList(List<Building> buildingList) {
         this.buildingList = buildingList;
     }
 
@@ -27,6 +28,14 @@ public class BuildingResultMessage {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public Building getBuilding() {

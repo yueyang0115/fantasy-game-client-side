@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.model.Unit;
 
 import java.util.List;
 

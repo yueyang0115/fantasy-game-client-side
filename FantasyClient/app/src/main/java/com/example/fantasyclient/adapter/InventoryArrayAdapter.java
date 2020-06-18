@@ -3,9 +3,7 @@ package com.example.fantasyclient.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -40,10 +38,10 @@ public class InventoryArrayAdapter extends InventoryAdapter {
 
     protected void findView(InventoryViewHolder viewHolder, View convertView) {
         // Lookup view for data population
-        viewHolder.itemName = (TextView) convertView.findViewById(R.id.itemName);
-        viewHolder.itemCost = (TextView) convertView.findViewById(R.id.itemCost);
-        viewHolder.itemAmount = (TextView) convertView.findViewById(R.id.itemAmount);
-        viewHolder.itemNumPicker = (NumberPicker) convertView.findViewById(R.id.itemNum);
+        viewHolder.inventoryName = (TextView) convertView.findViewById(R.id.itemName);
+        viewHolder.inventoryCost = (TextView) convertView.findViewById(R.id.itemCost);
+        viewHolder.inventoryAmount = (TextView) convertView.findViewById(R.id.itemAmount);
+        viewHolder.inventoryNumPicker = (NumberPicker) convertView.findViewById(R.id.itemNum);
     }
 
     @SuppressLint("SetTextI18n")
@@ -58,16 +56,16 @@ public class InventoryArrayAdapter extends InventoryAdapter {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        viewHolder.itemName.setText("Name:" + name);
-        viewHolder.itemCost.setText("Cost: " + cost);
-        viewHolder.itemAmount.setText("Amount: " + inventory.getAmount());
-        viewHolder.itemNumPicker.setMaxValue(inventory.getAmount());
-        viewHolder.itemNumPicker.setMinValue(0);
-        viewHolder.itemNumPicker.setValue(0);
-        viewHolder.itemNumPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+        viewHolder.inventoryName.setText("Name:" + name);
+        viewHolder.inventoryCost.setText("Cost: " + cost);
+        viewHolder.inventoryAmount.setText("Amount: " + inventory.getAmount());
+        viewHolder.inventoryNumPicker.setMaxValue(inventory.getAmount());
+        viewHolder.inventoryNumPicker.setMinValue(0);
+        viewHolder.inventoryNumPicker.setValue(0);
+        viewHolder.inventoryNumPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                itemMap.put(inventory.getId(), viewHolder.itemNumPicker.getValue());
+                itemMap.put(inventory.getId(), viewHolder.inventoryNumPicker.getValue());
             }
         });
     }

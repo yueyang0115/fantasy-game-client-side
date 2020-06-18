@@ -2,7 +2,8 @@ package com.example.fantasyclient;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -24,6 +26,8 @@ import com.example.fantasyclient.adapter.MapUnitAdapter;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.BuildingRequestMessage;
+import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
@@ -36,9 +40,7 @@ import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -283,6 +285,42 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void checkBuildingResult(BuildingResultMessage m){
+        if(m.getResult().equals("success")){
+            if(m.getAction().equals("createList") || m.getAction().equals("upgradeList")) {
+                List<Building> buildingList = m.getBuildingList();
+
+            }
+        }
+    }
+
+    protected void setUpDialog(String title, List list){
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(title);
+        // add a radio button list
+        String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
+        int checkedItem = 1; // cow
+        builder.setSingleChoiceItems((ListAdapter) list, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // user checked an item
+            }
+        });
+        // add OK and Cancel buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // user clicked OK
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     /**
      * This method changes the source file array in several adapters for corresponding map layers
      * mainly including layers that are unlikely to change: terrain, building
@@ -355,7 +393,9 @@ public class MainActivity extends BaseActivity {
         enqueuePositionRequest();
     }
 
-
+    /**
+     * This method enqueue position request to be sent to server
+     */
     protected void enqueuePositionRequest(){
         //get the coordinates which need to be queried from server
         List<WorldCoord> queriedCoords = territoryAdapter.getQueriedCoords();
@@ -410,6 +450,11 @@ public class MainActivity extends BaseActivity {
                     else if(buildingAdapter.checkCacheByCoords(currCoord)){
                         socketService.enqueue(new MessagesC2S(
                                 new ShopRequestMessage(buildingAdapter.getCachedTargetByCoord(currCoord).getId(),"list")));
+                    }
+                    else{
+                        socketService.enqueue(new MessagesC2S(
+                                new BuildingRequestMessage(currCoord,"createList")
+                        ));
                     }
                 }
             }

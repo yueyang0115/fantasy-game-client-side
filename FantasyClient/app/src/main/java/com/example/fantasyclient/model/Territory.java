@@ -1,8 +1,6 @@
 package com.example.fantasyclient.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Territory implements Serializable {
 
