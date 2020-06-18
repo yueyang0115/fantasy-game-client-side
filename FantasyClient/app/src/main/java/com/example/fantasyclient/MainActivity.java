@@ -61,8 +61,6 @@ public class MainActivity extends BaseActivity {
     SimpleLocation location;//used to track current location
 
     WorldCoord currCoord = new WorldCoord(0,0);
-    Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data, Integer to Coord because need to check monsters' ID when receiving monster data
-    Map<WorldCoord, Integer> buildingMap = new HashMap<>();//cached building data, Coord to Integer because need to check building coordinates when receiving building data
 
     //fields to show map
     MapTerritoryAdapter territoryAdapter;
@@ -264,7 +262,7 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
             intent.putExtra("territoryCoord", currCoord);
-            intent.putExtra("ShopID", buildingMap.get(currCoord));
+            intent.putExtra("ShopID", buildingAdapter.getCachedTargetByCoord(currCoord).getId());
             startActivityForResult(intent, SHOP);
         }
     }
@@ -293,12 +291,6 @@ public class MainActivity extends BaseActivity {
      */
     protected void updateTerrain(Territory t){
         WorldCoord targetCoord = t.getCoord();
-
-        /*//check if this territory is current territory
-        if(targetCoord == currCoord){
-            currTerr = t;
-        }*/
-
         //update terrain layer
         territoryAdapter.addToCacheByCoords(targetCoord,t);
     }
@@ -309,14 +301,12 @@ public class MainActivity extends BaseActivity {
      * 2. Update its new coordinate and add it the cache
      */
     protected void updateMonster(Monster m){
-        int monsterID = m.getId();
         //remove from cache if cached
-        if(monsterMap.containsKey(monsterID)){
-            unitAdapter.removeFromCacheByCoords(monsterMap.get(monsterID));
+        if(unitAdapter.checkCacheByTarget(m)){
+            unitAdapter.removeFromCacheByTarget(m);
         }
         //update coordinate and cache it
         unitAdapter.addToCacheByCoords(m.getCoord(),m);
-        monsterMap.put(monsterID,m.getCoord());
     }
 
     /**
@@ -327,7 +317,6 @@ public class MainActivity extends BaseActivity {
      */
     protected void updateBuilding(Building b){
         buildingAdapter.addToCacheByCoords(b.getCoord(),b);
-        buildingMap.put(b.getCoord(),b.getId());
     }
 
     /**
@@ -351,10 +340,6 @@ public class MainActivity extends BaseActivity {
                 //check the result of battle
                 if(resultCode == RESULT_WIN){
                     unitAdapter.removeFromCacheByCoords(currCoord);
-                    List<Integer> defeatedMonsters = data.getIntegerArrayListExtra("defeatedMonsters");
-                    for(Integer i : defeatedMonsters){
-                        monsterMap.remove(i);
-                    }
                     updateMapLayers();
                 }
                 break;
@@ -417,14 +402,14 @@ public class MainActivity extends BaseActivity {
                 //check if click on the center territory
                 if(position==CENTER){
                     //check if current territory has monsters
-                    if(monsterMap.containsValue(currCoord)) {
+                    if(unitAdapter.checkCacheByCoords(currCoord)){
                         socketService.enqueue(new MessagesC2S(
                                 new BattleRequestMessage(currCoord, "start")));
                     }
                     //check if current territory has buildings
-                    else if(buildingMap.containsKey(currCoord)){
+                    else if(buildingAdapter.checkCacheByCoords(currCoord)){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(buildingMap.get(currCoord),"list")));
+                                new ShopRequestMessage(buildingAdapter.getCachedTargetByCoord(currCoord).getId(),"list")));
                     }
                 }
             }

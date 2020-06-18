@@ -45,6 +45,21 @@ public class Building implements Serializable {
     public void setCoord(WorldCoord coord) {
         this.coord = coord;
     }
+
+    @Override
+    public boolean equals(Object b) {
+        if ( b instanceof Building &&
+                this.id == ((Building)b).getId())
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public int hashCode() {
+        Integer tempID = id;
+        return tempID.hashCode();
+    }
 }
 
 

@@ -36,7 +36,7 @@ public class SendTimerHandler extends TimerHandler {
                         //get the coordinates which need to be queried from server
                         List<WorldCoord> queriedCoords = adapterList.get(0).getQueriedCoords();
                         //enqueue query message in order to send to server
-                        PositionRequestMessage p = new PositionRequestMessage(queriedCoords); //add to this message: a list of coordinates you want information for
+                        PositionRequestMessage p = new PositionRequestMessage(queriedCoords, currCoord); //add to this message: a list of coordinates you want information for
                         messageSender.enqueue(new MessagesC2S(p));
                     }
                 });

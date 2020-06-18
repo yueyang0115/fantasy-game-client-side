@@ -7,19 +7,19 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.example.fantasyclient.helper.BidirectMap;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private static final int WIDTH = 5;
     private static final int HEIGHT = 7;
-    static final int CENTER = WIDTH * HEIGHT / 2;
-    Drawable initImage;
+    private static final int CENTER = WIDTH * HEIGHT / 2;
+    private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
-    HashMap<WorldCoord,T> imageMap = new HashMap<>();//HashMap<VirtualCoord, TerritoryImage>
+    private BidirectMap<WorldCoord,T> imageMap = new BidirectMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
     private List<WorldCoord> queriedCoords = new ArrayList<>();//coordinates to ask from server
 
     // Constructor
@@ -67,7 +67,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         Drawable[] drawables;
         if(imageMap.containsKey(coord)) {
             //already cached, show the cached image
-            currT = getCachedTarget(coord);
+            currT = getCachedTargetByCoord(coord);
             drawables = getImageDrawables(imageView, position, currT);
         }
         else{
@@ -80,10 +80,6 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     }
 
     protected abstract Drawable[] getImageDrawables(ImageView imageView, int position, T t);
-
-    protected T getCachedTarget(WorldCoord coord){
-        return imageMap.get(coord);
-    }
 
     /**
      * Set the initial image of this adapter
@@ -109,9 +105,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     }
 
     /**
-     * Cache virtual coordinates into map
-     * @param coord target coordinate to update
-     * @param t target territory
+     * Cache related methods
      */
     public void addToCacheByCoords(WorldCoord coord, T t) {
         imageMap.put(coord, t);
@@ -122,6 +116,30 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         imageMap.remove(coord);
     }
 
+    public void removeFromCacheByTarget(T t){
+        imageMap.removeByValue(t);
+    }
+
+    public boolean checkCacheByCoords(WorldCoord coord){
+        return imageMap.containsKey(coord);
+    }
+
+    public boolean checkCacheByTarget(T t){
+        return imageMap.containsValue(t);
+    }
+
+    public T getCachedTargetByCoord(WorldCoord coord){
+        return imageMap.get(coord);
+    }
+
+    public WorldCoord getCachedCoordByTarget(T t){
+        return imageMap.getKey(t);
+    }
+
+    /**
+     * Query related methods
+     * @param coord
+     */
     private void addQueriedCoord(WorldCoord coord){
         //check if coordinate has been cached
         if(!imageMap.containsKey(coord)) {
