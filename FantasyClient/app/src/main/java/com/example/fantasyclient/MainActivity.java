@@ -13,12 +13,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.fantasyclient.adapter.BuildingArrayAdapter;
 import com.example.fantasyclient.adapter.MapAdapter;
 import com.example.fantasyclient.adapter.MapBuildingAdapter;
 import com.example.fantasyclient.adapter.MapTerritoryAdapter;
@@ -263,8 +263,7 @@ public class MainActivity extends BaseActivity {
         if (m.getResult().equals("valid")) {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
-            intent.putExtra("territoryCoord", currCoord);
-            intent.putExtra("ShopID", buildingAdapter.getCachedTargetByCoord(currCoord).getId());
+            intent.putExtra("ShopCoord", currCoord);
             startActivityForResult(intent, SHOP);
         }
     }
@@ -288,24 +287,43 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkBuildingResult(BuildingResultMessage m){
         if(m.getResult().equals("success")){
-            if(m.getAction().equals("createList") || m.getAction().equals("upgradeList")) {
-                List<Building> buildingList = m.getBuildingList();
-
+            String action = m.getAction();
+            if(action.equals("createList") || action.equals("upgradeList")) {
+                setUpBuildingDialog(m.getBuildingList());
+            }
+            else if(action.equals("create") || action.equals("upgrade")){
+                updateBuilding(m.getBuilding());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        buildingAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         }
     }
 
-    protected void setUpDialog(String title, List list){
+    protected void setUpBuildingDialog(final List<Building> list){
         // setup the alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(title);
+        builder.setTitle("Please choose a building to build");
         // add a radio button list
-        String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
-        int checkedItem = 1; // cow
-        builder.setSingleChoiceItems((ListAdapter) list, checkedItem, new DialogInterface.OnClickListener() {
+        final BuildingArrayAdapter adapter = new BuildingArrayAdapter(MainActivity.this, list);
+        int checkedItem = 0; // default is the first choice
+        final String[] buildingName = {""};
+        builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // user checked an item
+                buildingName[0] = adapter.getItem(which).getName();
+                //highlight selected item
+                adapter.setHighlightedPosition(which);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateAdapter(adapter, list);
+                    }
+                });
             }
         });
         // add OK and Cancel buttons
@@ -313,6 +331,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // user clicked OK
+                socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, "create", buildingName[0])));
             }
         });
         builder.setNegativeButton("Cancel", null);
@@ -449,7 +468,7 @@ public class MainActivity extends BaseActivity {
                     //check if current territory has buildings
                     else if(buildingAdapter.checkCacheByCoords(currCoord)){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(buildingAdapter.getCachedTargetByCoord(currCoord).getId(),"list")));
+                                new ShopRequestMessage(currCoord,"list")));
                     }
                     else{
                         socketService.enqueue(new MessagesC2S(

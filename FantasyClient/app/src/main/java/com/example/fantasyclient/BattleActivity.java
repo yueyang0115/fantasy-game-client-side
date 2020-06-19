@@ -156,7 +156,7 @@ public class BattleActivity extends BaseActivity{
      * @param position selected position
      */
     private void selectSoldier(int position){
-        soldierAdapter.setCurrPosition(position);
+        soldierAdapter.setHighlightedPosition(position);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -166,7 +166,7 @@ public class BattleActivity extends BaseActivity{
     }
 
     private void selectMonster(int position){
-        monsterAdapter.setCurrPosition(position);
+        monsterAdapter.setHighlightedPosition(position);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

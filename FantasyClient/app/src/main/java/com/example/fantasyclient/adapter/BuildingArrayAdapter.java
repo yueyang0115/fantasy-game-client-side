@@ -15,7 +15,7 @@ import java.util.List;
 
 public class BuildingArrayAdapter extends BuildingAdapter {
 
-    private static final String TAG = "UnitArrayAdapter";
+    private static final String TAG = "BuildingArrayAdapter";
 
     public BuildingArrayAdapter(Context context, List<Building> objects) {
         super(context, objects);
@@ -34,7 +34,7 @@ public class BuildingArrayAdapter extends BuildingAdapter {
     protected void setView(BuildingViewHolder viewHolder, Building building, int position){
         // Populate the data into the template view using the data object
         viewHolder.buildingName.setText("Name: "+ building.getName());
-        //viewHolder.buildingCost.setText("HP: "+ building.getCost());
+        viewHolder.buildingCost.setText("HP: "+ building.getCost());
         viewHolder.buildingImg.setImageDrawable(getDrawableByName(building.getName()));
     }
 

@@ -15,6 +15,7 @@ import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Inventory;
+import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class ShopActivity extends BaseActivity {
     //Cached messages passed by other activities
     ShopResultMessage shopResultMessage;
     InventoryResultMessage inventoryResultMessage;
-    int terrID, shopID;
+    WorldCoord currCoord;
 
     final static String TAG = "ShopActivity";
 
@@ -82,8 +83,7 @@ public class ShopActivity extends BaseActivity {
         assert shopResultMessage != null;
         inventoryResultMessage = shopResultMessage.getInventoryResultMessage();
         checkShopResult(shopResultMessage);
-        terrID = intent.getIntExtra("territoryID",0);
-        shopID = intent.getIntExtra("ShopID",0);
+        currCoord = (WorldCoord) intent.getSerializableExtra("ShopCoord");
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ShopActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //send shop request
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,shopAdapter.getItemMap(),"buy")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,shopAdapter.getItemMap(),"buy")));
                 handleRecvMessage(socketService.dequeue());
                 shopAdapter.clearMap();
             }
@@ -100,7 +100,7 @@ public class ShopActivity extends BaseActivity {
         btn_sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,inventoryAdapter.getItemMap(),"sell")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,inventoryAdapter.getItemMap(),"sell")));
                 handleRecvMessage(socketService.dequeue());
                 inventoryAdapter.clearMap();
             }

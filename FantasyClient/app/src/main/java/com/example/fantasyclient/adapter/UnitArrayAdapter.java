@@ -38,7 +38,7 @@ public class UnitArrayAdapter extends UnitAdapter {
         viewHolder.unitHp.setText("HP: "+ unit.getHp());
         viewHolder.unitAtk.setText("ATK: "+ unit.getAtk());
         viewHolder.unitSpeed.setText("SPD: "+ unit.getSpeed());
-        setImageByPosition(viewHolder.unitImg, position, new Drawable[]{getDrawableByName(unit.getName())}, currPosition);
+        setImageByPosition(viewHolder.unitImg, position, new Drawable[]{getDrawableByName(unit.getName())}, highlightedPosition);
     }
 
 }

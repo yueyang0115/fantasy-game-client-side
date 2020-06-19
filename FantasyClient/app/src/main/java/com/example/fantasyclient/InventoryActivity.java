@@ -159,12 +159,12 @@ public class InventoryActivity extends BaseActivity {
      * @param position selected position
      */
     private void selectSoldier(int position){
-        soldierAdapter.setCurrPosition(position);
+        soldierAdapter.setHighlightedPosition(position);
         updateSoldierAdapter();
     }
 
     private void selectInventory(int position){
-        inventoryAdapter.setCurrPosition(position);
+        inventoryAdapter.setHighlightedPosition(position);
         updateInventoryAdapter();
     }
 

@@ -8,7 +8,7 @@ public class BuildingResultMessage {
 
     private List<Building> buildingList;
     private String result;
-    private String action;
+    private String action;//"createList", "upgradeList", "create", "upgrade", "destruct"
     private Building building;
 
     public BuildingResultMessage() {

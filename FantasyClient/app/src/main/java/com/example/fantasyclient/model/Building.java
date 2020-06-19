@@ -1,14 +1,20 @@
 package com.example.fantasyclient.model;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 public class Building implements Serializable {
 
-    private int id;
+    private WorldCoord coord;
 
     private String name;
 
-    private WorldCoord coord;
+    private int cost;
+
+    private List<Prerequisite> prerequisites;
+
+    private Map<String, Building> UpgradeTo;
 
     public Building() {
     }
@@ -17,12 +23,14 @@ public class Building implements Serializable {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
+
+
+    public WorldCoord getCoord() {
+        return coord;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCoord(WorldCoord coord) {
+        this.coord = coord;
     }
 
     public String getName() {
@@ -33,18 +41,34 @@ public class Building implements Serializable {
         this.name = name;
     }
 
-    public WorldCoord getCoord() {
-        return coord;
+    public int getCost() {
+        return cost;
     }
 
-    public void setCoord(WorldCoord coord) {
-        this.coord = coord;
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public List<Prerequisite> getPrerequisites() {
+        return prerequisites;
+    }
+
+    public void setPrerequisites(List<Prerequisite> prerequisites) {
+        this.prerequisites = prerequisites;
+    }
+
+    public Map<String, Building> getUpgradeTo() {
+        return UpgradeTo;
+    }
+
+    public void setUpgradeTo(Map<String, Building> upgradeTo) {
+        UpgradeTo = upgradeTo;
     }
 
     @Override
     public boolean equals(Object b) {
         if ( b instanceof Building &&
-                this.id == ((Building)b).getId())
+                this.coord == ((Building)b).getCoord())
             return true;
         else
             return false;
@@ -52,8 +76,7 @@ public class Building implements Serializable {
 
     @Override
     public int hashCode() {
-        Integer tempID = id;
-        return tempID.hashCode();
+        return coord.hashCode();
     }
 }
 

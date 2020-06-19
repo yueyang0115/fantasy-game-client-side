@@ -14,9 +14,14 @@ import com.example.fantasyclient.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is an ArrayAdapter class which provides a highlighted position for selecting elements in this array
+ * @param <T>
+ */
 public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
 
-    int currPosition = 0;
+    //target position to highlight
+    int highlightedPosition = 0;
 
     //View lookup cache
     static class UnitViewHolder {
@@ -44,8 +49,8 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
         super(context, 0, new ArrayList<>(objects));
     }
 
-    public void setCurrPosition(int position){
-        currPosition = position;
+    public void setHighlightedPosition(int position){
+        highlightedPosition = position;
     }
 
     /**

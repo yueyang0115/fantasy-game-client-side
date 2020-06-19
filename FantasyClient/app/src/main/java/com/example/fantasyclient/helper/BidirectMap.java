@@ -10,6 +10,10 @@ public class BidirectMap<K,V> extends HashMap<K,V> {
     //add to both maps
     @Override
     public V put(K key, V value) {
+        //remove from reverse map if put a new value to an existing key
+        if(reverseMap.containsValue(key)){
+            reverseMap.remove(get(key));
+        }
         reverseMap.put(value, key);
         return super.put(key, value);
     }

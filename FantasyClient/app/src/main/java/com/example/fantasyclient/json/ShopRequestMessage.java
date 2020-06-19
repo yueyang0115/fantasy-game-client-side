@@ -1,32 +1,34 @@
 package com.example.fantasyclient.json;
 
+import com.example.fantasyclient.model.WorldCoord;
+
 import java.util.Map;
 
 public class ShopRequestMessage {
-    private int shopID;
+    private WorldCoord coord;
     private Map<Integer,Integer> itemMap;//Map<inventoryID, amount to buy>
     private String action;//"list""buy""sell"
 
     public ShopRequestMessage() {
     }
 
-    public ShopRequestMessage(int shopID, String action) {
-        this.shopID = shopID;
+    public ShopRequestMessage(WorldCoord coord, String action) {
+        this.coord = coord;
         this.action = action;
     }
 
-    public ShopRequestMessage(int shopID, Map<Integer,Integer> itemMap, String action) {
-        this.shopID = shopID;
+    public ShopRequestMessage(WorldCoord coord, Map<Integer,Integer> itemMap, String action) {
+        this.coord = coord;
         this.itemMap = itemMap;
         this.action = action;
     }
 
-    public int getShopID() {
-        return shopID;
+    public WorldCoord getCoord() {
+        return coord;
     }
 
-    public void setShopID(int shopID) {
-        this.shopID = shopID;
+    public void setCoord(WorldCoord coord) {
+        this.coord = coord;
     }
 
     public Map<Integer, Integer> getItemMap() {
