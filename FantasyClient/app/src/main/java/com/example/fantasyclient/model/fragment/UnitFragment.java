@@ -1,4 +1,4 @@
-package com.example.fantasyclient.fragment;
+package com.example.fantasyclient.model.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

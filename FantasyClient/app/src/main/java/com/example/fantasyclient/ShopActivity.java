@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is an activity of shopping, which maintains two item lists of both shop and inventory
+ * This is an activity of shopping, which maintains two item lists of both Shop and inventory
  */
 public class ShopActivity extends BaseActivity {
 
@@ -91,7 +91,7 @@ public class ShopActivity extends BaseActivity {
         btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //send shop request
+                //send Shop request
                 socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,shopAdapter.getItemMap(),"buy")));
                 handleRecvMessage(socketService.dequeue());
                 shopAdapter.clearMap();

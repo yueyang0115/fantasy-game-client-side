@@ -46,7 +46,7 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
     }
 
     HighlightAdapter(Context context, List<T> objects) {
-        super(context, 0, new ArrayList<>(objects));
+        super(context, 0, objects);
     }
 
     public void setHighlightedPosition(int position){

@@ -1,5 +1,6 @@
 package com.example.fantasyclient.json;
 
+import com.example.fantasyclient.model.BattleAction;
 import com.example.fantasyclient.model.WorldCoord;
 
 public class BattleRequestMessage {

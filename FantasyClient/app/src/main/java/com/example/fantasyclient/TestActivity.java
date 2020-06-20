@@ -41,7 +41,6 @@ public class TestActivity extends BaseActivity {
                 List<Building> buildingList = new ArrayList<>();
                 buildingList.add(new Building("shop"));
                 BuildingArrayAdapter adapter = new BuildingArrayAdapter(TestActivity.this, buildingList);
-                String[] animals = {"horse", "cow", "camel", "sheep", "goat"};
 
                 int checkedItem = 1; // cow
                 builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {

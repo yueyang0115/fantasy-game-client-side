@@ -22,6 +22,8 @@ import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
 
+import java.util.List;
+
 /**
  * This is base activity which contains several basic methods for all activities:
  * 1.Bind to socket service: communicate with server
@@ -38,7 +40,7 @@ public class BaseActivity extends Activity {
     static final int RESULT_WIN = RESULT_OK;
     static final int RESULT_LOSE = RESULT_FIRST_USER;
     static final int BATTLE = 2;//request code for battle
-    static final int SHOP = 3;//request code for shop
+    static final int SHOP = 3;//request code for Shop
     static final int INVENTORY = 4;//request code for inventory
     static final int CENTER = 17;//center of the map
 
@@ -173,7 +175,7 @@ public class BaseActivity extends Activity {
      * @param adapter target adapter
      * @param object updated list
      */
-    protected void updateAdapter(HighlightAdapter adapter, Object object){
+    protected void updateAdapter(HighlightAdapter adapter, List object){
         adapter.clear();
         adapter.addAll(object);
         adapter.notifyDataSetChanged();

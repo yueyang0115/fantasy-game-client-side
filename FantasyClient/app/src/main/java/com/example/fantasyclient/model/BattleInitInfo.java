@@ -1,4 +1,4 @@
-package com.example.fantasyclient.json;
+package com.example.fantasyclient.model;
 
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Soldier;

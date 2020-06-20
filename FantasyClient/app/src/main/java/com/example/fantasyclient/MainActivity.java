@@ -285,11 +285,16 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void checkBuildingResult(BuildingResultMessage m){
+    protected void checkBuildingResult(final BuildingResultMessage m){
         if(m.getResult().equals("success")){
             String action = m.getAction();
             if(action.equals("createList") || action.equals("upgradeList")) {
-                setUpBuildingDialog(m.getBuildingList());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setUpBuildingDialog(m.getBuildingList());
+                    }
+                });
             }
             else if(action.equals("create") || action.equals("upgrade")){
                 updateBuilding(m.getBuilding());
