@@ -34,7 +34,7 @@ public class BuildingArrayAdapter extends BuildingAdapter {
     protected void setView(BuildingViewHolder viewHolder, Building building, int position){
         // Populate the data into the template view using the data object
         viewHolder.buildingName.setText("Name: "+ building.getName());
-        viewHolder.buildingCost.setText("HP: "+ building.getCost());
+        viewHolder.buildingCost.setText("Cost: "+ building.getCost());
         viewHolder.buildingImg.setImageDrawable(getDrawableByName(building.getName()));
     }
 

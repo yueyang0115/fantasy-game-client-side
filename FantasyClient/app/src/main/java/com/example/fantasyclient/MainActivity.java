@@ -326,7 +326,8 @@ public class MainActivity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        updateAdapter(adapter, list);
+                        adapter.notifyDataSetChanged();
+                        //updateAdapter(adapter, list);
                     }
                 });
             }
