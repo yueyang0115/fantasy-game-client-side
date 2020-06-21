@@ -226,16 +226,22 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
         //update new terrains
-        for(Territory t : m.getTerritoryArray()) {
-            updateTerrain(t);
+        if(m.getTerritoryArray() != null) {
+            for (Territory t : m.getTerritoryArray()) {
+                updateTerrain(t);
+            }
         }
         //update new monsters
-        for(Monster monster : m.getMonsterArray()){
-            updateMonster(monster);
+        if(m.getMonsterArray() != null) {
+            for (Monster monster : m.getMonsterArray()) {
+                updateMonster(monster);
+            }
         }
         //update new buildings
-        for(Building b : m.getBuildingArray()){
-            updateBuilding(b);
+        if(m.getBuildingArray() != null) {
+            for (Building b : m.getBuildingArray()) {
+                updateBuilding(b);
+            }
         }
         //update UI
         updateMapLayers();
