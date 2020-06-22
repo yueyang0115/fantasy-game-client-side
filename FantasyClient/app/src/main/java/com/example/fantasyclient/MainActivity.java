@@ -320,6 +320,9 @@ public class MainActivity extends BaseActivity {
     }
 
     protected void setUpBuildingDialog(final List<Building> list, final String title){
+
+        //really need UIthread??
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -504,6 +507,7 @@ public class MainActivity extends BaseActivity {
                     else if(buildingAdapter.checkCacheByCoords(currCoord)){
                         switch (buildingAdapter.getItem(position).getName()) {
                             case "shop":
+                            case "super_shop":
                                 socketService.enqueue(new MessagesC2S(
                                         new ShopRequestMessage(currCoord, "list")));
                                 break;
@@ -512,7 +516,6 @@ public class MainActivity extends BaseActivity {
                     else{
                         setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
                     }
-
                 }
                 else {
                     setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
