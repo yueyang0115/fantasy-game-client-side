@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.fantasyclient.adapter.UnitArrayAdapter;
+import com.example.fantasyclient.adapter.UnitInfoAdapter;
 import com.example.fantasyclient.adapter.UnitImageAdapter;
 import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.AttributeResultMessage;
@@ -38,7 +38,7 @@ public class BattleActivity extends BaseActivity{
     List<Unit> seqList = new ArrayList<>();
     List<Integer> defeatedMonsters = new ArrayList<>();//List to store defeated monsters
     Unit currSoldier, currMonster;//current attacker and attackee
-    UnitArrayAdapter soldierAdapter, monsterAdapter;
+    UnitInfoAdapter soldierAdapter, monsterAdapter;
     UnitImageAdapter seqAdapter;
     ListView soldierListView, monsterListView, seqListView;
     WorldCoord territoryCoord;
@@ -74,9 +74,9 @@ public class BattleActivity extends BaseActivity{
 
     @Override
     protected void initView(){
-        soldierAdapter = new UnitArrayAdapter(this, soldierList);
+        soldierAdapter = new UnitInfoAdapter(this, soldierList);
         soldierListView.setAdapter(soldierAdapter);
-        monsterAdapter = new UnitArrayAdapter(this, monsterList);
+        monsterAdapter = new UnitInfoAdapter(this, monsterList);
         monsterListView.setAdapter(monsterAdapter);
         seqAdapter = new UnitImageAdapter(this, seqList);
         seqListView.setAdapter(seqAdapter);

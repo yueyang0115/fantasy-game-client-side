@@ -1,33 +1,34 @@
 package com.example.fantasyclient.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.fantasyclient.R;
+import com.example.fantasyclient.adapter.viewholder.BaseViewHolder;
+import com.example.fantasyclient.adapter.viewholder.UnitViewHolder;
 import com.example.fantasyclient.model.Unit;
 
 import java.util.List;
 
 public class UnitImageAdapter extends UnitAdapter {
 
-    private static final String TAG = "UnitImageAdapter";
-
     public UnitImageAdapter(Context context, List<Unit> objects) {
         super(context, objects);
+        TAG = "UnitImageAdapter";
     }
 
     @Override
-    protected void findView(UnitViewHolder viewHolder, View convertView){
+    protected void findView(BaseViewHolder baseViewHolder, View convertView){
         // Lookup view for data population
-        viewHolder.unitImg = (ImageView) convertView.findViewById(R.id.unitImg);
+        UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
+        viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImg);
     }
 
     @Override
-    @SuppressLint("SetTextI18n")
-    protected void setView(UnitViewHolder viewHolder, Unit unit, int position){
+    protected void setView(BaseViewHolder baseViewHolder, Unit unit, int position){
         // Populate the data into the template view using the data object
-        viewHolder.unitImg.setImageDrawable(getDrawableByName(unit.getName()));
+        UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
+        viewHolder.image.setImageDrawable(getDrawableByName(unit.getName()));
     }
 }

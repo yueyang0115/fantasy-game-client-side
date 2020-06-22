@@ -9,10 +9,9 @@ import com.example.fantasyclient.model.WorldCoord;
 
 public class MapTerritoryAdapter extends MapAdapter<Territory> {
 
-    private static String TAG = "MapTerritoryAdapter";
-
     public MapTerritoryAdapter(Context context, WorldCoord coord) {
         super(context, coord);
+        TAG = "MapTerritoryAdapter";
     }
 
     @Override

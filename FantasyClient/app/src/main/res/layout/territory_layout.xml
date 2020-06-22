@@ -6,8 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
     <ImageView
-        android:id="@+id/buildingImg"
-        app:srcCompat="@drawable/mountain_castle00"
+        android:id="@+id/terrainImg"
+        app:srcCompat="@drawable/mountain"
         android:layout_height="100dp"
         android:layout_width="100dp"
         android:layout_weight="1"/>
@@ -17,18 +17,30 @@
         android:layout_height="100dp"
         android:layout_weight="1">
         <TextView
-            android:id="@+id/buildingName"
+            android:id="@+id/terrainType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name"
-            android:layout_marginTop="25dp"
+            android:text="Type"
             android:layout_weight="1"
+            android:layout_marginTop="10dp"
             tools:ignore="NestedWeights" />
         <TextView
-            android:id="@+id/buildingCost"
+            android:id="@+id/x"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cost"
+            android:text="X"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/y"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Y"
+            android:layout_weight="1"/>
+        <TextView
+            android:id="@+id/tame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tame"
             android:layout_weight="1"/>
     </LinearLayout>
 

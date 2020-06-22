@@ -6,12 +6,9 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
-import android.widget.TextView;
 
 import com.example.fantasyclient.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,30 +17,10 @@ import java.util.List;
  */
 public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
 
+    protected static String TAG;
+
     //target position to highlight
     int highlightedPosition = 0;
-
-    //View lookup cache
-    static class UnitViewHolder {
-        TextView unitID, unitHp, unitAtk, unitSpeed;
-        ImageView unitImg;
-    }
-
-    static class InventoryViewHolder {
-        TextView inventoryName, inventoryCost, inventoryAmount;
-        ImageView inventoryImg;
-        NumberPicker inventoryNumPicker;
-    }
-
-    static class BuildingViewHolder {
-        TextView buildingName, buildingCost;
-        ImageView buildingImg;
-    }
-
-    static class CustomViewHolder {
-        TextView textView;
-        ImageView imageView;
-    }
 
     HighlightAdapter(Context context, List<T> objects) {
         super(context, 0, objects);

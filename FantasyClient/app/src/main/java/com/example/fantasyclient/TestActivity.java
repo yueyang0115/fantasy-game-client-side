@@ -5,14 +5,11 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 
-import com.example.fantasyclient.adapter.BuildingArrayAdapter;
-import com.example.fantasyclient.drawable.TextDrawable;
+import com.example.fantasyclient.adapter.BuildingInfoAdapter;
 import com.example.fantasyclient.model.Building;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TestActivity extends BaseActivity {
@@ -40,7 +37,7 @@ public class TestActivity extends BaseActivity {
                 // add a radio button list
                 List<Building> buildingList = new ArrayList<>();
                 buildingList.add(new Building("shop"));
-                BuildingArrayAdapter adapter = new BuildingArrayAdapter(TestActivity.this, buildingList);
+                BuildingInfoAdapter adapter = new BuildingInfoAdapter(TestActivity.this, buildingList);
 
                 int checkedItem = 1; // cow
                 builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {

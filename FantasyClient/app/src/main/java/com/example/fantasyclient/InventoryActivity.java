@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.adapter.InventoryArrayAdapter;
-import com.example.fantasyclient.adapter.UnitArrayAdapter;
+import com.example.fantasyclient.adapter.InventoryInfoAdapter;
+import com.example.fantasyclient.adapter.UnitInfoAdapter;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
@@ -36,8 +36,8 @@ public class InventoryActivity extends BaseActivity {
     List<Unit> soldierList = new ArrayList<>();
 
     //Adapters to show ListView
-    InventoryArrayAdapter inventoryAdapter;
-    UnitArrayAdapter soldierAdapter;
+    InventoryInfoAdapter inventoryAdapter;
+    UnitInfoAdapter soldierAdapter;
 
     ListView soldierListView, inventoryListView;
 
@@ -77,9 +77,9 @@ public class InventoryActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        inventoryAdapter = new InventoryArrayAdapter(this, inventoryItemList);
+        inventoryAdapter = new InventoryInfoAdapter(this, inventoryItemList);
         inventoryListView.setAdapter(inventoryAdapter);
-        soldierAdapter = new UnitArrayAdapter(this, soldierList);
+        soldierAdapter = new UnitInfoAdapter(this, soldierList);
         soldierListView.setAdapter(soldierAdapter);
     }
 

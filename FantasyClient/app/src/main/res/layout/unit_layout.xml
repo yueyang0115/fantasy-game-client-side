@@ -9,11 +9,13 @@
         android:id="@+id/unitImg"
         app:srcCompat="@drawable/soldier"
         android:layout_height="100dp"
-        android:layout_width="100dp" />
+        android:layout_width="100dp"
+        android:layout_weight="1"/>
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="100dp">
+        android:layout_height="100dp"
+        android:layout_weight="1">
         <TextView
             android:id="@+id/unitID"
             android:layout_width="wrap_content"

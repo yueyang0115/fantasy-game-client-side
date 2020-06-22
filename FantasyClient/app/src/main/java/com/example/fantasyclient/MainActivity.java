@@ -18,11 +18,12 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.adapter.BuildingArrayAdapter;
+import com.example.fantasyclient.adapter.BuildingInfoAdapter;
 import com.example.fantasyclient.adapter.MapAdapter;
 import com.example.fantasyclient.adapter.MapBuildingAdapter;
 import com.example.fantasyclient.adapter.MapTerritoryAdapter;
 import com.example.fantasyclient.adapter.MapUnitAdapter;
+import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
@@ -39,7 +40,10 @@ import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import im.delight.android.location.SimpleLocation;
@@ -294,58 +298,77 @@ public class MainActivity extends BaseActivity {
     protected void checkBuildingResult(final BuildingResultMessage m){
         if(m.getResult().equals("success")){
             String action = m.getAction();
-            if(action.equals("createList") || action.equals("upgradeList")) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setUpBuildingDialog(m.getBuildingList());
-                    }
-                });
-            }
-            else if(action.equals("create") || action.equals("upgrade")){
-                updateBuilding(m.getBuilding());
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        buildingAdapter.notifyDataSetChanged();
-                    }
-                });
+            switch (action) {
+                case "createList":
+                    setUpBuildingDialog(m.getBuildingList(), "create");
+                    break;
+                case "upgradeList":
+                    setUpBuildingDialog(m.getBuildingList(), "upgrade");
+                    break;
+                case "create":
+                case "upgrade":
+                    updateBuilding(m.getBuilding());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            buildingAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    break;
             }
         }
     }
 
-    protected void setUpBuildingDialog(final List<Building> list){
-        // setup the alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Please choose a building to build");
-        // add a radio button list
-        final BuildingArrayAdapter adapter = new BuildingArrayAdapter(MainActivity.this, list);
-        int checkedItem = 0; // default is the first choice
-        final String[] buildingName = {""};
-        builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
+    protected void setUpBuildingDialog(final List<Building> list, final String title){
+        runOnUiThread(new Runnable() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // user checked an item
-                buildingName[0] = adapter.getItem(which).getName();
-                //highlight selected item
-                adapter.setHighlightedPosition(which);
-                runOnUiThread(new Runnable() {
+            public void run() {
+                // setup the alert builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Please choose a building to " + title);
+                // add a radio button list
+                final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
+                int checkedItem = 0; // default is the first choice
+                final String[] buildingName = {""};
+                builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
                     @Override
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                        //updateAdapter(adapter, list);
+                    public void onClick(DialogInterface dialog, int which) {
+                        // user checked an item
+                        buildingName[0] = adapter.getItem(which).getName();
+                        //highlight selected item
+                        adapter.setHighlightedPosition(which);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                //updateAdapter(adapter, list);
+                            }
+                        });
                     }
                 });
+                // add OK and Cancel buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // user clicked OK
+                        socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, buildingName[0])));
+                    }
+                });
+                builder.setNegativeButton("Cancel", null);
+                // create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
-        // add OK and Cancel buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // user clicked OK
-                socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, "create", buildingName[0])));
-            }
-        });
+    }
+
+    protected void setUpTerritoryDialog(final List<Territory> list){
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Territory Details");
+        // add a radio button list
+        final TerritoryInfoAdapter adapter = new TerritoryInfoAdapter(MainActivity.this, list);
+        builder.setAdapter(adapter, null);
         builder.setNegativeButton("Cancel", null);
         // create and show the alert dialog
         AlertDialog dialog = builder.create();
@@ -471,6 +494,36 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //check if click on the center territory
+                if(position==CENTER) {
+                    //check if current territory has monsters
+                    if(unitAdapter.checkCacheByCoords(currCoord)){
+                        socketService.enqueue(new MessagesC2S(
+                                new BattleRequestMessage(currCoord, "start")));
+                    }
+                    //check if current territory has buildings
+                    else if(buildingAdapter.checkCacheByCoords(currCoord)){
+                        switch (buildingAdapter.getItem(position).getName()) {
+                            case "shop":
+                                socketService.enqueue(new MessagesC2S(
+                                        new ShopRequestMessage(currCoord, "list")));
+                                break;
+                        }
+                    }
+                    else{
+                        setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
+                    }
+
+                }
+                else {
+                    setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
+                }
+            }
+        });
+
+        unitGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //check if click on the center territory
                 if(position==CENTER){
                     //check if current territory has monsters
                     if(unitAdapter.checkCacheByCoords(currCoord)){
@@ -480,7 +533,8 @@ public class MainActivity extends BaseActivity {
                     //check if current territory has buildings
                     else if(buildingAdapter.checkCacheByCoords(currCoord)){
                         socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(currCoord,"list")));
+                                new BuildingRequestMessage(currCoord,"upgradeList")
+                        ));
                     }
                     else{
                         socketService.enqueue(new MessagesC2S(
@@ -488,6 +542,7 @@ public class MainActivity extends BaseActivity {
                         ));
                     }
                 }
+                return true;
             }
         });
 
