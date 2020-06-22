@@ -2,6 +2,7 @@ package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,7 +37,7 @@ public class BuildingInfoAdapter extends BuildingAdapter {
         BuildingViewHolder viewHolder = (BuildingViewHolder) baseViewHolder;
         viewHolder.baseText.setText("Name: "+ building.getName());
         viewHolder.buildingCost.setText("Cost: "+ building.getCost());
-        viewHolder.image.setImageDrawable(getDrawableByName(building.getName()));
+        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(building.getName())}, highlightedPosition);
     }
 
 }

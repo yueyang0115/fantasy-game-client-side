@@ -321,8 +321,6 @@ public class MainActivity extends BaseActivity {
 
     protected void setUpBuildingDialog(final List<Building> list, final String title){
 
-        //really need UIthread??
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -333,6 +331,10 @@ public class MainActivity extends BaseActivity {
                 final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
                 int checkedItem = 0; // default is the first choice
                 final String[] buildingName = {""};
+                //set initial selected building to be the first
+                if(!list.isEmpty()) {
+                    buildingName[0] = adapter.getItem(checkedItem).getName();
+                }
                 builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
