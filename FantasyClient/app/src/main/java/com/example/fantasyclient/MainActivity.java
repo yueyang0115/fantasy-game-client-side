@@ -330,16 +330,16 @@ public class MainActivity extends BaseActivity {
                 // add a radio button list
                 final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
                 int checkedItem = 0; // default is the first choice
-                final String[] buildingName = {""};
+                final Building[] currBuilding = new Building[1];
                 //set initial selected building to be the first
                 if(!list.isEmpty()) {
-                    buildingName[0] = adapter.getItem(checkedItem).getName();
+                    currBuilding[0] = adapter.getItem(checkedItem);
                 }
                 builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // user checked an item
-                        buildingName[0] = adapter.getItem(which).getName();
+                        currBuilding[0] = adapter.getItem(which);
                         //highlight selected item
                         adapter.setHighlightedPosition(which);
                         runOnUiThread(new Runnable() {
@@ -356,7 +356,9 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // user clicked OK
-                        socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, buildingName[0])));
+                        if(currBuilding[0]!=null) {
+                            socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, currBuilding[0].getName())));
+                        }
                     }
                 });
                 builder.setNegativeButton("Cancel", null);
