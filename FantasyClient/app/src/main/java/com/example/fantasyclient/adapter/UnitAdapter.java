@@ -12,8 +12,12 @@ import com.example.fantasyclient.model.Unit;
 
 import java.util.List;
 
+/**
+ * This is an ElementAdapter class contains array of units
+ */
 public abstract class UnitAdapter extends ElementAdapter<Unit> {
 
+    //initialize the unit layout
     UnitAdapter(Context context, List<Unit> objects) {
         super(context, objects, R.layout.unit_layout);
     }
@@ -23,6 +27,7 @@ public abstract class UnitAdapter extends ElementAdapter<Unit> {
         return new UnitViewHolder();
     }
 
+    //find views of UnitViewHolder
     @Override
     protected void findView(BaseViewHolder baseViewHolder, View convertView){
         // Lookup view for data population

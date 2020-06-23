@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.adapter.InventoryInfoAdapter;
 import com.example.fantasyclient.adapter.InventoryPickerAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;

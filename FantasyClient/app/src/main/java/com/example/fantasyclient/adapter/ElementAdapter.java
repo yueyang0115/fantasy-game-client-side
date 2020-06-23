@@ -9,10 +9,16 @@ import com.example.fantasyclient.adapter.viewholder.BaseViewHolder;
 
 import java.util.List;
 
+/**
+ * This is an HighlightAdapter class which overrides getView() function to show an array of elements
+ * @param <T> the type of element in array
+ */
 public abstract class ElementAdapter<T> extends HighlightAdapter<T> {
 
+    //the layout of array
     private final int layout;
 
+    //initialize layout in constructor
     ElementAdapter(Context context, List<T> objects, int layout) {
         super(context, objects);
         this.layout = layout;
@@ -34,15 +40,17 @@ public abstract class ElementAdapter<T> extends HighlightAdapter<T> {
             // View is being recycled, retrieve the viewHolder object from tag
             viewHolder = (BaseViewHolder) convertView.getTag();
         }
-
         setView(viewHolder, unit, position);
         // Return the completed view to render on screen
         return convertView;
     }
 
+    //get different ViewHolder class based on T
     protected abstract BaseViewHolder getViewHolder();
 
+    //find views based on T
     protected abstract void findView(BaseViewHolder viewHolder, View convertView);
 
+    //set views based on T
     protected abstract void setView(BaseViewHolder viewHolder, T t, int position);
 }

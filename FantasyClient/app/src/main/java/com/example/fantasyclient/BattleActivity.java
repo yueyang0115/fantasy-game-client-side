@@ -9,16 +9,16 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.example.fantasyclient.adapter.UnitInfoAdapter;
 import com.example.fantasyclient.adapter.UnitImageAdapter;
+import com.example.fantasyclient.adapter.UnitInfoAdapter;
 import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.AttributeResultMessage;
-import com.example.fantasyclient.model.BattleAction;
-import com.example.fantasyclient.model.BattleInitInfo;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.model.BattleAction;
+import com.example.fantasyclient.model.BattleInitInfo;
 import com.example.fantasyclient.model.Unit;
 import com.example.fantasyclient.model.WorldCoord;
 

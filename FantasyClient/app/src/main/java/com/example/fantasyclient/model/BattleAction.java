@@ -1,7 +1,5 @@
 package com.example.fantasyclient.model;
 
-import com.example.fantasyclient.model.Unit;
-
 import java.util.List;
 
 public class BattleAction {

@@ -13,8 +13,12 @@ import com.example.fantasyclient.model.Inventory;
 
 import java.util.List;
 
+/**
+ * This is an ElementAdapter class contains array of inventories
+ */
 public abstract class InventoryAdapter extends ElementAdapter<Inventory> {
 
+    //initialize the inventory layout
     InventoryAdapter(Context context, List<Inventory> objects) {
         super(context, objects, R.layout.item_layout);
     }
@@ -24,6 +28,7 @@ public abstract class InventoryAdapter extends ElementAdapter<Inventory> {
         return new InventoryViewHolder();
     }
 
+    //find views of InventoryViewHolder
     @Override
     protected void findView(BaseViewHolder baseViewHolder, View convertView) {
         // Lookup view for data population

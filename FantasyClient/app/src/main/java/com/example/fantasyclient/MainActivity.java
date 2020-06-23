@@ -40,9 +40,7 @@ import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
