@@ -274,6 +274,8 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
             intent.putExtra("ShopCoord", currCoord);
+            //clear queue before change activities
+            socketService.clearQueue();
             startActivityForResult(intent, SHOP);
         }
     }
@@ -290,6 +292,8 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this,BattleActivity.class);
             intent.putExtra("BattleResultMessage", m);
             intent.putExtra("territoryCoord", currCoord);
+            //clear queue before change activities
+            socketService.clearQueue();
             startActivityForResult(intent,BATTLE);
         }
     }

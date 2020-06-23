@@ -19,16 +19,13 @@ public class UnitImageAdapter extends UnitAdapter {
     }
 
     @Override
-    protected void findView(BaseViewHolder baseViewHolder, View convertView){
-        // Lookup view for data population
-        UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
-        viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImg);
-    }
-
-    @Override
     protected void setView(BaseViewHolder baseViewHolder, Unit unit, int position){
         // Populate the data into the template view using the data object
         UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
+        viewHolder.baseText.setVisibility(View.GONE);
+        viewHolder.unitAtk.setVisibility(View.GONE);
+        viewHolder.unitHp.setVisibility(View.GONE);
+        viewHolder.unitSpeed.setVisibility(View.GONE);
         viewHolder.image.setImageDrawable(getDrawableByName(unit.getName()));
     }
 }

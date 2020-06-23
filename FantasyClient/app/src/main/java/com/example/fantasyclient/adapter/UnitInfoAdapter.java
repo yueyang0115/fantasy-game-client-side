@@ -22,17 +22,6 @@ public class UnitInfoAdapter extends UnitAdapter {
     }
 
     @Override
-    protected void findView(BaseViewHolder baseViewHolder, View convertView){
-        // Lookup view for data population
-        UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
-        viewHolder.baseText = (TextView) convertView.findViewById(R.id.unitID);
-        viewHolder.unitHp = (TextView) convertView.findViewById(R.id.unitHp);
-        viewHolder.unitAtk = (TextView) convertView.findViewById(R.id.unitAtk);
-        viewHolder.unitSpeed = (TextView) convertView.findViewById(R.id.unitSpeed);
-        viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImg);
-    }
-
-    @Override
     @SuppressLint("SetTextI18n")
     protected void setView(BaseViewHolder baseViewHolder, Unit unit, int position){
         // Populate the data into the template view using the data object

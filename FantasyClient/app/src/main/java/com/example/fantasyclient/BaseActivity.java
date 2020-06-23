@@ -164,6 +164,8 @@ public class BaseActivity extends Activity {
         if (m.getResult().equals("valid")) {
             Intent intent = new Intent(this, InventoryActivity.class);
             intent.putExtra("InventoryResultMessage", m);
+            //clear queue before change activities
+            socketService.clearQueue();
             startActivityForResult(intent, INVENTORY);
         }
     }

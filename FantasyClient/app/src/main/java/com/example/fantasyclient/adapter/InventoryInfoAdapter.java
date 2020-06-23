@@ -2,8 +2,10 @@ package com.example.fantasyclient.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -21,30 +23,9 @@ import java.util.Map;
 
 public class InventoryInfoAdapter extends InventoryAdapter {
 
-    //Map to store numbers of items to act on
-    private Map<Integer,Integer> itemMap = new HashMap<>();
-    private static final String TAG = "InventoryArrayAdapter";
-
     public InventoryInfoAdapter(Context context, List<Inventory> objects) {
         super(context, objects);
-    }
-
-    public Map<Integer,Integer> getItemMap(){
-        return itemMap;
-    }
-
-    public void clearMap(){
-        itemMap.clear();
-        Log.d(TAG, "Clear Map");
-    }
-
-    protected void findView(BaseViewHolder baseViewHolder, View convertView) {
-        // Lookup view for data population
-        InventoryViewHolder viewHolder = (InventoryViewHolder)baseViewHolder; 
-        viewHolder.baseText = (TextView) convertView.findViewById(R.id.itemName);
-        viewHolder.inventoryCost = (TextView) convertView.findViewById(R.id.itemCost);
-        viewHolder.inventoryAmount = (TextView) convertView.findViewById(R.id.itemAmount);
-        viewHolder.inventoryNumPicker = (NumberPicker) convertView.findViewById(R.id.itemNum);
+        TAG = "InventoryInfoAdapter";
     }
 
     @SuppressLint("SetTextI18n")
@@ -63,14 +44,7 @@ public class InventoryInfoAdapter extends InventoryAdapter {
         viewHolder.baseText.setText("Name:" + name);
         viewHolder.inventoryCost.setText("Cost: " + cost);
         viewHolder.inventoryAmount.setText("Amount: " + inventory.getAmount());
-        viewHolder.inventoryNumPicker.setMaxValue(inventory.getAmount());
-        viewHolder.inventoryNumPicker.setMinValue(0);
-        viewHolder.inventoryNumPicker.setValue(0);
-        viewHolder.inventoryNumPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                itemMap.put(inventory.getId(), viewHolder.inventoryNumPicker.getValue());
-            }
-        });
+        viewHolder.inventoryNumPicker.setVisibility(View.GONE);
+        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(name)}, highlightedPosition);
     }
 }

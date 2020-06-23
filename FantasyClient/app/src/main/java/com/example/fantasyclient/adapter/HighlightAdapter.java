@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.example.fantasyclient.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
     int highlightedPosition = 0;
 
     HighlightAdapter(Context context, List<T> objects) {
-        super(context, 0, objects);
+        super(context, 0, new ArrayList<T>(objects));
     }
 
     public void setHighlightedPosition(int position){

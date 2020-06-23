@@ -230,6 +230,8 @@ public class BattleActivity extends BaseActivity{
     }
 
     protected void finishActivity(String result){
+        //clear queue before change activities
+        socketService.clearQueue();
         doUnbindService();
         ifStop = true;
         Intent intent = new Intent();
