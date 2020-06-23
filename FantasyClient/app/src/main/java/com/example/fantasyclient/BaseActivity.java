@@ -11,8 +11,10 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.example.fantasyclient.adapter.HighlightAdapter;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
 import com.example.fantasyclient.json.MessagesS2C;
@@ -20,9 +22,7 @@ import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
 
-import java.util.Objects;
-
-import static com.example.fantasyclient.MainActivity.INVENTORY;
+import java.util.List;
 
 /**
  * This is base activity which contains several basic methods for all activities:
@@ -40,7 +40,7 @@ public class BaseActivity extends Activity {
     static final int RESULT_WIN = RESULT_OK;
     static final int RESULT_LOSE = RESULT_FIRST_USER;
     static final int BATTLE = 2;//request code for battle
-    static final int SHOP = 3;//request code for shop
+    static final int SHOP = 3;//request code for Shop
     static final int INVENTORY = 4;//request code for inventory
     static final int CENTER = 17;//center of the map
 
@@ -121,6 +121,9 @@ public class BaseActivity extends Activity {
             if (m.getInventoryResultMessage() != null){
                 checkInventoryResult(m.getInventoryResultMessage());
             }
+            if (m.getBuildingResultMessage() != null){
+                checkBuildingResult(m.getBuildingResultMessage());
+            }
         }
     }
 
@@ -165,10 +168,17 @@ public class BaseActivity extends Activity {
         }
     }
 
-    protected void updateAdapter(ArrayAdapter a, Object object){
-        a.clear();
-        a.addAll(object);
-        a.notifyDataSetChanged();
+    protected void checkBuildingResult(BuildingResultMessage m){}
+
+    /**
+     * This method updates target adapter to show updated data
+     * @param adapter target adapter
+     * @param object updated list
+     */
+    protected void updateAdapter(HighlightAdapter adapter, List object){
+        adapter.clear();
+        adapter.addAll(object);
+        adapter.notifyDataSetChanged();
     }
 
     /**

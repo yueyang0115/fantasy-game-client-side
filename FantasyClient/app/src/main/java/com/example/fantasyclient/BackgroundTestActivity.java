@@ -5,14 +5,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 
-import com.example.fantasyclient.adapter.ImageAdapter;
+import com.example.fantasyclient.adapter.MapTerritoryAdapter;
 import com.example.fantasyclient.model.WorldCoord;
 
 public class BackgroundTestActivity extends BaseActivity {
 
     Button btnTest;
-    ImageAdapter terrainAdapter = new ImageAdapter(this, new WorldCoord());
-    ImageAdapter unitAdapter = new ImageAdapter(this, new WorldCoord());
+    MapTerritoryAdapter terrainAdapter = new MapTerritoryAdapter(this, new WorldCoord());
+    MapTerritoryAdapter unitAdapter = new MapTerritoryAdapter(this, new WorldCoord());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +25,7 @@ public class BackgroundTestActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 terrainAdapter.updateCurrCoord(new WorldCoord(0,0));
-                terrainAdapter.updateImageByCoords(new WorldCoord(0,-1),R.drawable.tree_e);
+                //terrainAdapter.addToCacheByCoords(new WorldCoord(0,-1),R.drawable.tree_e);
                 terrainAdapter.notifyDataSetChanged();
             }
         });

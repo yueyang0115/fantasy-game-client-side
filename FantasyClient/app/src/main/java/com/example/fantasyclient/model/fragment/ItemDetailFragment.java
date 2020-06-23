@@ -1,4 +1,4 @@
-package com.example.fantasyclient.fragment;
+package com.example.fantasyclient.model.fragment;
 
 import androidx.fragment.app.Fragment;
 

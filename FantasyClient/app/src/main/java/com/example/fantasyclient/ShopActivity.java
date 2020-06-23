@@ -9,18 +9,19 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.adapter.ItemArrayAdapter;
+import com.example.fantasyclient.adapter.InventoryInfoAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Inventory;
+import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is an activity of shopping, which maintains two item lists of both shop and inventory
+ * This is an activity of shopping, which maintains two item lists of both Shop and inventory
  */
 public class ShopActivity extends BaseActivity {
 
@@ -33,13 +34,13 @@ public class ShopActivity extends BaseActivity {
     List<Inventory> inventoryItemList = new ArrayList<>();
 
     //Adapters to show ListView
-    ItemArrayAdapter shopAdapter, inventoryAdapter;
+    InventoryInfoAdapter shopAdapter, inventoryAdapter;
     ListView shopListView, inventoryListView;
 
     //Cached messages passed by other activities
     ShopResultMessage shopResultMessage;
     InventoryResultMessage inventoryResultMessage;
-    int terrID, shopID;
+    WorldCoord currCoord;
 
     final static String TAG = "ShopActivity";
 
@@ -69,9 +70,9 @@ public class ShopActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        inventoryAdapter = new ItemArrayAdapter(this, inventoryItemList);
+        inventoryAdapter = new InventoryInfoAdapter(this, inventoryItemList);
         inventoryListView.setAdapter(inventoryAdapter);
-        shopAdapter = new ItemArrayAdapter(this, shopInventoryList);
+        shopAdapter = new InventoryInfoAdapter(this, shopInventoryList);
         shopListView.setAdapter(shopAdapter);
     }
 
@@ -82,8 +83,7 @@ public class ShopActivity extends BaseActivity {
         assert shopResultMessage != null;
         inventoryResultMessage = shopResultMessage.getInventoryResultMessage();
         checkShopResult(shopResultMessage);
-        terrID = intent.getIntExtra("territoryID",0);
-        shopID = intent.getIntExtra("ShopID",0);
+        currCoord = (WorldCoord) intent.getSerializableExtra("ShopCoord");
     }
 
     @Override
@@ -91,8 +91,8 @@ public class ShopActivity extends BaseActivity {
         btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //send shop request
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,shopAdapter.getItemMap(),"buy")));
+                //send Shop request
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,shopAdapter.getItemMap(),"buy")));
                 handleRecvMessage(socketService.dequeue());
                 shopAdapter.clearMap();
             }
@@ -100,7 +100,7 @@ public class ShopActivity extends BaseActivity {
         btn_sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(shopID,inventoryAdapter.getItemMap(),"sell")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,inventoryAdapter.getItemMap(),"sell")));
                 handleRecvMessage(socketService.dequeue());
                 inventoryAdapter.clearMap();
             }
@@ -131,9 +131,7 @@ public class ShopActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    shopAdapter.clear();
-                    shopAdapter.addAll(shopInventoryList);
-                    shopAdapter.notifyDataSetChanged();
+                    updateAdapter(shopAdapter,shopInventoryList);
                 }
             });
             checkInventoryResult(m.getInventoryResultMessage());
@@ -152,9 +150,7 @@ public class ShopActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    inventoryAdapter.clear();
-                    inventoryAdapter.addAll(inventoryItemList);
-                    inventoryAdapter.notifyDataSetChanged();
+                    updateAdapter(inventoryAdapter,inventoryItemList);
                 }
             });
             text_money.setText(Integer.toString(m.getMoney()));

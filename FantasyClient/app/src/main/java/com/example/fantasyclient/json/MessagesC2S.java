@@ -8,7 +8,9 @@ public class MessagesC2S {
     private AttributeRequestMessage attributeRequestMessage;
     private ShopRequestMessage shopRequestMessage;
     private InventoryRequestMessage inventoryRequestMessage;
+    private BuildingRequestMessage buildingRequestMessage;
 
+    //constructors
     public MessagesC2S() {
     }
 
@@ -39,6 +41,12 @@ public class MessagesC2S {
     public MessagesC2S(InventoryRequestMessage inventoryRequestMessage) {
         this.inventoryRequestMessage = inventoryRequestMessage;
     }
+
+    public MessagesC2S(BuildingRequestMessage buildingRequestMessage) {
+        this.buildingRequestMessage = buildingRequestMessage;
+    }
+
+    //getter and setter
 
     public LoginRequestMessage getLoginRequestMessage() {
         return loginRequestMessage;
@@ -94,5 +102,13 @@ public class MessagesC2S {
 
     public void setInventoryRequestMessage(InventoryRequestMessage inventoryRequestMessage) {
         this.inventoryRequestMessage = inventoryRequestMessage;
+    }
+
+    public BuildingRequestMessage getBuildingRequestMessage() {
+        return buildingRequestMessage;
+    }
+
+    public void setBuildingRequestMessage(BuildingRequestMessage buildingRequestMessage) {
+        this.buildingRequestMessage = buildingRequestMessage;
     }
 }

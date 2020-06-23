@@ -2,7 +2,8 @@ package com.example.fantasyclient;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -17,10 +18,17 @@ import android.widget.TextView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.fantasyclient.adapter.ImageAdapter;
+import com.example.fantasyclient.adapter.BuildingInfoAdapter;
+import com.example.fantasyclient.adapter.MapAdapter;
+import com.example.fantasyclient.adapter.MapBuildingAdapter;
+import com.example.fantasyclient.adapter.MapTerritoryAdapter;
+import com.example.fantasyclient.adapter.MapUnitAdapter;
+import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
+import com.example.fantasyclient.json.BuildingRequestMessage;
+import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
@@ -32,10 +40,11 @@ import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import im.delight.android.location.SimpleLocation;
 
@@ -56,13 +65,14 @@ public class MainActivity extends BaseActivity {
 
     //map data
     SimpleLocation location;//used to track current location
-    Territory currTerr = new Territory(new WorldCoord(0,0));//used to track current territory
-    Map<Integer, WorldCoord> monsterMap = new HashMap<>();//cached monster data, Integer to Coord because need to check monsters' ID when receiving monster data
-    Map<WorldCoord, Integer> buildingMap = new HashMap<>();//cached building data, Coord to Integer because need to check building coordinates when receiving building data
+
+    WorldCoord currCoord = new WorldCoord(0,0);
 
     //fields to show map
-    ImageAdapter terrainAdapter, unitAdapter, buildingAdapter;//Adapters for map
-    List<ImageAdapter> adapterList = new ArrayList<>();
+    MapTerritoryAdapter territoryAdapter;
+    MapUnitAdapter unitAdapter;
+    MapBuildingAdapter buildingAdapter;//Adapters for map
+    List<MapAdapter> adapterList = new ArrayList<>();
     GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
 
     boolean ifPause = false;//flag to stop threads
@@ -181,17 +191,13 @@ public class MainActivity extends BaseActivity {
         WorldCoord tempCoord = new WorldCoord();
         PositionHelper.convertVPosition(tempCoord,location.getLatitude(),location.getLongitude());
         //check if current location has changed
-        if(!tempCoord.equals(currTerr.getCoord())) {
+        if(!tempCoord.equals(currCoord)) {
             //update current coordinate of all layers of map, and queryList as well
-            currTerr.updateCoord(tempCoord);
-            for (ImageAdapter adapter : adapterList) {
-                adapter.updateCurrCoord(currTerr.getCoord());
+            currCoord = tempCoord;
+            for (MapAdapter adapter : adapterList) {
+                adapter.updateCurrCoord(currCoord);
             }
-            //get the coordinates which need to be queried from server
-            List<WorldCoord> queriedCoords = adapterList.get(0).getQueriedCoords();
-            //enqueue query message in order to send to server
-            PositionRequestMessage p = new PositionRequestMessage(queriedCoords);
-            socketService.enqueue(new MessagesC2S(p));
+            enqueuePositionRequest();
         }
     }
 
@@ -224,16 +230,22 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void checkPositionResult(final PositionResultMessage m){
         //update new terrains
-        for(Territory t : m.getTerritoryArray()) {
-            updateTerrain(t);
+        if(m.getTerritoryArray() != null) {
+            for (Territory t : m.getTerritoryArray()) {
+                updateTerrain(t);
+            }
         }
         //update new monsters
-        for(Monster monster : m.getMonsterArray()){
-            updateMonster(monster);
+        if(m.getMonsterArray() != null) {
+            for (Monster monster : m.getMonsterArray()) {
+                updateMonster(monster);
+            }
         }
         //update new buildings
-        for(Building b : m.getBuildingArray()){
-            updateBuilding(b);
+        if(m.getBuildingArray() != null) {
+            for (Building b : m.getBuildingArray()) {
+                updateBuilding(b);
+            }
         }
         //update UI
         updateMapLayers();
@@ -243,7 +255,7 @@ public class MainActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                terrainAdapter.notifyDataSetChanged();
+                territoryAdapter.notifyDataSetChanged();
                 unitAdapter.notifyDataSetChanged();
                 buildingAdapter.notifyDataSetChanged();
             }
@@ -261,8 +273,7 @@ public class MainActivity extends BaseActivity {
         if (m.getResult().equals("valid")) {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
-            intent.putExtra("territoryCoord", currTerr.getCoord());
-            intent.putExtra("ShopID", buildingMap.get(currTerr.getCoord()));
+            intent.putExtra("ShopCoord", currCoord);
             startActivityForResult(intent, SHOP);
         }
     }
@@ -278,9 +289,100 @@ public class MainActivity extends BaseActivity {
         if(m.getResult().equals("continue")){
             Intent intent = new Intent(this,BattleActivity.class);
             intent.putExtra("BattleResultMessage", m);
-            intent.putExtra("territoryCoord", currTerr.getCoord());
+            intent.putExtra("territoryCoord", currCoord);
             startActivityForResult(intent,BATTLE);
         }
+    }
+
+    @Override
+    protected void checkBuildingResult(final BuildingResultMessage m){
+        if(m.getResult().equals("success")){
+            String action = m.getAction();
+            switch (action) {
+                case "createList":
+                    setUpBuildingDialog(m.getBuildingList(), "create");
+                    break;
+                case "upgradeList":
+                    setUpBuildingDialog(m.getBuildingList(), "upgrade");
+                    break;
+                case "create":
+                case "upgrade":
+                    updateBuilding(m.getBuilding());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            buildingAdapter.notifyDataSetChanged();
+                        }
+                    });
+                    break;
+            }
+        }
+        else{
+            socketService.errorAlert(m.getResult());
+        }
+    }
+
+    protected void setUpBuildingDialog(final List<Building> list, final String title){
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // setup the alert builder
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Please choose a building to " + title);
+                // add a radio button list
+                final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
+                int checkedItem = 0; // default is the first choice
+                final Building[] currBuilding = new Building[1];
+                //set initial selected building to be the first
+                if(!list.isEmpty()) {
+                    currBuilding[0] = adapter.getItem(checkedItem);
+                }
+                builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // user checked an item
+                        currBuilding[0] = adapter.getItem(which);
+                        //highlight selected item
+                        adapter.setHighlightedPosition(which);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                                //updateAdapter(adapter, list);
+                            }
+                        });
+                    }
+                });
+                // add OK and Cancel buttons
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // user clicked OK
+                        if(currBuilding[0]!=null) {
+                            socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, currBuilding[0].getName())));
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", null);
+                // create and show the alert dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+    }
+
+    protected void setUpTerritoryDialog(final List<Territory> list){
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Territory Details");
+        // add a radio button list
+        final TerritoryInfoAdapter adapter = new TerritoryInfoAdapter(MainActivity.this, list);
+        builder.setAdapter(adapter, null);
+        builder.setNegativeButton("Cancel", null);
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /**
@@ -291,15 +393,8 @@ public class MainActivity extends BaseActivity {
      */
     protected void updateTerrain(Territory t){
         WorldCoord targetCoord = t.getCoord();
-        //check if this territory is current territory
-
-        //FIX
-        if(targetCoord == currTerr.getCoord()){
-            currTerr = t;
-        }
-
         //update terrain layer
-        terrainAdapter.updateImageByCoords(targetCoord,getImageID(this,t.getTerrainType()));
+        territoryAdapter.addToCacheByCoords(targetCoord,t);
     }
 
     /**
@@ -308,14 +403,12 @@ public class MainActivity extends BaseActivity {
      * 2. Update its new coordinate and add it the cache
      */
     protected void updateMonster(Monster m){
-        int monsterID = m.getId();
         //remove from cache if cached
-        if(monsterMap.containsKey(monsterID)){
-            unitAdapter.updateImageByCoords(monsterMap.get(monsterID),UNIT_INIT);
+        if(unitAdapter.checkCacheByTarget(m)){
+            unitAdapter.removeFromCacheByTarget(m);
         }
         //update coordinate and cache it
-        unitAdapter.updateImageByCoords(m.getCoord(),getImageID(this,m.getName()));
-        monsterMap.put(monsterID,m.getCoord());
+        unitAdapter.addToCacheByCoords(m.getCoord(),m);
     }
 
     /**
@@ -325,17 +418,7 @@ public class MainActivity extends BaseActivity {
      * @param b
      */
     protected void updateBuilding(Building b){
-        buildingAdapter.updateImageByCoords(b.getCoord(),getImageID(this,b.getName()));
-        buildingMap.put(b.getCoord(),b.getId());
-    }
-
-    /**
-     * This method convert image file name to image ID
-     * @param ImageName
-     * @return: Image ID
-     */
-    public static int getImageID(Context context, String ImageName){
-        return context.getResources().getIdentifier(ImageName, "drawable", context.getPackageName());
+        buildingAdapter.addToCacheByCoords(b.getCoord(),b);
     }
 
     /**
@@ -358,11 +441,7 @@ public class MainActivity extends BaseActivity {
             case BATTLE:
                 //check the result of battle
                 if(resultCode == RESULT_WIN){
-                    unitAdapter.updateImageByCoords(currTerr.getCoord(), UNIT_INIT);
-                    List<Integer> defeatedMonsters = data.getIntegerArrayListExtra("defeatedMonsters");
-                    for(Integer i : defeatedMonsters){
-                        monsterMap.remove(i);
-                    }
+                    unitAdapter.removeFromCacheByCoords(currCoord);
                     updateMapLayers();
                 }
                 break;
@@ -374,6 +453,19 @@ public class MainActivity extends BaseActivity {
             default:
                 Log.e(TAG,"Invalid request code");
         }
+        //inform server that the player has switch to the map
+        enqueuePositionRequest();
+    }
+
+    /**
+     * This method enqueue position request to be sent to server
+     */
+    protected void enqueuePositionRequest(){
+        //get the coordinates which need to be queried from server
+        List<WorldCoord> queriedCoords = territoryAdapter.getQueriedCoords();
+        //enqueue query message in order to send to server
+        PositionRequestMessage p = new PositionRequestMessage(queriedCoords, currCoord);
+        socketService.enqueue(new MessagesC2S(p));
     }
 
     @Override
@@ -389,19 +481,19 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        terrainAdapter = new ImageAdapter(this, currTerr.getCoord());
-        unitAdapter = new ImageAdapter(this, currTerr.getCoord());
-        buildingAdapter = new ImageAdapter(this, currTerr.getCoord());
+        territoryAdapter = new MapTerritoryAdapter(this, currCoord);
+        unitAdapter = new MapUnitAdapter(this, currCoord);
+        buildingAdapter = new MapBuildingAdapter(this, currCoord);
 
-        adapterList.add(terrainAdapter);
+        adapterList.add(territoryAdapter);
         adapterList.add(unitAdapter);
         adapterList.add(buildingAdapter);
 
-        terrainAdapter.initImage(TERRAIN_INIT);
+        territoryAdapter.initImage(TERRAIN_INIT);
         unitAdapter.initImage(UNIT_INIT);
         buildingAdapter.initImage(UNIT_INIT);
 
-        terrainGridView.setAdapter(terrainAdapter);
+        terrainGridView.setAdapter(territoryAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
     }
@@ -412,18 +504,55 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //check if click on the center territory
-                if(position==CENTER){
+                if(position==CENTER) {
                     //check if current territory has monsters
-                    if(monsterMap.containsValue(currTerr.getCoord())) {
+                    if(unitAdapter.checkCacheByCoords(currCoord)){
                         socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currTerr.getCoord(), "start")));
+                                new BattleRequestMessage(currCoord, "start")));
                     }
                     //check if current territory has buildings
-                    else if(buildingMap.containsKey(currTerr.getCoord())){
-                        socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(buildingMap.get(currTerr.getCoord()),"list")));
+                    else if(buildingAdapter.checkCacheByCoords(currCoord)){
+                        switch (buildingAdapter.getItem(position).getName()) {
+                            case "shop":
+                            case "super_shop":
+                                socketService.enqueue(new MessagesC2S(
+                                        new ShopRequestMessage(currCoord, "list")));
+                                break;
+                        }
+                    }
+                    else{
+                        setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
                     }
                 }
+                else {
+                    setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
+                }
+            }
+        });
+
+        unitGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //check if click on the center territory
+                if(position==CENTER){
+                    //check if current territory has monsters
+                    if(unitAdapter.checkCacheByCoords(currCoord)){
+                        socketService.enqueue(new MessagesC2S(
+                                new BattleRequestMessage(currCoord, "start")));
+                    }
+                    //check if current territory has buildings
+                    else if(buildingAdapter.checkCacheByCoords(currCoord)){
+                        socketService.enqueue(new MessagesC2S(
+                                new BuildingRequestMessage(currCoord,"upgradeList")
+                        ));
+                    }
+                    else{
+                        socketService.enqueue(new MessagesC2S(
+                                new BuildingRequestMessage(currCoord,"createList")
+                        ));
+                    }
+                }
+                return true;
             }
         });
 

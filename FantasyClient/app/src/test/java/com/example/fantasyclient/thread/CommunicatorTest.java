@@ -1,6 +1,4 @@
 package com.example.fantasyclient.thread;
-import android.os.PowerManager;
-import android.util.Log;
 
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
@@ -11,13 +9,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.*;
-import static org.junit.Assert.*;
-import android.util.Log;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class CommunicatorTest {
     @Test

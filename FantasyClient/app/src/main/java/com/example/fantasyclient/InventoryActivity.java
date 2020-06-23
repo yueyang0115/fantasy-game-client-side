@@ -9,9 +9,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.adapter.*;
-import com.example.fantasyclient.json.*;
-import com.example.fantasyclient.model.*;
+import com.example.fantasyclient.adapter.InventoryInfoAdapter;
+import com.example.fantasyclient.adapter.UnitInfoAdapter;
+import com.example.fantasyclient.json.AttributeResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.model.Inventory;
+import com.example.fantasyclient.model.Soldier;
+import com.example.fantasyclient.model.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +36,8 @@ public class InventoryActivity extends BaseActivity {
     List<Unit> soldierList = new ArrayList<>();
 
     //Adapters to show ListView
-    ItemArrayAdapter inventoryAdapter;
-    UnitArrayAdapter soldierAdapter;
+    InventoryInfoAdapter inventoryAdapter;
+    UnitInfoAdapter soldierAdapter;
 
     ListView soldierListView, inventoryListView;
 
@@ -71,9 +77,9 @@ public class InventoryActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        inventoryAdapter = new ItemArrayAdapter(this, inventoryItemList);
+        inventoryAdapter = new InventoryInfoAdapter(this, inventoryItemList);
         inventoryListView.setAdapter(inventoryAdapter);
-        soldierAdapter = new UnitArrayAdapter(this, soldierList);
+        soldierAdapter = new UnitInfoAdapter(this, soldierList);
         soldierListView.setAdapter(soldierAdapter);
     }
 
@@ -153,12 +159,12 @@ public class InventoryActivity extends BaseActivity {
      * @param position selected position
      */
     private void selectSoldier(int position){
-        soldierAdapter.setCurrPosition(position);
+        soldierAdapter.setHighlightedPosition(position);
         updateSoldierAdapter();
     }
 
     private void selectInventory(int position){
-        inventoryAdapter.setCurrPosition(position);
+        inventoryAdapter.setHighlightedPosition(position);
         updateInventoryAdapter();
     }
 
@@ -191,9 +197,7 @@ public class InventoryActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                soldierAdapter.clear();
-                soldierAdapter.addAll(soldierList);
-                soldierAdapter.notifyDataSetChanged();
+                updateAdapter(soldierAdapter, soldierList);
             }
         });
     }
@@ -202,9 +206,7 @@ public class InventoryActivity extends BaseActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                inventoryAdapter.clear();
-                inventoryAdapter.addAll(inventoryItemList);
-                inventoryAdapter.notifyDataSetChanged();
+                updateAdapter(inventoryAdapter,inventoryItemList);
             }
         });
     }

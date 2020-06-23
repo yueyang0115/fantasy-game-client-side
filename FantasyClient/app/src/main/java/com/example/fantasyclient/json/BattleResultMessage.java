@@ -1,5 +1,8 @@
 package com.example.fantasyclient.json;
 
+import com.example.fantasyclient.model.BattleAction;
+import com.example.fantasyclient.model.BattleInitInfo;
+
 import java.io.Serializable;
 import java.util.List;
 

@@ -1,39 +1,30 @@
 package com.example.fantasyclient.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.example.fantasyclient.R;
-import com.example.fantasyclient.helper.AdapterHelper;
+import com.example.fantasyclient.helper.BidirectMap;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class ImageAdapter extends BaseAdapter {
-    private Context mContext;
+public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private static final int WIDTH = 5;
     private static final int HEIGHT = 7;
     private static final int CENTER = WIDTH * HEIGHT / 2;
-    private static String TAG = "ImageAdapter";
-    private Integer initImageID;
+    private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
-    private HashMap<WorldCoord,Integer> imageMap = new HashMap<>();//HashMap<VirtualCoord, TerritoryImage>
+    private BidirectMap<WorldCoord,T> imageMap = new BidirectMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
     private List<WorldCoord> queriedCoords = new ArrayList<>();//coordinates to ask from server
 
     // Constructor
-    public ImageAdapter(Context c, WorldCoord coord) {
-        mContext = c;
+    public MapAdapter(Context context, WorldCoord coord) {
+        super(context, new ArrayList<T>());
         currCoord = coord;
     }
 
@@ -41,19 +32,10 @@ public class ImageAdapter extends BaseAdapter {
         return WIDTH * HEIGHT;
     }
 
-    public Integer getItem(int position) {
+    public T getItem(int position) {
         int dx = position % WIDTH - WIDTH / 2;
         int dy = HEIGHT / 2 - position / WIDTH;
         return imageMap.get(new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY()));
-
-        /*WorldCoord tempCoord = new WorldCoord(dx + currCoord.getX(), dy + currCoord.getY());
-        Integer imageID = imageMap.get(tempCoord);
-        if(imageID == null){
-            return initImageID;
-        }
-        else{
-            return imageID;
-        }*/
     }
 
     public long getItemId(int position) {
@@ -70,44 +52,41 @@ public class ImageAdapter extends BaseAdapter {
         ImageView imageView;
 
         if (convertView == null) {
-            imageView = new ImageView(mContext);
+            imageView = new ImageView(getContext());
             imageView.setLayoutParams(new GridView.LayoutParams(1100/WIDTH, 1100/WIDTH));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         }
-        else
-        {
+        else {
             imageView = (ImageView) convertView;
         }
 
         //check if current coordinate has been cached in map
         WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
-        int imageID = initImageID;
+        T currT = null;
+        Drawable[] drawables;
         if(imageMap.containsKey(coord)) {
             //already cached, show the cached image
-            imageID = imageMap.get(coord);
+            currT = getCachedTargetByCoord(coord);
+            drawables = getImageDrawables(imageView, position, currT);
         }
-        setImageByPosition(imageView,position,imageID);
+        else{
+
+            drawables = new Drawable[]{initImage};
+        }
+
+        setImageByPosition(imageView, position, drawables, CENTER);
         return imageView;
     }
 
-    /**
-     * This method distinguish specific territories from others:
-     * 1. center territory
-     * @param imageView target image view to set
-     * @param position position of the image view
-     * @param imageID image resource to set
-     */
-    private void setImageByPosition(ImageView imageView, int position, int imageID){
-        AdapterHelper.setImageByPosition(mContext, imageView, position, imageID, CENTER);
-    }
+    protected abstract Drawable[] getImageDrawables(ImageView imageView, int position, T t);
 
     /**
      * Set the initial image of this adapter
      * @param source image ID
      */
     public void initImage(int source){
-        initImageID = source;
+        initImage = getContext().getResources().getDrawable(source);
     }
 
     /**
@@ -126,15 +105,41 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     /**
-     * Cache virtual coordinates into map
-     * @param coord target coordinate to update
-     * @param source the image id
+     * Cache related methods
      */
-    public void updateImageByCoords(WorldCoord coord, int source) {
-        imageMap.put(coord, source);
+    public void addToCacheByCoords(WorldCoord coord, T t) {
+        imageMap.put(coord, t);
         queriedCoords.remove(coord);
     }
 
+    public void removeFromCacheByCoords(WorldCoord coord){
+        imageMap.remove(coord);
+    }
+
+    public void removeFromCacheByTarget(T t){
+        imageMap.removeByValue(t);
+    }
+
+    public boolean checkCacheByCoords(WorldCoord coord){
+        return imageMap.containsKey(coord);
+    }
+
+    public boolean checkCacheByTarget(T t){
+        return imageMap.containsValue(t);
+    }
+
+    public T getCachedTargetByCoord(WorldCoord coord){
+        return imageMap.get(coord);
+    }
+
+    public WorldCoord getCachedCoordByTarget(T t){
+        return imageMap.getKey(t);
+    }
+
+    /**
+     * Query related methods
+     * @param coord
+     */
     private void addQueriedCoord(WorldCoord coord){
         //check if coordinate has been cached
         if(!imageMap.containsKey(coord)) {
