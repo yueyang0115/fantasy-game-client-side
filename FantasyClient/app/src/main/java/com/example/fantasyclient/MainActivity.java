@@ -317,6 +317,9 @@ public class MainActivity extends BaseActivity {
                     break;
             }
         }
+        else{
+            socketService.errorAlert(m.getResult());
+        }
     }
 
     protected void setUpBuildingDialog(final List<Building> list, final String title){
