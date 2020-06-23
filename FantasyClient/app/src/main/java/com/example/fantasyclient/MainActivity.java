@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -502,6 +503,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void setOnClickListener(){
+        //short click on GridView
         unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -531,7 +533,7 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
-
+        //long click on GridView
         unitGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -557,7 +559,35 @@ public class MainActivity extends BaseActivity {
                 return true;
             }
         });
-
+        unitGridView.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // do nothing
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        textLocation.setText((int) event.getX());
+                        textVLocation.setText((int) event.getY());
+                        break;
+                    case DragEvent.ACTION_DRAG_LOCATION:
+                        break;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        break;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        for (MapAdapter adapter : adapterList) {
+                            adapter.updateCurrCoord(currCoord);
+                        }
+                        enqueuePositionRequest();
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
         btnBag.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override

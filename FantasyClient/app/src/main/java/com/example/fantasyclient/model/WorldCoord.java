@@ -16,6 +16,12 @@ public class WorldCoord implements Serializable{
         this.y=y;
     }
 
+    public WorldCoord(WorldCoord coord){
+        this.wid = coord.wid;
+        this.x = coord.getX();
+        this.y = coord.getY();
+    }
+
 
     public int getWid() {
         return wid;
