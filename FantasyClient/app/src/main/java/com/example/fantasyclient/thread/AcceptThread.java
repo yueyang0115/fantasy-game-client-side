@@ -12,7 +12,7 @@ import java.net.Socket;
 import static com.example.fantasyclient.SocketService.TCP_PORT;
 
 //thread to connect server
-public class AcceptThread implements Runnable {
+public class AcceptThread extends SocketThread {
     private Communicator communicator;
 
     public AcceptThread(Communicator communicator) {
