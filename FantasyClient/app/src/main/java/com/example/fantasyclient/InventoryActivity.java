@@ -103,10 +103,10 @@ public class InventoryActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if(inventoryItemList.isEmpty()){
-                    socketService.errorAlert("Nothing to use");
+                    toastAlert("Nothing to use");
                 }
                 else if(soldierList.isEmpty()){
-                    socketService.errorAlert("No soldier to use on");
+                    toastAlert("No soldier to use on");
                 }
                 else {
                     if(currInventory == null) {
@@ -124,7 +124,7 @@ public class InventoryActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if(inventoryItemList.isEmpty()){
-                    socketService.errorAlert("Nothing to use");
+                    toastAlert("Nothing to use");
                 }
                 else {
                     if(currInventory == null) {
@@ -190,7 +190,7 @@ public class InventoryActivity extends BaseActivity {
         }
         else{
             //action is invalid, show error message
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
         checkAttributeResult(m.getAttributeResultMessage());
     }

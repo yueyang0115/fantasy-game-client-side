@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -321,7 +322,7 @@ public class MainActivity extends BaseActivity {
             }
         }
         else{
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
     }
 
@@ -501,6 +502,7 @@ public class MainActivity extends BaseActivity {
         buildingGridView.setAdapter(buildingAdapter);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setOnClickListener(){
         //short click on GridView
@@ -559,33 +561,10 @@ public class MainActivity extends BaseActivity {
                 return true;
             }
         });
-        unitGridView.setOnDragListener(new View.OnDragListener() {
+        unitGridView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                switch (action) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        // do nothing
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        textLocation.setText((int) event.getX());
-                        textVLocation.setText((int) event.getY());
-                        break;
-                    case DragEvent.ACTION_DRAG_LOCATION:
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        for (MapAdapter adapter : adapterList) {
-                            adapter.updateCurrCoord(currCoord);
-                        }
-                        enqueuePositionRequest();
-                    default:
-                        break;
-                }
-                return true;
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
             }
         });
         btnBag.setOnClickListener(new View.OnClickListener() {

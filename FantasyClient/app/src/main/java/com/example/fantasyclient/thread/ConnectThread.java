@@ -3,6 +3,7 @@ package com.example.fantasyclient.thread;
 import android.util.Log;
 
 import com.example.fantasyclient.SocketService;
+import com.example.fantasyclient.json.MessagesS2C;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -22,7 +23,7 @@ public class ConnectThread extends SocketThread {
             System.out.println("connecting socket");
             Socket socket = new Socket(SocketService.SERVER_IP, SocketService.TCP_PORT);
             DatagramSocket udpSocket = new DatagramSocket(SocketService.UDP_PORT);
-            socketService.communicator = new Communicator(socket);
+            socketService.communicator = new Communicator<>(socket, new MessagesS2C());
             socketService.udpSocket = udpSocket;
             Log.d("Connection", "Succeed");
         } catch (IOException e) {

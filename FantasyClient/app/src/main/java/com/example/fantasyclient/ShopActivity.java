@@ -140,7 +140,7 @@ public class ShopActivity extends BaseActivity {
         }
         else{
             //action is invalid, show error message
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
     }
 
@@ -159,7 +159,7 @@ public class ShopActivity extends BaseActivity {
         }
         else{
             //action is invalid, show error message
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
     }
 }

@@ -13,47 +13,47 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class Communicator {
+public class Communicator<S, R> {
     private Socket socket;
     private OutputStream os;
     private InputStream is;
     private ObjectMapper objectMapper;
+    private R recvMsg;
     private static final String TAG = "Communicator";
 
-    public Communicator(Socket in) {
+    public Communicator(Socket in, R r) {
         socket = in;
-        this.objectMapper = new ObjectMapper();
+        objectMapper = new ObjectMapper();
         objectMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET,false);
         objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE,false);
-
+        recvMsg = r;
         try{
             os = socket.getOutputStream();
             is = socket.getInputStream();
         }catch (IOException e){
             Log.e(TAG,"Failed to construct communicator!");
         }
-
     }
 
-    public void sendMsg(MessagesC2S m) {
+    public void sendMsg(S s) {
         try {
-            objectMapper.writeValue(os,m);
-            Log.d(TAG, "Send:"+objectMapper.writeValueAsString(m));
+            objectMapper.writeValue(os,s);
+            Log.d(TAG, "Send:"+objectMapper.writeValueAsString(s));
         } catch (IOException e) {
             Log.e(TAG,"Failed to send data!");
             e.printStackTrace();
         }
     }
 
-    public MessagesS2C recvMsg()  {
-        MessagesS2C m = new MessagesS2C();
+    public R recvMsg() {
+        //MessagesS2C m = new MessagesS2C();
         try {
-            m = objectMapper.readValue(is, MessagesS2C.class);
-            Log.d(TAG, "Receive:"+objectMapper.writeValueAsString(m));
+            recvMsg = (R) objectMapper.readValue(is, recvMsg.getClass());
+            Log.d(TAG, "Receive:"+objectMapper.writeValueAsString(recvMsg));
         } catch (IOException e) {
             Log.e(TAG,"Failed to receive data!");
             e.printStackTrace();
         }
-        return m;
+        return recvMsg;
     }
 }

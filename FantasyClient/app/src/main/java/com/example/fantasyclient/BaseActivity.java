@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.fantasyclient.adapter.HighlightAdapter;
 import com.example.fantasyclient.json.AttributeResultMessage;
@@ -132,7 +133,7 @@ public class BaseActivity extends Activity {
         } else {
             String errorMsg = m.getError_msg();
             Log.e("Login", errorMsg);
-            socketService.errorAlert(errorMsg);
+            toastAlert(errorMsg);
         }
     }
 
@@ -142,7 +143,7 @@ public class BaseActivity extends Activity {
         } else {
             String errorMsg = m.getError_msg();
             Log.e("Sign Up", errorMsg);
-            socketService.errorAlert(errorMsg);
+            toastAlert(errorMsg);
         }
     }
 
@@ -180,6 +181,15 @@ public class BaseActivity extends Activity {
         adapter.clear();
         adapter.addAll(object);
         adapter.notifyDataSetChanged();
+    }
+
+    public void toastAlert(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(BaseActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

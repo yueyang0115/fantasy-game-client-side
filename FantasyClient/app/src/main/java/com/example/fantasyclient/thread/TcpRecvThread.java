@@ -18,7 +18,7 @@ public class TcpRecvThread extends SocketThread {
 
     @Override
     public void run() {
-        container.add(comms.recvMsg());
+        container.add((MessagesS2C) comms.recvMsg());
         latch.countDown();
     }
 

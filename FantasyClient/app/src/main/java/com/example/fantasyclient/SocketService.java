@@ -24,13 +24,13 @@ import java.net.Socket;
  */
 public class SocketService extends Service {
     public Socket socket;
-    public Communicator communicator;
+    public Communicator<MessagesC2S, MessagesS2C> communicator;
     public static String SERVER_IP;
     public DatagramSocket udpSocket;
     public static final int TCP_PORT = 1234;
     public static final int UDP_PORT = 5678;
-    public MessageSender sender = new MessageSender();
-    public MessageReceiver receiver = new MessageReceiver();
+    public MessageSender<MessagesC2S> sender = new MessageSender<>();
+    public MessageReceiver<MessagesS2C> receiver = new MessageReceiver<>();
 
     @Override
     public IBinder onBind(Intent intent) {

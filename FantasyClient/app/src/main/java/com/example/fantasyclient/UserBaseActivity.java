@@ -26,11 +26,11 @@ public class UserBaseActivity extends BaseActivity{
      */
     protected boolean checkDataEntered(){
         if (isEmpty(textUsername)) {
-            socketService.errorAlert("Please enter username!");
+            toastAlert("Please enter username!");
             return false;
         }
         if (isEmpty(textPassword)) {
-            socketService.errorAlert("Please enter password!");
+            toastAlert("Please enter password!");
             return false;
         }
         return true;
