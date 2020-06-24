@@ -15,6 +15,16 @@ public class ShopResultMessage implements Serializable {
     public ShopResultMessage() {
     }
 
+    public ShopResultMessage(String result) {
+        this.result = result;
+    }
+
+    public ShopResultMessage(InventoryResultMessage inventoryResultMessage, List<Inventory> items, String result) {
+        this.inventoryResultMessage = inventoryResultMessage;
+        this.items = items;
+        this.result = result;
+    }
+
     public InventoryResultMessage getInventoryResultMessage() {
         return inventoryResultMessage;
     }

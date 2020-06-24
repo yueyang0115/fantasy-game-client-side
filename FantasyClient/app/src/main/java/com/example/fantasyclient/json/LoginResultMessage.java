@@ -6,6 +6,13 @@ public class LoginResultMessage {
     private String error_msg;
     private String status;
 
+    public LoginResultMessage(int wid, int id, String error_msg, String status) {
+        this.wid = wid;
+        this.id = id;
+        this.error_msg = error_msg;
+        this.status = status;
+    }
+
     public int getWid() {
         return wid;
     }

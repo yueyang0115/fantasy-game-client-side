@@ -15,6 +15,10 @@ public class BattleResultMessage implements Serializable {
     public BattleResultMessage() {
     }
 
+    public BattleResultMessage(String result) {
+        this.result = result;
+    }
+
     public BattleResultMessage(BattleInitInfo battleInitInfo, String result, List<BattleAction> actions) {
         this.battleInitInfo = battleInitInfo;
         this.result = result;

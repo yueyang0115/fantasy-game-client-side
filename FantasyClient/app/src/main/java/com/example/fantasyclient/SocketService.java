@@ -90,8 +90,12 @@ public class SocketService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("Service", "Start command");
         super.onStartCommand(intent, flags, startId);
-        (new ConnectThread(this)).start();
+        initCommunicator();
+        return START_STICKY;
+    }
 
+    public void initCommunicator(){
+        (new ConnectThread(this)).start();
         while(communicator==null){}
         new Thread(){
             @Override
@@ -105,8 +109,6 @@ public class SocketService extends Service {
                 receiver.recvLoop(communicator);
             }
         }.start();
-
-        return START_STICKY;
     }
 
     public void enqueue(MessagesC2S m){

@@ -14,6 +14,10 @@ public class BuildingResultMessage {
     public BuildingResultMessage() {
     }
 
+    public BuildingResultMessage(String result) {
+        this.result = result;
+    }
+
     public List<Building> getBuildingList() {
         return buildingList;
     }
