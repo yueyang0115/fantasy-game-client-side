@@ -11,6 +11,9 @@ public class PositionResultMessage {
     private List<Monster> monsterArray;
     private List<Building> buildingArray;
 
+    public PositionResultMessage() {
+    }
+
     public PositionResultMessage(List<Territory> territoryArray) {
         this.territoryArray = territoryArray;
     }

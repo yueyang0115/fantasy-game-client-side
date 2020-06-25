@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -76,7 +77,8 @@ public class MainActivity extends BaseActivity {
 
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
-    Button btnBag;
+    //Button btnBag;
+    ImageView bagImg, settingsImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -475,7 +477,9 @@ public class MainActivity extends BaseActivity {
     protected void findView(){
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        btnBag = (Button) findViewById(R.id.btn_bag);
+        //btnBag = (Button) findViewById(R.id.btn_bag);
+        bagImg = (ImageView) findViewById(R.id.bagImg);
+        settingsImg = (ImageView) findViewById(R.id.settingsImg);
         terrainGridView = (GridView) findViewById(R.id.terrainGridView);
         unitGridView = (GridView) findViewById(R.id.unitGridView);
         buildingGridView = (GridView) findViewById(R.id.buildingGridView);
@@ -566,14 +570,19 @@ public class MainActivity extends BaseActivity {
                 return false;
             }
         });
-        btnBag.setOnClickListener(new View.OnClickListener() {
+        bagImg.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 // TODO
                 socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
             }
+        });
+        settingsImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
         });
     }
 }
