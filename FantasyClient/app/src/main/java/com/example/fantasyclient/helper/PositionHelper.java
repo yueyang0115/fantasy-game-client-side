@@ -3,8 +3,6 @@ package com.example.fantasyclient.helper;
 import com.example.fantasyclient.model.WorldCoord;
 
 public class PositionHelper {
-    private static int width_unit = 10;
-    private static int height_unit = 10;
 
     /**
      * This function takes a latitude/longitude and converts it to world coordinate (VirtualPosition).

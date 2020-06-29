@@ -1,8 +1,5 @@
 package com.example.fantasyclient.model;
 
-import com.example.fantasyclient.model.Monster;
-import com.example.fantasyclient.model.Soldier;
-
 import java.io.Serializable;
 import java.util.List;
 

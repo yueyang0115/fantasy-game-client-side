@@ -44,9 +44,4 @@ public class UserSignUpActivity extends UserBaseActivity{
             }
         });
     }
-
-    @Override
-    protected void findView(){
-        super.findView();
-    }
 }

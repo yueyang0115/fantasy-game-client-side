@@ -9,11 +9,12 @@ import android.widget.ImageView;
 
 import com.example.fantasyclient.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This is an ArrayAdapter class which provides a highlighted position for selecting elements in this array
- * @param <T>
+ * @param <T> the type of element in array
  */
 public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
 
@@ -23,17 +24,23 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
     int highlightedPosition = 0;
 
     HighlightAdapter(Context context, List<T> objects) {
-        super(context, 0, objects);
+        //create a new ArrayList here, otherwise, adapter.clear() will clear the input list
+        super(context, 0, new ArrayList<T>(objects));
     }
 
+    /**
+     * This method sets the highlighted position,
+     * which is usually called when a specific item is clicked
+     * @param position
+     */
     public void setHighlightedPosition(int position){
         highlightedPosition = position;
     }
 
     /**
      * This method convert image file name to image ID
-     * @param ImageName
-     * @return: Image ID
+     * @param ImageName String of image name
+     * @return: Drawable
      */
     Drawable getDrawableByName(String ImageName){
         Resources resources = getContext().getResources();
@@ -41,8 +48,9 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
     }
 
     /**
-     * This method distinguish specific territories from others:
+     * This method distinguish specific item from others:
      * 1. center territory
+     * 2. selected item, unit, building
      * @param imageView target image view to set
      * @param position position of the image view
      * @param drawables background images
@@ -57,8 +65,9 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
     }
 
     /**
-     * This method generate a multi-layer drawable, which is used to:
-     * 1. put a green frame in the center of the map to show the current location
+     * This method generate a multi-layer drawable, which puts a green frame on:
+     * 1. the center of the map to show the current location
+     * 2. selected item, unit, building
      * @param drawables background images
      * @return multi-layer drawable
      */

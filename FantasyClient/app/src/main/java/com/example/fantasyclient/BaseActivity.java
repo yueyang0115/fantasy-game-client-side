@@ -6,10 +6,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.example.fantasyclient.adapter.HighlightAdapter;
 import com.example.fantasyclient.json.AttributeResultMessage;
@@ -43,21 +42,6 @@ public class BaseActivity extends Activity {
     static final int SHOP = 3;//request code for Shop
     static final int INVENTORY = 4;//request code for inventory
     static final int CENTER = 17;//center of the map
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 
     /**
      * find and init required common views, which may be overrode
@@ -133,7 +117,7 @@ public class BaseActivity extends Activity {
         } else {
             String errorMsg = m.getError_msg();
             Log.e("Login", errorMsg);
-            socketService.errorAlert(errorMsg);
+            toastAlert(errorMsg);
         }
     }
 
@@ -143,7 +127,7 @@ public class BaseActivity extends Activity {
         } else {
             String errorMsg = m.getError_msg();
             Log.e("Sign Up", errorMsg);
-            socketService.errorAlert(errorMsg);
+            toastAlert(errorMsg);
         }
     }
 
@@ -164,6 +148,8 @@ public class BaseActivity extends Activity {
         if (m.getResult().equals("valid")) {
             Intent intent = new Intent(this, InventoryActivity.class);
             intent.putExtra("InventoryResultMessage", m);
+            //clear queue before change activities
+            socketService.clearQueue();
             startActivityForResult(intent, INVENTORY);
         }
     }
@@ -179,6 +165,15 @@ public class BaseActivity extends Activity {
         adapter.clear();
         adapter.addAll(object);
         adapter.notifyDataSetChanged();
+    }
+
+    public void toastAlert(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(BaseActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**

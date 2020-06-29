@@ -14,7 +14,10 @@ public class InventoryResultMessage implements Serializable {
     private int money;
 
     public InventoryResultMessage() {
-        super();
+    }
+
+    public InventoryResultMessage(String result) {
+        this.result = result;
     }
 
     public AttributeResultMessage getAttributeResultMessage() {

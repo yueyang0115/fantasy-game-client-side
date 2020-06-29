@@ -7,6 +7,11 @@ public class SignUpResultMessage {
     public SignUpResultMessage() {
     }
 
+    public SignUpResultMessage(String error_msg, String status) {
+        this.error_msg = error_msg;
+        this.status = status;
+    }
+
     public String getError_msg() {
         return error_msg;
     }

@@ -45,9 +45,4 @@ public class UserLoginActivity extends UserBaseActivity{
             }
         });
     }
-
-    @Override
-    protected void findView(){
-        super.findView();
-    }
 }

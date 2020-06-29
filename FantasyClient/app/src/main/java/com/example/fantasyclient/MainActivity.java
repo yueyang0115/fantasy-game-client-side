@@ -9,10 +9,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -40,9 +42,7 @@ import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,7 +77,8 @@ public class MainActivity extends BaseActivity {
 
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
-    Button btnBag;
+    //Button btnBag;
+    ImageView bagImg, settingsImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,6 +275,8 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this, ShopActivity.class);
             intent.putExtra("ShopResultMessage", m);
             intent.putExtra("ShopCoord", currCoord);
+            //clear queue before change activities
+            socketService.clearQueue();
             startActivityForResult(intent, SHOP);
         }
     }
@@ -290,6 +293,8 @@ public class MainActivity extends BaseActivity {
             Intent intent = new Intent(this,BattleActivity.class);
             intent.putExtra("BattleResultMessage", m);
             intent.putExtra("territoryCoord", currCoord);
+            //clear queue before change activities
+            socketService.clearQueue();
             startActivityForResult(intent,BATTLE);
         }
     }
@@ -318,7 +323,7 @@ public class MainActivity extends BaseActivity {
             }
         }
         else{
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
     }
 
@@ -472,7 +477,9 @@ public class MainActivity extends BaseActivity {
     protected void findView(){
         textLocation = (TextView) findViewById(R.id.position);
         textVLocation = (TextView) findViewById(R.id.v_position);
-        btnBag = (Button) findViewById(R.id.btn_bag);
+        //btnBag = (Button) findViewById(R.id.btn_bag);
+        bagImg = (ImageView) findViewById(R.id.bagImg);
+        settingsImg = (ImageView) findViewById(R.id.settingsImg);
         terrainGridView = (GridView) findViewById(R.id.terrainGridView);
         unitGridView = (GridView) findViewById(R.id.unitGridView);
         buildingGridView = (GridView) findViewById(R.id.buildingGridView);
@@ -498,8 +505,10 @@ public class MainActivity extends BaseActivity {
         buildingGridView.setAdapter(buildingAdapter);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setOnClickListener(){
+        //short click on GridView
         unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -529,7 +538,7 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
-
+        //long click on GridView
         unitGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -555,15 +564,25 @@ public class MainActivity extends BaseActivity {
                 return true;
             }
         });
-
-        btnBag.setOnClickListener(new View.OnClickListener() {
+        unitGridView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
+        bagImg.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 // TODO
                 socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
             }
+        });
+        settingsImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
         });
     }
 }

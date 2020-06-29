@@ -31,14 +31,4 @@ public class StartActivity extends BaseActivity {
             }
         });
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 }

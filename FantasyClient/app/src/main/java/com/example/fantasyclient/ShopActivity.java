@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.fantasyclient.adapter.InventoryInfoAdapter;
+import com.example.fantasyclient.adapter.InventoryPickerAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.ShopRequestMessage;
@@ -34,7 +34,7 @@ public class ShopActivity extends BaseActivity {
     List<Inventory> inventoryItemList = new ArrayList<>();
 
     //Adapters to show ListView
-    InventoryInfoAdapter shopAdapter, inventoryAdapter;
+    InventoryPickerAdapter shopAdapter, inventoryAdapter;
     ListView shopListView, inventoryListView;
 
     //Cached messages passed by other activities
@@ -70,9 +70,9 @@ public class ShopActivity extends BaseActivity {
 
     @Override
     protected void initView(){
-        inventoryAdapter = new InventoryInfoAdapter(this, inventoryItemList);
+        inventoryAdapter = new InventoryPickerAdapter(this, inventoryItemList);
         inventoryListView.setAdapter(inventoryAdapter);
-        shopAdapter = new InventoryInfoAdapter(this, shopInventoryList);
+        shopAdapter = new InventoryPickerAdapter(this, shopInventoryList);
         shopListView.setAdapter(shopAdapter);
     }
 
@@ -108,6 +108,8 @@ public class ShopActivity extends BaseActivity {
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //clear queue before change activities
+                socketService.clearQueue();
                 doUnbindService();
                 Intent intent = new Intent();
                 setResult(RESULT_CANCELED,intent);
@@ -138,7 +140,7 @@ public class ShopActivity extends BaseActivity {
         }
         else{
             //action is invalid, show error message
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
     }
 
@@ -157,7 +159,7 @@ public class ShopActivity extends BaseActivity {
         }
         else{
             //action is invalid, show error message
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
     }
 }

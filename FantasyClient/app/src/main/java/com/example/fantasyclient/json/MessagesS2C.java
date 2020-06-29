@@ -13,6 +13,38 @@ public class MessagesS2C {
     public MessagesS2C(){
     }
 
+    public MessagesS2C(PositionResultMessage positionResultMessage){
+        this.positionResultMessage = positionResultMessage;
+    }
+
+    public MessagesS2C(LoginResultMessage loginResultMessage){
+        this.loginResultMessage = loginResultMessage;
+    }
+
+    public MessagesS2C(SignUpResultMessage signUpResultMessage){
+        this.signUpResultMessage = signUpResultMessage;
+    }
+
+    public MessagesS2C(BattleResultMessage battleResultMessage){
+        this.battleResultMessage = battleResultMessage;
+    }
+
+    public MessagesS2C(AttributeResultMessage attributeResultMessage){
+        this.attributeResultMessage = attributeResultMessage;
+    }
+
+    public MessagesS2C(ShopResultMessage shopResultMessage){
+        this.shopResultMessage = shopResultMessage;
+    }
+
+    public MessagesS2C(InventoryResultMessage inventoryResultMessage){
+        this.inventoryResultMessage = inventoryResultMessage;
+    }
+
+    public MessagesS2C(BuildingResultMessage buildingResultMessage){
+        this.buildingResultMessage = buildingResultMessage;
+    }
+
     public PositionResultMessage getPositionResultMessage() {
         return positionResultMessage;
     }

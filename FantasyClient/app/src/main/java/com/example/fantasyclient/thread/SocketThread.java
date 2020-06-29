@@ -1,10 +1,7 @@
 package com.example.fantasyclient.thread;
 
-import java.util.concurrent.CountDownLatch;
-
 public class SocketThread  implements Runnable {
-    Thread thisThread;
-    CountDownLatch latch;
+    private Thread thisThread;
 
     public void start() {
         if (thisThread == null) {
@@ -15,6 +12,5 @@ public class SocketThread  implements Runnable {
 
     @Override
     public void run() {
-
     }
 }

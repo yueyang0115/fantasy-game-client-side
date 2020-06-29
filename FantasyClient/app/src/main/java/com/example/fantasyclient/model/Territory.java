@@ -13,9 +13,10 @@ public class Territory implements Serializable {
     public Territory(){
     }
 
-    public Territory(WorldCoord coord, int tame){
+    public Territory(WorldCoord coord, int tame, String terrainType) {
         this.coord = coord;
         this.tame = tame;
+        this.terrainType = terrainType;
     }
 
     @Override

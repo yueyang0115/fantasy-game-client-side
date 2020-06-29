@@ -103,10 +103,10 @@ public class InventoryActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if(inventoryItemList.isEmpty()){
-                    socketService.errorAlert("Nothing to use");
+                    toastAlert("Nothing to use");
                 }
                 else if(soldierList.isEmpty()){
-                    socketService.errorAlert("No soldier to use on");
+                    toastAlert("No soldier to use on");
                 }
                 else {
                     if(currInventory == null) {
@@ -115,7 +115,6 @@ public class InventoryActivity extends BaseActivity {
                     if(currSoldier == null){
                         currSoldier = (Soldier) soldierList.get(0);
                     }
-                    socketService.clearQueue();
                     socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currInventory.getId(), currSoldier.getId())));
                     handleRecvMessage(socketService.dequeue());
                 }
@@ -124,12 +123,24 @@ public class InventoryActivity extends BaseActivity {
         btn_drop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(inventoryItemList.isEmpty()){
+                    toastAlert("Nothing to use");
+                }
+                else {
+                    if(currInventory == null) {
+                        currInventory = inventoryItemList.get(0);
+                    }
+                    /*socketService.clearQueue();
+                    socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("drop", currInventory.getId(), currSoldier.getId())));
+                    handleRecvMessage(socketService.dequeue());*/
+                }
             }
         });
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //clear queue before change activities
+                socketService.clearQueue();
                 doUnbindService();
                 Intent intent = new Intent();
                 setResult(RESULT_CANCELED,intent);
@@ -179,7 +190,7 @@ public class InventoryActivity extends BaseActivity {
         }
         else{
             //action is invalid, show error message
-            socketService.errorAlert(m.getResult());
+            toastAlert(m.getResult());
         }
         checkAttributeResult(m.getAttributeResultMessage());
     }

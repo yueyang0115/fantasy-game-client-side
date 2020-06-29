@@ -1,7 +1,6 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,21 +15,16 @@ public class UserBaseActivity extends BaseActivity{
     Button submit;
     Button redirect;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     /**
      * check if all required data has been entered
      */
     protected boolean checkDataEntered(){
         if (isEmpty(textUsername)) {
-            socketService.errorAlert("Please enter username!");
+            toastAlert("Please enter username!");
             return false;
         }
         if (isEmpty(textPassword)) {
-            socketService.errorAlert("Please enter password!");
+            toastAlert("Please enter password!");
             return false;
         }
         return true;
