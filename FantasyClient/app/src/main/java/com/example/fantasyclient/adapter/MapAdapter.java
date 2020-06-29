@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.example.fantasyclient.helper.BidirectMap;
+import com.example.fantasyclient.helper.BidirectionalMap;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private static final int CENTER = WIDTH * HEIGHT / 2;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
-    private BidirectMap<WorldCoord,T> imageMap = new BidirectMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
+    private BidirectionalMap<WorldCoord,T> imageMap = new BidirectionalMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
     private List<WorldCoord> queriedCoords = new ArrayList<>();//coordinates to ask from server
 
     // Constructor

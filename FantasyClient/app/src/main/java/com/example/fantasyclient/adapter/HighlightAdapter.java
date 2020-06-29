@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
@@ -44,7 +45,12 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
      */
     Drawable getDrawableByName(String ImageName){
         Resources resources = getContext().getResources();
-        return resources.getDrawable(resources.getIdentifier(ImageName, "drawable", getContext().getPackageName()));
+        try{
+            return resources.getDrawable(resources.getIdentifier(ImageName, "drawable", getContext().getPackageName()));
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Error: Resources not found");
+            return null;
+        }
     }
 
     /**

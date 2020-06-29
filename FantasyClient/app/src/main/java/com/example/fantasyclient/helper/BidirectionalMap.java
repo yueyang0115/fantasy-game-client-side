@@ -3,7 +3,7 @@ package com.example.fantasyclient.helper;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BidirectMap<K,V> extends HashMap<K,V> {
+public class BidirectionalMap<K,V> extends HashMap<K,V> {
 
     private Map<V,K> reverseMap = new HashMap<V,K>();
 
