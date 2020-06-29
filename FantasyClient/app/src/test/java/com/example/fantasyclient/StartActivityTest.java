@@ -11,7 +11,14 @@ public class StartActivityTest {
 
     @Test
     public void testStartActivity(){
-        ActivityScenario scenario = ActivityScenario.launch(StartActivity.class);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new MockedServer();
+            }
+        }).start();
+        ActivityScenario scenario = ActivityScenario.launch(UserLoginActivity.class);
         scenario.close();
     }
 }

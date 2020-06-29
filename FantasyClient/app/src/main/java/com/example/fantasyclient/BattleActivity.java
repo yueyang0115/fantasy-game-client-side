@@ -58,11 +58,6 @@ public class BattleActivity extends BaseActivity{
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     protected void findView(){
         attackBtn = findViewById(R.id.attack_btn);
         escapeBtn = findViewById(R.id.escape_btn);

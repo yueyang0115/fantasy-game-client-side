@@ -25,13 +25,17 @@ import com.example.fantasyclient.json.SignUpResultMessage;
 import com.example.fantasyclient.model.Soldier;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
-import com.example.fantasyclient.thread.AcceptThread;
 import com.example.fantasyclient.thread.Communicator;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerMock {
+import static com.example.fantasyclient.SocketService.TCP_PORT;
+
+public class MockedServer {
 
     private static final String SUCCESS = "success";
     private static final String INVALID = "invalid";
@@ -41,7 +45,17 @@ public class ServerMock {
     private Communicator<MessagesS2C, MessagesC2S> communicator;
 
     public void runServer(){
-        (new AcceptThread(communicator)).start();
+        //(new AcceptThread(communicator)).start();
+        try {
+            System.out.println("accepting socket");
+            ServerSocket serverSocket = new ServerSocket(TCP_PORT);
+            Socket socket = serverSocket.accept();
+            communicator = new Communicator<>(socket, new MessagesC2S());
+            Log.d("Connection", "Succeed");
+        } catch (IOException e) {
+            Log.d("Connection", "Error", e);
+            return;
+        }
         new Thread(){
             @Override
             public void run() {

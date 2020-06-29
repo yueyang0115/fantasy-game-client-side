@@ -14,7 +14,6 @@ import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.thread.Communicator;
 import com.example.fantasyclient.thread.ConnectThread;
 
-import java.net.DatagramSocket;
 import java.net.Socket;
 
 /**
@@ -22,13 +21,13 @@ import java.net.Socket;
  * it is created in MainActivity when a player click on the button to start
  * then bound to each activity when needed
  */
-public class SocketService extends Service {
+public class SocketService extends Service implements BidirectionalMessageQueue<MessagesC2S, MessagesS2C>{
     public Socket socket;
     public Communicator<MessagesC2S, MessagesS2C> communicator;
     public static String SERVER_IP;
-    public DatagramSocket udpSocket;
+    //public DatagramSocket udpSocket;
     public static final int TCP_PORT = 1234;
-    public static final int UDP_PORT = 5678;
+    //public static final int UDP_PORT = 5678;
     public MessageSender<MessagesC2S> sender = new MessageSender<>();
     public MessageReceiver<MessagesS2C> receiver = new MessageReceiver<>();
 
@@ -41,8 +40,8 @@ public class SocketService extends Service {
 
     private final IBinder myBinder = new LocalBinder();
 
-    public class LocalBinder extends Binder {
-        public SocketService getService() {
+    class LocalBinder extends Binder {
+        SocketService getService() {
             Log.d("Service", "LocalBinder");
             return SocketService.this;
         }
@@ -63,29 +62,6 @@ public class SocketService extends Service {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    /*//send message to server
-    public void sendTcpMsg(MessagesC2S m) {
-        (new TcpSendThread(communicator, m)).start();
-    }
-
-    public void sendUdpMsg(String message) {
-        (new UdpSendThread(udpSocket,message)).start();
-    }
-
-    //receive message from server
-    public MessagesS2C recvTcpMsg() {
-        List<MessagesS2C> container = new ArrayList<>();
-        CountDownLatch recvLatch = new CountDownLatch(1);
-        (new TcpRecvThread(recvLatch, communicator, container)).start();
-        try{
-            recvLatch.await();
-        }
-        catch (InterruptedException ine){
-            System.out.println("Latch Interrupted!");
-        }
-        return container.get(0);
-    }*/
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("Service", "Start command");
@@ -94,6 +70,7 @@ public class SocketService extends Service {
         return START_STICKY;
     }
 
+    @Override
     public void initCommunicator(){
         (new ConnectThread(this)).start();
         while(communicator==null){}
@@ -111,19 +88,23 @@ public class SocketService extends Service {
         }.start();
     }
 
+    @Override
     public void enqueue(MessagesC2S m){
         sender.enqueue(m);
     }
 
+    @Override
     public MessagesS2C dequeue(){
         return receiver.dequeue();
     }
 
+    @Override
     public void clearQueue(){
         sender.clear();
         receiver.clear();
     }
 
+    @Override
     public boolean isEmpty(){
         return receiver.isEmpty();
     }

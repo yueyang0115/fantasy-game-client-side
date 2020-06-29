@@ -6,7 +6,6 @@ import com.example.fantasyclient.SocketService;
 import com.example.fantasyclient.json.MessagesS2C;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.Socket;
 
 //thread to connect server
@@ -22,9 +21,9 @@ public class ConnectThread extends SocketThread {
         try {
             System.out.println("connecting socket");
             Socket socket = new Socket(SocketService.SERVER_IP, SocketService.TCP_PORT);
-            DatagramSocket udpSocket = new DatagramSocket(SocketService.UDP_PORT);
+            /*DatagramSocket udpSocket = new DatagramSocket(SocketService.UDP_PORT);
+            socketService.udpSocket = udpSocket;*/
             socketService.communicator = new Communicator<>(socket, new MessagesS2C());
-            socketService.udpSocket = udpSocket;
             Log.d("Connection", "Succeed");
         } catch (IOException e) {
             Log.d("Connection", "Error", e);
