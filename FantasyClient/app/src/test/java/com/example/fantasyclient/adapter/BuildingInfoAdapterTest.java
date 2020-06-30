@@ -5,10 +5,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class InventoryInfoAdapterTest extends InventoryAdapterTest{
+public class BuildingInfoAdapterTest extends BuildingAdapterTest{
 
-    public InventoryInfoAdapterTest() {
+    public BuildingInfoAdapterTest() {
         super();
-        testAdapter = new InventoryInfoAdapter(testContext, testList);
+        testAdapter = new BuildingInfoAdapter(testContext, testList);
     }
 }

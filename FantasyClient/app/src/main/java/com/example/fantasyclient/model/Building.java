@@ -23,7 +23,16 @@ public class Building implements Serializable {
         this.name = name;
     }
 
+    public Building(String name, int cost){
+        this.name = name;
+        this.cost = cost;
+    }
 
+    public Building(String name, int cost, WorldCoord coord){
+        this.name = name;
+        this.cost = cost;
+        this.coord = coord;
+    }
 
     public WorldCoord getCoord() {
         return coord;

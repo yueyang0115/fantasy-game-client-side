@@ -13,7 +13,6 @@ import com.example.fantasyclient.adapter.viewholder.BaseViewHolder;
 import com.example.fantasyclient.adapter.viewholder.InventoryViewHolder;
 import com.example.fantasyclient.model.Inventory;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -58,8 +57,8 @@ public class InventoryPickerAdapter extends InventoryAdapter {
             jsonObject = new JSONObject(inventory.getDBItem().getItem_properties());
             name = jsonObject.getString("name");
             cost = jsonObject.getInt("cost");
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG,"Json object deserialization fails");
         }
         final InventoryViewHolder viewHolder = (InventoryViewHolder)baseViewHolder;
         viewHolder.baseText.setText("Name:" + name);

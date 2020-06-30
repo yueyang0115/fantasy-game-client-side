@@ -3,6 +3,7 @@ package com.example.fantasyclient.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import com.example.fantasyclient.adapter.viewholder.BaseViewHolder;
@@ -36,7 +37,7 @@ public class InventoryInfoAdapter extends InventoryAdapter {
             name = jsonObject.getString("name");
             cost = jsonObject.getInt("cost");
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG,"Json object deserialization fails");
         }
         // cast BaseViewHolder to InventoryViewHolder
         final InventoryViewHolder viewHolder = (InventoryViewHolder)baseViewHolder;
