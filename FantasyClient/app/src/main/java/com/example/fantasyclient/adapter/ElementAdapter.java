@@ -27,7 +27,7 @@ public abstract class ElementAdapter<T> extends HighlightAdapter<T> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // Get the data item for this position
-        final T unit = getItem(position);
+        final T t = getItem(position);
         final BaseViewHolder viewHolder;
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null) {
@@ -40,7 +40,7 @@ public abstract class ElementAdapter<T> extends HighlightAdapter<T> {
             // View is being recycled, retrieve the viewHolder object from tag
             viewHolder = (BaseViewHolder) convertView.getTag();
         }
-        setView(viewHolder, unit, position);
+        setView(viewHolder, t, position);
         // Return the completed view to render on screen
         return convertView;
     }

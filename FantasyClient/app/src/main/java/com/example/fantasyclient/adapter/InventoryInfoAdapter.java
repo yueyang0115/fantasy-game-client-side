@@ -9,7 +9,6 @@ import com.example.fantasyclient.adapter.viewholder.BaseViewHolder;
 import com.example.fantasyclient.adapter.viewholder.InventoryViewHolder;
 import com.example.fantasyclient.model.Inventory;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class InventoryInfoAdapter extends InventoryAdapter {
             jsonObject = new JSONObject(inventory.getDBItem().getItem_properties());
             name = jsonObject.getString("name");
             cost = jsonObject.getInt("cost");
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // cast BaseViewHolder to InventoryViewHolder
@@ -47,6 +46,6 @@ public class InventoryInfoAdapter extends InventoryAdapter {
         viewHolder.inventoryAmount.setText("Amount: " + inventory.getAmount());
         viewHolder.inventoryNumPicker.setVisibility(View.GONE);
         // add frame to selected image
-        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(name)}, highlightedPosition);
+        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(name)});
     }
 }

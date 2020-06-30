@@ -26,6 +26,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public MapAdapter(Context context, WorldCoord coord) {
         super(context, new ArrayList<T>());
         currCoord = coord;
+        highlightedPosition = CENTER;
     }
 
     public int getCount() {
@@ -75,7 +76,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
             drawables = new Drawable[]{initImage};
         }
 
-        setImageByPosition(imageView, position, drawables, CENTER);
+        setImageByPosition(imageView, position, drawables);
         return imageView;
     }
 

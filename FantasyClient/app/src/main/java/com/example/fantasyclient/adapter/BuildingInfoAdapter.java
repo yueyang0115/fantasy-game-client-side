@@ -30,7 +30,7 @@ public class BuildingInfoAdapter extends BuildingAdapter {
         viewHolder.baseText.setText("Name: "+ building.getName());
         viewHolder.buildingCost.setText("Cost: "+ building.getCost());
         // add frame to selected image
-        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(building.getName())}, highlightedPosition);
+        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(building.getName())});
     }
 
 }

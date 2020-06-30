@@ -2,21 +2,24 @@ package com.example.fantasyclient.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.example.fantasyclient.R;
 import com.example.fantasyclient.adapter.viewholder.BaseViewHolder;
+import com.example.fantasyclient.model.DBItem;
 import com.example.fantasyclient.model.Inventory;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -25,8 +28,9 @@ import static org.junit.Assert.assertNull;
 public class InventoryInfoAdapterTest {
 
     private Context testContext = ApplicationProvider.getApplicationContext();
-    private List<Inventory> testList = new ArrayList<>();
-    private int layout = R.layout.item_layout;
+    private List<Inventory> testList = new ArrayList<>(Arrays.asList(
+            new Inventory(new DBItem("Test1",null),10),
+            new Inventory(new DBItem("Test2","{Durability:10}"),5)));
     private InventoryInfoAdapter testAdapter = new InventoryInfoAdapter(testContext, testList);
     private BaseViewHolder testViewHolder;
 
@@ -37,24 +41,10 @@ public class InventoryInfoAdapterTest {
     }
 
     @Test
-    public void findView() {
-        ListView listView = new ListView(testContext);
-        listView.setAdapter(testAdapter);
-
-        /*int measureSpec = View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY);
-
-        testAdapter.notifyDataSetChanged();
-        listView.measure(measureSpec, measureSpec);
-        listView.layout(0, 0, 100, 100);*/
-    }
-
-    @Test
-    public void getView() {
-    }
-
-    @Test
     public void setHighlightedPosition() {
-        testAdapter.setHighlightedPosition(10);
+        assertEquals(testAdapter.getHighlightedPosition(),0);
+        testAdapter.setHighlightedPosition(1);
+        assertEquals(testAdapter.getHighlightedPosition(),1);
     }
 
     @Test
@@ -69,6 +59,17 @@ public class InventoryInfoAdapterTest {
     }
 
     @Test
-    public void setImageByPosition() {
+    public void comprehensiveTest(){
+        ListView listView = new ListView(testContext);
+        listView.setAdapter(testAdapter);
+        testList.add(new Inventory(new DBItem("Test",null),10));
+        testAdapter.notifyDataSetChanged();
+        ViewGroup testViewGroup = new ViewGroup(testContext) {
+            @Override
+            protected void onLayout(boolean changed, int l, int t, int r, int b) {
+            }
+        };
+        testAdapter.getView(0, null, testViewGroup);
+        testAdapter.getView(1,null,testViewGroup);
     }
 }

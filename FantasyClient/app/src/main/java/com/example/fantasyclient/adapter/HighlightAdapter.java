@@ -38,6 +38,9 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
         highlightedPosition = position;
     }
 
+    public int getHighlightedPosition() {
+        return highlightedPosition;
+    }
     /**
      * This method convert image file name to image ID
      * @param ImageName String of image name
@@ -61,8 +64,8 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
      * @param position position of the image view
      * @param drawables background images
      */
-    void setImageByPosition(ImageView imageView, int position, Drawable[] drawables, int currPosition){
-        if(position == currPosition){
+    void setImageByPosition(ImageView imageView, int position, Drawable[] drawables){
+        if(position == highlightedPosition){
             imageView.setImageDrawable(getFrameLayerDrawable(drawables));
         }
         else {
