@@ -92,7 +92,7 @@ public class ShopActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //send Shop request
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,shopAdapter.getItemMap(),"buy")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,shopAdapter.getSelectedItems(),"buy")));
                 handleRecvMessage(socketService.dequeue());
                 shopAdapter.clearMap();
             }
@@ -100,7 +100,7 @@ public class ShopActivity extends BaseActivity {
         btn_sell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,inventoryAdapter.getItemMap(),"sell")));
+                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,inventoryAdapter.getSelectedItems(),"sell")));
                 handleRecvMessage(socketService.dequeue());
                 inventoryAdapter.clearMap();
             }

@@ -1,12 +1,13 @@
 package com.example.fantasyclient.json;
 
+import com.example.fantasyclient.model.Inventory;
 import com.example.fantasyclient.model.WorldCoord;
 
-import java.util.Map;
+import java.util.List;
 
 public class ShopRequestMessage {
     private WorldCoord coord;
-    private Map<Integer,Integer> itemMap;//Map<inventoryID, amount to buy>
+    private List<Inventory> selectedItems;//Map<inventoryID, amount to buy>
     private String action;//"list""buy""sell"
 
     public ShopRequestMessage() {
@@ -17,9 +18,9 @@ public class ShopRequestMessage {
         this.action = action;
     }
 
-    public ShopRequestMessage(WorldCoord coord, Map<Integer,Integer> itemMap, String action) {
+    public ShopRequestMessage(WorldCoord coord, List<Inventory> selectedItems, String action) {
         this.coord = coord;
-        this.itemMap = itemMap;
+        this.selectedItems = selectedItems;
         this.action = action;
     }
 
@@ -31,12 +32,12 @@ public class ShopRequestMessage {
         this.coord = coord;
     }
 
-    public Map<Integer, Integer> getItemMap() {
-        return itemMap;
+    public List<Inventory> getSelectedItems() {
+        return selectedItems;
     }
 
-    public void setItemMap(Map<Integer, Integer> itemMap) {
-        this.itemMap = itemMap;
+    public void setSelectedItems(List<Inventory> selectedItems) {
+        this.selectedItems = selectedItems;
     }
 
     public String getAction() {

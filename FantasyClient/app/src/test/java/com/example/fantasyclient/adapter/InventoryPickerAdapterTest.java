@@ -20,7 +20,7 @@ public class InventoryPickerAdapterTest extends InventoryAdapterTest{
 
     @Test
     public void mapTest(){
-        Map<Integer, Integer> map = ((InventoryPickerAdapter)testAdapter).getItemMap();
+        Map<Integer, Integer> map = ((InventoryPickerAdapter)testAdapter).getSelectedItems();
         assertNotNull(map);
         assertTrue(map.isEmpty());
         ((InventoryPickerAdapter)testAdapter).clearMap();

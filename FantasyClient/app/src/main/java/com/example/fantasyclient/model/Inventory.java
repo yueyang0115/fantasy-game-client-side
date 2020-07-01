@@ -17,6 +17,12 @@ public class Inventory implements Serializable {
         this.amount = amount;
     }
 
+    public Inventory(Inventory inventory, int amount){
+        this.id = inventory.getId();
+        this.item = inventory.getDBItem();
+        this.amount = amount;
+    }
+
     public int getId() {
         return id;
     }
@@ -39,6 +45,21 @@ public class Inventory implements Serializable {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public boolean equals(Object e) {
+        if ( e instanceof Inventory &&
+                this.id == ((Inventory)e).getId())
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public int hashCode() {
+        Integer tempID = id;
+        return tempID.hashCode();
     }
 
 }

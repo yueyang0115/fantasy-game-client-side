@@ -15,26 +15,25 @@ import com.example.fantasyclient.model.Inventory;
 
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class InventoryPickerAdapter extends InventoryAdapter {
 
     //Map to store numbers of items to act on
-    private Map<Integer,Integer> itemMap = new HashMap<>();
+    private List<Inventory> selectedItems = new ArrayList<>();
 
     public InventoryPickerAdapter(Context context, List<Inventory> objects) {
         super(context, objects);
         TAG = "InventoryPickerAdapter";
     }
 
-    public Map<Integer,Integer> getItemMap(){
-        return itemMap;
+    public List<Inventory> getSelectedItems(){
+        return selectedItems;
     }
 
     public void clearMap(){
-        itemMap.clear();
+        selectedItems.clear();
         Log.d(TAG, "Clear Map");
     }
 
@@ -71,7 +70,13 @@ public class InventoryPickerAdapter extends InventoryAdapter {
         viewHolder.inventoryNumPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                itemMap.put(inventory.getId(), viewHolder.inventoryNumPicker.getValue());
+                int amount = viewHolder.inventoryNumPicker.getValue();
+                if(selectedItems.contains(inventory)){
+                    selectedItems.get(selectedItems.indexOf(inventory)).setAmount(amount);
+                }
+                else {
+                    selectedItems.add(new Inventory(inventory, amount));
+                }
             }
         });
     }
