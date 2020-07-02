@@ -2,10 +2,12 @@ package com.example.fantasyclient.adapter;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.fantasyclient.model.Inventory;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Map;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -20,11 +22,11 @@ public class InventoryPickerAdapterTest extends InventoryAdapterTest{
 
     @Test
     public void mapTest(){
-        Map<Integer, Integer> map = ((InventoryPickerAdapter)testAdapter).getSelectedItems();
-        assertNotNull(map);
-        assertTrue(map.isEmpty());
+        List<Inventory> selectedItems = ((InventoryPickerAdapter)testAdapter).getSelectedItems();
+        assertNotNull(selectedItems);
+        assertTrue(selectedItems.isEmpty());
         ((InventoryPickerAdapter)testAdapter).clearMap();
-        assertTrue(map.isEmpty());
+        assertTrue(selectedItems.isEmpty());
     }
 
 }

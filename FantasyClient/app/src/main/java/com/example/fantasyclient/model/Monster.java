@@ -6,6 +6,12 @@ public class Monster extends Unit{
 
     private boolean needUpdate;
 
+    public Monster(String type, String name, int hp, int atk, int speed, WorldCoord coord, boolean needUpdate) {
+        super(type, name, hp, atk, speed);
+        this.coord = coord;
+        this.needUpdate = needUpdate;
+    }
+
     public WorldCoord getCoord() {
         return coord;
     }

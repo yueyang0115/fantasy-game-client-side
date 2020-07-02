@@ -23,7 +23,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private List<WorldCoord> queriedCoords = new ArrayList<>();//coordinates to ask from server
 
     // Constructor
-    public MapAdapter(Context context, WorldCoord coord) {
+    MapAdapter(Context context, WorldCoord coord) {
         super(context, new ArrayList<T>());
         currCoord = coord;
         highlightedPosition = CENTER;
@@ -64,7 +64,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
 
         //check if current coordinate has been cached in map
         WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
-        T currT = null;
+        T currT;
         Drawable[] drawables;
         if(imageMap.containsKey(coord)) {
             //already cached, show the cached image
