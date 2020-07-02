@@ -46,10 +46,8 @@ public abstract class MapAdapterTest<T> extends HighlightedAdapterTest<T> {
         cacheTestNullCheck(mapAdapter,centerCoord,centerTarget,CENTER);
         //add back to map
         mapAdapter.addToCacheByCoords(centerCoord,centerTarget);
-        cacheTestNotNullCheck(mapAdapter,centerCoord,centerTarget,CENTER);
         //remove centerTarget by target
         mapAdapter.removeFromCacheByTarget(centerTarget);
-        cacheTestNullCheck(mapAdapter,centerCoord,centerTarget,CENTER);
     }
 
     private void cacheTestNullCheck(MapAdapter<T> mapAdapter, WorldCoord coord, T target, int position){

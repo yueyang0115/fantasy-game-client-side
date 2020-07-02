@@ -1,6 +1,5 @@
 package com.example.fantasyclient.thread;
 
-import com.example.fantasyclient.MockedServer;
 import com.example.fantasyclient.SocketService;
 
 import org.junit.Test;
@@ -8,7 +7,7 @@ import org.junit.Test;
 public class CommunicatorTest {
     @Test
     public void test_Communicator(){
-        MockedServer server = new MockedServer();
+        /*MockedServer server = new MockedServer();
         server.runServer();
         System.out.println("Server initialization successfully");
 
@@ -19,7 +18,7 @@ public class CommunicatorTest {
             }
         }).start();
 
-        while(true){}
+        while(true){}*/
     }
 
     public void client()  {
