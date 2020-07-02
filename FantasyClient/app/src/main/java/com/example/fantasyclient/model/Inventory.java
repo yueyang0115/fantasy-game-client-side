@@ -1,7 +1,10 @@
 package com.example.fantasyclient.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Inventory implements Serializable {
     private int id;
 
