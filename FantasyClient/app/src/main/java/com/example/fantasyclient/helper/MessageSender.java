@@ -2,16 +2,11 @@ package com.example.fantasyclient.helper;
 
 import android.util.Log;
 
-import com.example.fantasyclient.thread.Communicator;
-
-import java.util.concurrent.LinkedBlockingQueue;
-
-public class MessageSender<T> {
-    private LinkedBlockingQueue<T> queue;
-    private final String TAG = "MessageSender";
+public class MessageSender<T> extends MessageQueue<T>{
 
     public MessageSender() {
-        queue = new LinkedBlockingQueue<>();
+        super();
+        TAG = "MessageSender";
     }
 
     public void enqueue(final T t){
@@ -19,7 +14,7 @@ public class MessageSender<T> {
     }
 
     public void sendLoop(Communicator c){
-        while(true){
+        while(!ifClosed){
             try {
                 c.sendMsg(queue.take());//queue.take() will
             } catch (InterruptedException e) {
@@ -27,9 +22,5 @@ public class MessageSender<T> {
                 break;
             }
         }
-    }
-
-    public void clear(){
-        queue.clear();
     }
 }

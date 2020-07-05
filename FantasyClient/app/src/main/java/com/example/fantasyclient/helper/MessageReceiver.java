@@ -2,16 +2,11 @@ package com.example.fantasyclient.helper;
 
 import android.util.Log;
 
-import com.example.fantasyclient.thread.Communicator;
-
-import java.util.concurrent.LinkedBlockingQueue;
-
-public class MessageReceiver<T> {
-    private LinkedBlockingQueue<T> queue;
-    private final String TAG = "MessageReceiver";
+public class MessageReceiver<T> extends MessageQueue<T>{
 
     public MessageReceiver() {
-        queue = new LinkedBlockingQueue<>();
+        super();
+        TAG = "MessageReceiver";
     }
 
     public T dequeue(){
@@ -25,12 +20,8 @@ public class MessageReceiver<T> {
         return result;
     }
 
-    public boolean isEmpty(){
-        return queue.isEmpty();
-    }
-
     public void recvLoop(Communicator c){
-        while(true){
+        while(!ifClosed){
             try {
                 queue.add((T) c.recvMsg());
             } catch (Exception e) {
@@ -38,9 +29,5 @@ public class MessageReceiver<T> {
                 break;
             }
         }
-    }
-
-    public void clear(){
-        queue.clear();
     }
 }

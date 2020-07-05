@@ -6,7 +6,7 @@ import com.example.fantasyclient.helper.MessageReceiver;
 import com.example.fantasyclient.helper.MessageSender;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
-import com.example.fantasyclient.thread.Communicator;
+import com.example.fantasyclient.helper.Communicator;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -15,6 +15,7 @@ import java.net.Socket;
  * this mocked service is built to pretend to communicate with server
  */
 public class MockedService implements BidirectionalMessageQueue<MessagesC2S,MessagesS2C>{
+
     private Communicator<MessagesC2S, MessagesS2C> communicator;
     private MessageSender<MessagesC2S> sender = new MessageSender<>();
     private MessageReceiver<MessagesS2C> receiver = new MessageReceiver<>();

@@ -1,4 +1,4 @@
-package com.example.fantasyclient.thread;
+package com.example.fantasyclient.helper;
 
 import android.util.Log;
 
@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class Communicator<S, R> {
+
     private OutputStream os;
     private InputStream is;
     private ObjectMapper objectMapper;
