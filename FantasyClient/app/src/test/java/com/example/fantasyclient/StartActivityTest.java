@@ -3,6 +3,8 @@ package com.example.fantasyclient;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.fantasyclient.helper.MockedServer;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

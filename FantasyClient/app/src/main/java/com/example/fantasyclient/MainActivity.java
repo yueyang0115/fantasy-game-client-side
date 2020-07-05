@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -449,6 +448,7 @@ public class MainActivity extends BaseActivity {
                     unitAdapter.removeFromCacheByCoords(currCoord);
                     updateMapLayers();
                 }
+                territoryAdapter.updateQuery(3, 3, false);
                 break;
             case SHOP:
                 //check the result of purchase

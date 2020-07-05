@@ -98,9 +98,20 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         currCoord.setX(coord.getX());
         currCoord.setY(coord.getY());
         //query for the territories if not cached
-        for(int i = - WIDTH / 2; i <= WIDTH / 2; i++){
-            for(int j = - HEIGHT / 2; j <= HEIGHT / 2; j++){
-                addQueriedCoord(new WorldCoord(currCoord.getX()+i,currCoord.getY()+j));
+        updateQuery(WIDTH, HEIGHT, true);
+    }
+
+    public void updateQuery(int width, int height, boolean ifCheckMap){
+        for(int i = - width / 2; i <= width / 2; i++){
+            for(int j = - height / 2; j <= height / 2; j++){
+                WorldCoord tempCoord = new WorldCoord(currCoord.getX() + i, currCoord.getY() + j);
+                //check if coordinate has been cached
+                if(ifCheckMap) {
+                    checkMapThenAddQueriedCoord(tempCoord);
+                }
+                else{
+                    addQueriedCoord(tempCoord);
+                }
             }
         }
     }
@@ -141,14 +152,17 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
      * Query related methods
      * @param coord
      */
-    private void addQueriedCoord(WorldCoord coord){
-        //check if coordinate has been cached
+    public void checkMapThenAddQueriedCoord(WorldCoord coord){
         if(!imageMap.containsKey(coord)) {
             //coordinate not cached yet
-            //check if it has been added to queryList
-            if (!queriedCoords.contains(coord)) {
-                queriedCoords.add(coord);
-            }
+            addQueriedCoord(coord);
+        }
+    }
+
+    public void addQueriedCoord(WorldCoord coord){
+        //check if it has been added to queryList
+        if (!queriedCoords.contains(coord)) {
+            queriedCoords.add(coord);
         }
     }
 

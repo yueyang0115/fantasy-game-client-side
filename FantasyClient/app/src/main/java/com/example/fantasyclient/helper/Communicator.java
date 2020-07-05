@@ -35,7 +35,9 @@ public class Communicator<S, R> {
     public void sendMsg(S s) {
         try {
             objectMapper.writeValue(os,s);
-            Log.d(TAG, "Send:"+objectMapper.writeValueAsString(s));
+            String msg = objectMapper.writeValueAsString(s);
+            Log.d(TAG, "Send:"+ msg);
+            //System.out.println("Send:"+ msg);
         } catch (IOException e) {
             Log.e(TAG,"Failed to send data!");
             e.printStackTrace();
@@ -45,7 +47,9 @@ public class Communicator<S, R> {
     public R recvMsg() {
         try {
             receivedMessage = (R) objectMapper.readValue(is, receivedMessage.getClass());
-            Log.d(TAG, "Receive:"+objectMapper.writeValueAsString(receivedMessage));
+            String msg = objectMapper.writeValueAsString(receivedMessage);
+            Log.d(TAG, "Receive:"+ msg);
+            //System.out.println("Receive:"+ msg);
         } catch (IOException e) {
             Log.e(TAG,"Failed to receive data!");
             e.printStackTrace();

@@ -1,10 +1,8 @@
-package com.example.fantasyclient;
+package com.example.fantasyclient.helper;
 
 import android.util.Log;
 
-import com.example.fantasyclient.helper.Communicator;
-import com.example.fantasyclient.helper.MessageReceiver;
-import com.example.fantasyclient.helper.MessageSender;
+import com.example.fantasyclient.BidirectionalMessageQueue;
 import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
@@ -35,7 +33,7 @@ import java.util.List;
 
 import static com.example.fantasyclient.SocketService.TCP_PORT;
 
-public class MockedServer implements BidirectionalMessageQueue<MessagesS2C, MessagesC2S>{
+public class MockedServer implements BidirectionalMessageQueue<MessagesS2C, MessagesC2S> {
 
     private static final String SUCCESS = "success";
     private static final String INVALID = "invalid";
@@ -43,21 +41,14 @@ public class MockedServer implements BidirectionalMessageQueue<MessagesS2C, Mess
     private MessageSender<MessagesS2C> sender = new MessageSender<>();
     private MessageReceiver<MessagesC2S> receiver = new MessageReceiver<>();
     private Communicator<MessagesS2C, MessagesC2S> communicator;
+    private ServerSocket serverSocket;
+    private Socket socket;
 
     public void runServer(){
         initCommunicator();
-        new Thread() {
-            @Override
-            public void run() {
-                while(communicator==null){}
-                if(!receiver.isEmpty()){
-                    handleRecvMessage(receiver.dequeue());
-                }
-            }
-        }.start();
     }
 
-    private void handleRecvMessage(MessagesC2S m) {
+    public void handleRecvMessage(MessagesC2S m) {
         if (m == null) {
             Log.e(TAG, "HandleRecvMessage: Invalid result received");
         } else {
@@ -128,8 +119,8 @@ public class MockedServer implements BidirectionalMessageQueue<MessagesS2C, Mess
     public void initCommunicator() {
         try {
             System.out.println("accepting socket");
-            ServerSocket serverSocket = new ServerSocket(TCP_PORT);
-            Socket socket = serverSocket.accept();
+            serverSocket = new ServerSocket(TCP_PORT);
+            socket = serverSocket.accept();
             communicator = new Communicator<>(socket, new MessagesC2S());
             Log.d("Connection", "Succeed");
         } catch (IOException e) {
@@ -168,8 +159,25 @@ public class MockedServer implements BidirectionalMessageQueue<MessagesS2C, Mess
         receiver.clear();
     }
 
+    public void closeQueue(){
+        sender.close();
+        receiver.close();
+    }
+
     @Override
     public boolean isEmpty() {
         return receiver.isEmpty();
+    }
+
+    protected void finalize(){
+        try{
+            sender.close();
+            receiver.close();
+            serverSocket.close();
+            socket.close();
+        } catch (IOException e) {
+            System.out.println("Could not close socket");
+            System.exit(-1);
+        }
     }
 }
