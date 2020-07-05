@@ -101,15 +101,24 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         updateQuery(WIDTH, HEIGHT, true);
     }
 
+    /**
+     * This method add required coordinates to query list based on:
+     * @param width
+     * @param height
+     * @param ifCheckMap if it need to check the map
+     *                   true: when players change location, same territory will not be queried again
+     *                   false: when battle ends, tame of cached territories will change
+     */
     public void updateQuery(int width, int height, boolean ifCheckMap){
         for(int i = - width / 2; i <= width / 2; i++){
             for(int j = - height / 2; j <= height / 2; j++){
                 WorldCoord tempCoord = new WorldCoord(currCoord.getX() + i, currCoord.getY() + j);
-                //check if coordinate has been cached
                 if(ifCheckMap) {
+                    //need to check if coordinate has been cached
                     checkMapThenAddQueriedCoord(tempCoord);
                 }
                 else{
+                    //no need to check map, add to query directly
                     addQueriedCoord(tempCoord);
                 }
             }
@@ -149,17 +158,21 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     }
 
     /**
-     * Query related methods
+     * Check map first, only add to query when target coordinate has not been cached before
      * @param coord
      */
-    public void checkMapThenAddQueriedCoord(WorldCoord coord){
+    private void checkMapThenAddQueriedCoord(WorldCoord coord){
         if(!imageMap.containsKey(coord)) {
             //coordinate not cached yet
             addQueriedCoord(coord);
         }
     }
 
-    public void addQueriedCoord(WorldCoord coord){
+    /**
+     * ask for specific territories and add to query without check
+     * @param coord
+     */
+    private void addQueriedCoord(WorldCoord coord){
         //check if it has been added to queryList
         if (!queriedCoords.contains(coord)) {
             queriedCoords.add(coord);

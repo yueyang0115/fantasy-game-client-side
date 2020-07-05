@@ -448,6 +448,7 @@ public class MainActivity extends BaseActivity {
                     unitAdapter.removeFromCacheByCoords(currCoord);
                     updateMapLayers();
                 }
+                //tame may be changed after battle, ask for data again
                 territoryAdapter.updateQuery(3, 3, false);
                 break;
             case SHOP:
