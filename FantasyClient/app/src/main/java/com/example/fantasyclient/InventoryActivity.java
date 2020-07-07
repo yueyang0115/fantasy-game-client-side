@@ -15,6 +15,7 @@ import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.model.Inventory;
 import com.example.fantasyclient.model.Soldier;
 import com.example.fantasyclient.model.Unit;
@@ -44,10 +45,6 @@ public class InventoryActivity extends BaseActivity {
     //Current selected target
     Inventory currInventory;//current item to use
     Soldier currSoldier;//current soldier to use item
-
-    //Cached messages passed by other activities
-    AttributeResultMessage attributeResultMessage;
-    InventoryResultMessage inventoryResultMessage;
 
     final static String TAG = "InventoryActivity";
 
@@ -86,14 +83,10 @@ public class InventoryActivity extends BaseActivity {
     @Override
     protected void getExtra(){
         Intent intent = getIntent();
-
-        inventoryResultMessage = (InventoryResultMessage) intent.getSerializableExtra("InventoryResultMessage");
-        assert inventoryResultMessage != null;
-        checkInventoryResult(inventoryResultMessage);
-
-        attributeResultMessage = inventoryResultMessage.getAttributeResultMessage();
-        assert attributeResultMessage != null;
-        checkAttributeResult(attributeResultMessage);
+        currMessage = (MessagesS2C) intent.getSerializableExtra("CurrentMessage");
+        assert currMessage != null;
+        checkInventoryResult(currMessage.getInventoryResultMessage());
+        checkAttributeResult(currMessage.getAttributeResultMessage());
     }
 
     @Override
@@ -192,7 +185,6 @@ public class InventoryActivity extends BaseActivity {
             //action is invalid, show error message
             toastAlert(m.getResult());
         }
-        checkAttributeResult(m.getAttributeResultMessage());
     }
 
     @Override

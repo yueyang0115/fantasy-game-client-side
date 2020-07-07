@@ -27,23 +27,18 @@ import com.example.fantasyclient.adapter.MapUnitAdapter;
 import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.BattleRequestMessage;
-import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingRequestMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
-import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
-import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
-import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -261,55 +256,6 @@ public class MainActivity extends BaseActivity {
                 buildingAdapter.notifyDataSetChanged();
             }
         });
-    }
-
-    /**
-     * This method is called after a MessageS2C with ShopResultMessage is received from server
-     * It happens in MainActivity only if players try to enter shops and send "list"
-     * After InventoryResultMessage is also received, ShopActivity will be launched
-     * @param m: received ShopResultMessage
-     */
-    @Override
-    protected void checkShopResult(final ShopResultMessage m){
-        currMessage.setShopResultMessage(m);
-    }
-
-    @Override
-    protected void checkInventoryResult(final InventoryResultMessage m){
-        currMessage.setInventoryResultMessage(m);
-    }
-
-    /**
-     * This method is called after a MessageS2C with BattleResultMessage is received from server
-     * It happens in MainActivity only if players try to battle with monsters and send "start"
-     * After permission from server, BattleActivity will be launched
-     * @param m: received BattleResultMessage
-     */
-    @Override
-    protected void checkBattleResult(final BattleResultMessage m){
-        currMessage.setBattleResultMessage(m);
-    }
-
-    @Override
-    protected void checkRedirectResult(final RedirectMessage m){
-        Intent intent;
-        //clear queue before change activities
-        socketService.clearQueue();
-        switch (m.getDestination()){
-            case "battle":
-                intent = new Intent(this,BattleActivity.class);
-                intent.putExtra("CurrentMessage", (Serializable) currMessage);
-                intent.putExtra("territoryCoord", currCoord);
-                startActivityForResult(intent,BATTLE);
-                break;
-            case "shop":
-                intent = new Intent(this, ShopActivity.class);
-                intent.putExtra("CurrentMessage", (Serializable) currMessage);
-                intent.putExtra("ShopCoord", currCoord);
-                startActivityForResult(intent, SHOP);
-                break;
-            default:
-        }
     }
 
     @Override

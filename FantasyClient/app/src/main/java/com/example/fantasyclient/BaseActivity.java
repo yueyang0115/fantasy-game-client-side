@@ -23,6 +23,7 @@ import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
 import com.example.fantasyclient.model.WorldCoord;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -78,6 +79,26 @@ public abstract class BaseActivity extends Activity {
     protected void launchLogin(){
         Intent intent = new Intent(this, UserLoginActivity.class);
         startActivity(intent);
+    }
+
+    protected void launchBattle(){
+        Intent intent = new Intent(this,BattleActivity.class);
+        intent.putExtra("CurrentMessage", (Serializable) currMessage);
+        intent.putExtra("territoryCoord", currCoord);
+        startActivityForResult(intent,BATTLE);
+    }
+
+    protected void launchShop(){
+        Intent intent = new Intent(this, ShopActivity.class);
+        intent.putExtra("CurrentMessage", (Serializable) currMessage);
+        intent.putExtra("ShopCoord", currCoord);
+        startActivityForResult(intent, SHOP);
+    }
+
+    protected void launchInventory(){
+        Intent intent = new Intent(this, InventoryActivity.class);
+        intent.putExtra("CurrentMessage", currMessage);
+        startActivityForResult(intent, INVENTORY);
     }
 
     /**
@@ -141,28 +162,55 @@ public abstract class BaseActivity extends Activity {
         }
     }
 
-    protected void checkPositionResult(PositionResultMessage m){}
-
-    protected void checkBattleResult(BattleResultMessage m){}
-
-    protected void checkAttributeResult(AttributeResultMessage m){}
-
-    protected void checkShopResult(ShopResultMessage m){}
-
-    protected void checkRedirectResult(RedirectMessage m){}
+    /**
+     * This method is called after a MessageS2C with ShopResultMessage is received from server
+     * It happens in MainActivity only if players try to enter shops and send "list"
+     * After InventoryResultMessage is also received, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
+    protected void checkShopResult(final ShopResultMessage m){
+        currMessage.setShopResultMessage(m);
+    }
 
     /**
      * This method is called after a MessageS2C with InventoryResultMessage is received from server
      * After ShopResultMessage is also received, ShopActivity will be launched
      * @param m: received ShopResultMessage
      */
-    protected void checkInventoryResult(InventoryResultMessage m){
-        if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this, InventoryActivity.class);
-            intent.putExtra("InventoryResultMessage", m);
-            //clear queue before change activities
-            socketService.clearQueue();
-            startActivityForResult(intent, INVENTORY);
+    protected void checkInventoryResult(final InventoryResultMessage m){
+        currMessage.setInventoryResultMessage(m);
+    }
+
+    /**
+     * This method is called after a MessageS2C with BattleResultMessage is received from server
+     * It happens in MainActivity only if players try to battle with monsters and send "start"
+     * After permission from server, BattleActivity will be launched
+     * @param m: received BattleResultMessage
+     */
+    protected void checkBattleResult(final BattleResultMessage m){
+        currMessage.setBattleResultMessage(m);
+    }
+
+    protected void checkPositionResult(PositionResultMessage m){}
+
+    protected void checkAttributeResult(AttributeResultMessage m){
+        currMessage.setAttributeResultMessage(m);
+    }
+
+    protected void checkRedirectResult(RedirectMessage m){
+        //clear queue before change activities
+        socketService.clearQueue();
+        switch (m.getDestination()){
+            case "battle":
+                launchBattle();
+                break;
+            case "shop":
+                launchShop();
+                break;
+            case "inventory":
+                launchInventory();
+                break;
+            default:
         }
     }
 

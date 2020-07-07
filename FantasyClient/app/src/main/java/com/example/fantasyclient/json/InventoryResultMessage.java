@@ -8,7 +8,6 @@ import java.util.List;
 
 public class InventoryResultMessage implements Serializable {
 
-    private AttributeResultMessage attributeResultMessage;
     private List<Inventory> items = new ArrayList<>(); //all items of player
     private String result; //status: "valid","invalid"
     private int money;
@@ -18,14 +17,6 @@ public class InventoryResultMessage implements Serializable {
 
     public InventoryResultMessage(String result) {
         this.result = result;
-    }
-
-    public AttributeResultMessage getAttributeResultMessage() {
-        return attributeResultMessage;
-    }
-
-    public void setAttributeResultMessage(AttributeResultMessage attributeResultMessage) {
-        this.attributeResultMessage = attributeResultMessage;
     }
 
     public List<Inventory> getItems() {
@@ -43,7 +34,6 @@ public class InventoryResultMessage implements Serializable {
     public void setResult(String result) {
         this.result = result;
     }
-
 
     public int getMoney() {
         return money;
