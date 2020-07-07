@@ -31,10 +31,11 @@ import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingRequestMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
-import com.example.fantasyclient.json.RedirectResultMessage;
+import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Building;
@@ -273,6 +274,11 @@ public class MainActivity extends BaseActivity {
         currMessage.setShopResultMessage(m);
     }
 
+    @Override
+    protected void checkInventoryResult(final InventoryResultMessage m){
+        currMessage.setInventoryResultMessage(m);
+    }
+
     /**
      * This method is called after a MessageS2C with BattleResultMessage is received from server
      * It happens in MainActivity only if players try to battle with monsters and send "start"
@@ -285,21 +291,24 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void checkRedirectResult(final RedirectResultMessage m){
+    protected void checkRedirectResult(final RedirectMessage m){
         Intent intent;
         //clear queue before change activities
         socketService.clearQueue();
         switch (m.getDestination()){
             case "battle":
                 intent = new Intent(this,BattleActivity.class);
-                intent.putExtra("CurrentMessage", (Serializable) m);
+                intent.putExtra("CurrentMessage", (Serializable) currMessage);
                 intent.putExtra("territoryCoord", currCoord);
                 startActivityForResult(intent,BATTLE);
+                break;
             case "shop":
                 intent = new Intent(this, ShopActivity.class);
                 intent.putExtra("CurrentMessage", (Serializable) currMessage);
                 intent.putExtra("ShopCoord", currCoord);
                 startActivityForResult(intent, SHOP);
+                break;
+            default:
         }
     }
 

@@ -18,7 +18,7 @@ import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
-import com.example.fantasyclient.json.RedirectResultMessage;
+import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
 import com.example.fantasyclient.model.WorldCoord;
@@ -115,8 +115,8 @@ public abstract class BaseActivity extends Activity {
             if (m.getBuildingResultMessage() != null){
                 checkBuildingResult(m.getBuildingResultMessage());
             }
-            if (m.getRedirectResultMessage() != null){
-                checkRedirectResult(m.getRedirectResultMessage());
+            if (m.getRedirectMessage() != null){
+                checkRedirectResult(m.getRedirectMessage());
             }
         }
     }
@@ -149,7 +149,7 @@ public abstract class BaseActivity extends Activity {
 
     protected void checkShopResult(ShopResultMessage m){}
 
-    protected void checkRedirectResult(RedirectResultMessage m){}
+    protected void checkRedirectResult(RedirectMessage m){}
 
     /**
      * This method is called after a MessageS2C with InventoryResultMessage is received from server

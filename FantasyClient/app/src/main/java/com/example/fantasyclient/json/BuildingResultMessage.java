@@ -2,9 +2,10 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Building;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BuildingResultMessage {
+public class BuildingResultMessage implements Serializable {
 
     private List<Building> buildingList;
     private String result;

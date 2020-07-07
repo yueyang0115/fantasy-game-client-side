@@ -1,6 +1,8 @@
 package com.example.fantasyclient.json;
 
-public class MessagesS2C {
+import java.io.Serializable;
+
+public class MessagesS2C implements Serializable {
     private PositionResultMessage positionResultMessage;
     private LoginResultMessage loginResultMessage;
     private SignUpResultMessage signUpResultMessage;
@@ -9,7 +11,7 @@ public class MessagesS2C {
     private ShopResultMessage shopResultMessage;
     private InventoryResultMessage inventoryResultMessage;
     private BuildingResultMessage buildingResultMessage;
-    private RedirectResultMessage redirectResultMessage;
+    private RedirectMessage redirectMessage;
 
     public MessagesS2C(){
     }
@@ -46,8 +48,8 @@ public class MessagesS2C {
         this.buildingResultMessage = buildingResultMessage;
     }
 
-    public MessagesS2C(RedirectResultMessage redirectResultMessage) {
-        this.redirectResultMessage = redirectResultMessage;
+    public MessagesS2C(RedirectMessage redirectMessage) {
+        this.redirectMessage = redirectMessage;
     }
 
     public PositionResultMessage getPositionResultMessage() {
@@ -114,11 +116,11 @@ public class MessagesS2C {
         this.buildingResultMessage = buildingResultMessage;
     }
 
-    public RedirectResultMessage getRedirectResultMessage() {
-        return redirectResultMessage;
+    public RedirectMessage getRedirectMessage() {
+        return redirectMessage;
     }
 
-    public void setRedirectResultMessage(RedirectResultMessage redirectResultMessage) {
-        this.redirectResultMessage = redirectResultMessage;
+    public void setRedirectMessage(RedirectMessage redirectMessage) {
+        this.redirectMessage = redirectMessage;
     }
 }

@@ -1,10 +1,12 @@
 package com.example.fantasyclient.json;
 
-public class RedirectResultMessage {
+import java.io.Serializable;
+
+public class RedirectMessage implements Serializable {
 
     private String destination;
 
-    public RedirectResultMessage() {
+    public RedirectMessage() {
     }
 
     public String getDestination() {
