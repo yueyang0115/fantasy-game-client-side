@@ -17,6 +17,7 @@ import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.model.BattleAction;
 import com.example.fantasyclient.model.BattleInitInfo;
 import com.example.fantasyclient.model.Unit;
@@ -41,7 +42,6 @@ public class BattleActivity extends BaseActivity{
     UnitInfoAdapter soldierAdapter, monsterAdapter;
     UnitImageAdapter seqAdapter;
     ListView soldierListView, monsterListView, seqListView;
-    WorldCoord territoryCoord;
     boolean ifStop = false;
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
@@ -80,10 +80,10 @@ public class BattleActivity extends BaseActivity{
     @Override
     protected void getExtra(){
         Intent intent = getIntent();
-        battleResultMessage = (BattleResultMessage) intent.getSerializableExtra("BattleResultMessage");
-        assert battleResultMessage != null;
-        checkBattleResult(battleResultMessage);
-        territoryCoord = (WorldCoord) intent.getSerializableExtra("territoryCoord");
+        currCoord = (WorldCoord) intent.getSerializableExtra("territoryCoord");
+        currMessage = (MessagesS2C) intent.getSerializableExtra("CurrentMessage");
+        assert currMessage != null;
+        checkBattleResult(currMessage.getBattleResultMessage());
     }
 
     @Override
@@ -103,7 +103,7 @@ public class BattleActivity extends BaseActivity{
                         currSoldier = soldierList.get(0);
                         selectSoldier(0);
                     }
-                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(territoryCoord,"attack",
+                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(currCoord,"attack",
                             new BattleAction(new Unit(currSoldier),new Unit(currMonster),"normal"))));
                     handleRecvMessage(socketService.dequeue());
                 }

@@ -9,6 +9,7 @@ public class MessagesS2C {
     private ShopResultMessage shopResultMessage;
     private InventoryResultMessage inventoryResultMessage;
     private BuildingResultMessage buildingResultMessage;
+    private RedirectResultMessage redirectResultMessage;
 
     public MessagesS2C(){
     }
@@ -43,6 +44,10 @@ public class MessagesS2C {
 
     public MessagesS2C(BuildingResultMessage buildingResultMessage){
         this.buildingResultMessage = buildingResultMessage;
+    }
+
+    public MessagesS2C(RedirectResultMessage redirectResultMessage) {
+        this.redirectResultMessage = redirectResultMessage;
     }
 
     public PositionResultMessage getPositionResultMessage() {
@@ -107,5 +112,13 @@ public class MessagesS2C {
 
     public void setBuildingResultMessage(BuildingResultMessage buildingResultMessage) {
         this.buildingResultMessage = buildingResultMessage;
+    }
+
+    public RedirectResultMessage getRedirectResultMessage() {
+        return redirectResultMessage;
+    }
+
+    public void setRedirectResultMessage(RedirectResultMessage redirectResultMessage) {
+        this.redirectResultMessage = redirectResultMessage;
     }
 }

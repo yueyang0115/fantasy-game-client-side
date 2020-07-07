@@ -18,8 +18,10 @@ import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.RedirectResultMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
+import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.List;
 
@@ -29,7 +31,7 @@ import java.util.List;
  * 2.Redirect to other activities
  */
 @SuppressLint("Registered")
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
 
     SocketService socketService;
     boolean mIsBound;
@@ -42,6 +44,11 @@ public class BaseActivity extends Activity {
     static final int SHOP = 3;//request code for Shop
     static final int INVENTORY = 4;//request code for inventory
     static final int CENTER = 17;//center of the map
+
+    //Cached messages
+    protected MessagesS2C currMessage = new MessagesS2C();
+    //Current coordinate
+    protected WorldCoord currCoord = new WorldCoord(0,0);
 
     /**
      * find and init required common views, which may be overrode
@@ -108,6 +115,9 @@ public class BaseActivity extends Activity {
             if (m.getBuildingResultMessage() != null){
                 checkBuildingResult(m.getBuildingResultMessage());
             }
+            if (m.getRedirectResultMessage() != null){
+                checkRedirectResult(m.getRedirectResultMessage());
+            }
         }
     }
 
@@ -138,6 +148,8 @@ public class BaseActivity extends Activity {
     protected void checkAttributeResult(AttributeResultMessage m){}
 
     protected void checkShopResult(ShopResultMessage m){}
+
+    protected void checkRedirectResult(RedirectResultMessage m){}
 
     /**
      * This method is called after a MessageS2C with InventoryResultMessage is received from server

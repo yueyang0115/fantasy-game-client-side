@@ -34,6 +34,7 @@ import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.RedirectResultMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Building;
@@ -41,6 +42,7 @@ import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 import com.example.fantasyclient.model.WorldCoord;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,8 +66,6 @@ public class MainActivity extends BaseActivity {
 
     //map data
     SimpleLocation location;//used to track current location
-
-    WorldCoord currCoord = new WorldCoord(0,0);
 
     //fields to show map
     MapTerritoryAdapter territoryAdapter;
@@ -270,14 +270,7 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void checkShopResult(final ShopResultMessage m){
-        if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this, ShopActivity.class);
-            intent.putExtra("ShopResultMessage", m);
-            intent.putExtra("ShopCoord", currCoord);
-            //clear queue before change activities
-            socketService.clearQueue();
-            startActivityForResult(intent, SHOP);
-        }
+        currMessage.setShopResultMessage(m);
     }
 
     /**
@@ -288,13 +281,25 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     protected void checkBattleResult(final BattleResultMessage m){
-        if(m.getResult().equals("continue")){
-            Intent intent = new Intent(this,BattleActivity.class);
-            intent.putExtra("BattleResultMessage", m);
-            intent.putExtra("territoryCoord", currCoord);
-            //clear queue before change activities
-            socketService.clearQueue();
-            startActivityForResult(intent,BATTLE);
+        currMessage.setBattleResultMessage(m);
+    }
+
+    @Override
+    protected void checkRedirectResult(final RedirectResultMessage m){
+        Intent intent;
+        //clear queue before change activities
+        socketService.clearQueue();
+        switch (m.getDestination()){
+            case "battle":
+                intent = new Intent(this,BattleActivity.class);
+                intent.putExtra("CurrentMessage", (Serializable) m);
+                intent.putExtra("territoryCoord", currCoord);
+                startActivityForResult(intent,BATTLE);
+            case "shop":
+                intent = new Intent(this, ShopActivity.class);
+                intent.putExtra("CurrentMessage", (Serializable) currMessage);
+                intent.putExtra("ShopCoord", currCoord);
+                startActivityForResult(intent, SHOP);
         }
     }
 

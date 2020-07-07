@@ -8,7 +8,6 @@ import java.util.List;
 
 public class ShopResultMessage implements Serializable {
 
-    private InventoryResultMessage inventoryResultMessage;
     private List<Inventory> items = new ArrayList<>(); //all items in the territory
     private String result; //status: "valid","invalid"
 
@@ -19,18 +18,9 @@ public class ShopResultMessage implements Serializable {
         this.result = result;
     }
 
-    public ShopResultMessage(InventoryResultMessage inventoryResultMessage, List<Inventory> items, String result) {
-        this.inventoryResultMessage = inventoryResultMessage;
+    public ShopResultMessage(List<Inventory> items, String result) {
         this.items = items;
         this.result = result;
-    }
-
-    public InventoryResultMessage getInventoryResultMessage() {
-        return inventoryResultMessage;
-    }
-
-    public void setInventoryResultMessage(InventoryResultMessage inventoryResultMessage) {
-        this.inventoryResultMessage = inventoryResultMessage;
     }
 
     public List<Inventory> getItems() {

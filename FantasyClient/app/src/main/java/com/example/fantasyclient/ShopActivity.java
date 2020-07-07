@@ -3,7 +3,6 @@ package com.example.fantasyclient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 import com.example.fantasyclient.adapter.InventoryPickerAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Inventory;
@@ -36,11 +36,6 @@ public class ShopActivity extends BaseActivity {
     //Adapters to show ListView
     InventoryPickerAdapter shopAdapter, inventoryAdapter;
     ListView shopListView, inventoryListView;
-
-    //Cached messages passed by other activities
-    ShopResultMessage shopResultMessage;
-    InventoryResultMessage inventoryResultMessage;
-    WorldCoord currCoord;
 
     final static String TAG = "ShopActivity";
 
@@ -79,11 +74,11 @@ public class ShopActivity extends BaseActivity {
     @Override
     protected void getExtra(){
         Intent intent = getIntent();
-        shopResultMessage = (ShopResultMessage) intent.getSerializableExtra("ShopResultMessage");
-        assert shopResultMessage != null;
-        inventoryResultMessage = shopResultMessage.getInventoryResultMessage();
-        checkShopResult(shopResultMessage);
         currCoord = (WorldCoord) intent.getSerializableExtra("ShopCoord");
+        currMessage = (MessagesS2C) intent.getSerializableExtra("CurrentMessage");
+        assert currMessage != null;
+        checkShopResult(currMessage.getShopResultMessage());
+        checkInventoryResult(currMessage.getInventoryResultMessage());
     }
 
     @Override
@@ -128,7 +123,6 @@ public class ShopActivity extends BaseActivity {
     protected void checkShopResult(final ShopResultMessage m) {
         if (m.getResult().equals("valid")) {
             //action is valid, updateUI
-            Log.d(TAG,"checkShopResult");
             shopInventoryList = m.getItems();
             runOnUiThread(new Runnable() {
                 @Override
@@ -136,7 +130,6 @@ public class ShopActivity extends BaseActivity {
                     updateAdapter(shopAdapter,shopInventoryList);
                 }
             });
-            checkInventoryResult(m.getInventoryResultMessage());
         }
         else{
             //action is invalid, show error message
