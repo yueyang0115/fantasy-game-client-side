@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MapAdapter<T> extends HighlightAdapter<T> {
-    private static final int WIDTH = 7;
-    private static final int HEIGHT = 9;
+    private static final int WIDTH = 5;
+    private static final int HEIGHT = 7;
     private static final int CENTER = WIDTH * HEIGHT / 2;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
