@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MapAdapter<T> extends HighlightAdapter<T> {
-    private static final int WIDTH = 5;
-    private static final int HEIGHT = 7;
+    private static final int WIDTH = 7;
+    private static final int HEIGHT = 9;
     private static final int CENTER = WIDTH * HEIGHT / 2;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
@@ -29,6 +29,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         highlightedPosition = CENTER;
     }
 
+    @Override
     public int getCount() {
         return WIDTH * HEIGHT;
     }
@@ -54,6 +55,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
 
         if (convertView == null) {
             imageView = new ImageView(getContext());
+            //TODO: fix
             imageView.setLayoutParams(new GridView.LayoutParams(1100/WIDTH, 1100/WIDTH));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
