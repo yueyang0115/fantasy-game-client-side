@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MapAdapter<T> extends HighlightAdapter<T> {
-    private static final int WIDTH = 5;
-    private static final int HEIGHT = 7;
-    private static final int CENTER = WIDTH * HEIGHT / 2;
+    private int WIDTH = 5;
+    private int HEIGHT = 7;
+    private int CENTER = WIDTH * HEIGHT / 2;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
     private BidirectionalMap<WorldCoord,T> imageMap = new BidirectionalMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
@@ -181,5 +181,14 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
 
     public List<WorldCoord> getQueriedCoords(){
         return queriedCoords;
+    }
+
+    /**
+     * zoom up and down
+     */
+    public void zoom(int zoomLevel){
+        WIDTH += 2 * zoomLevel;
+        HEIGHT += 2 * zoomLevel;
+        CENTER = WIDTH * HEIGHT / 2;
     }
 }

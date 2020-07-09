@@ -1,7 +1,6 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +8,8 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.fantasyclient.adapter.HighlightAdapter;
 import com.example.fantasyclient.json.AttributeResultMessage;
@@ -32,7 +33,7 @@ import java.util.List;
  * 2.Redirect to other activities
  */
 @SuppressLint("Registered")
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends FragmentActivity {
 
     SocketService socketService;
     boolean mIsBound;

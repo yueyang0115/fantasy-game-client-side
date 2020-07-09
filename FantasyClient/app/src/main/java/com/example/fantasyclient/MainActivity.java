@@ -466,6 +466,15 @@ public class MainActivity extends BaseActivity {
         buildingGridView.setAdapter(buildingAdapter);
     }
 
+    protected void zoomUp(){
+        for(MapAdapter m: adapterList){
+            terrainGridView.setNumColumns(7);
+            unitGridView.setNumColumns(7);
+            buildingGridView.setNumColumns(7);
+            //m.zoomUp();
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setOnClickListener(){
@@ -542,7 +551,7 @@ public class MainActivity extends BaseActivity {
         settingsImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                zoomUp();
             }
         });
     }
