@@ -1,5 +1,8 @@
 package com.example.fantasyclient.model;
 
+import java.util.List;
+import java.util.Set;
+
 public class Monster extends Unit{
 
     private WorldCoord coord;
@@ -9,8 +12,8 @@ public class Monster extends Unit{
     public Monster() {
     }
 
-    public Monster(String type, String name, int hp, int atk, int speed, WorldCoord coord, boolean needUpdate) {
-        super(type, name, hp, atk, speed);
+    public Monster(String type, String name, int hp, int atk, int speed, WorldCoord coord, boolean needUpdate, Set<Skill> skills) {
+        super(type, name, hp, atk, speed, skills);
         this.coord = coord;
         this.needUpdate = needUpdate;
     }

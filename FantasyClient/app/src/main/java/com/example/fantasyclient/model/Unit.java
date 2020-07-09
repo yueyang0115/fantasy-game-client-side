@@ -1,6 +1,10 @@
 package com.example.fantasyclient.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Unit implements Serializable {
 
@@ -10,16 +14,18 @@ public class Unit implements Serializable {
     private int hp;
     private int atk;
     private int speed;
+    private Set<Skill> skills = new HashSet<>();
 
     public Unit(){
     }
 
-    public Unit(String type, String name, int hp, int atk, int speed){
+    public Unit(String type, String name, int hp, int atk, int speed, Set<Skill> skills){
         this.type = type;
         this.name = name;
         this.hp = hp;
         this.atk = atk;
         this.speed = speed;
+        this.skills = skills;
     }
 
     public Unit(Unit unit){
@@ -33,6 +39,7 @@ public class Unit implements Serializable {
         this.hp = unit.getHp();
         this.atk = unit.getAtk();
         this.speed = unit.getSpeed();
+        this.skills = skills;
     }
 
     public int getId() {
@@ -82,6 +89,10 @@ public class Unit implements Serializable {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+
+    public Set<Skill> getSkills() { return skills; }
+
+    public void setSkills(Set<Skill> skills) { this.skills = skills; }
 
     @Override
     public boolean equals(Object e) {
