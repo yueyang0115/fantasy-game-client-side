@@ -12,8 +12,8 @@ public class Monster extends Unit{
     public Monster() {
     }
 
-    public Monster(String type, String name, int hp, int atk, int speed, WorldCoord coord, boolean needUpdate, Set<Skill> skills) {
-        super(type, name, hp, atk, speed, skills);
+    public Monster(String type, String name, int hp, int atk, int speed, int level, WorldCoord coord, boolean needUpdate, Set<Skill> skills) {
+        super(type, name, hp, atk, speed, level, skills);
         this.coord = coord;
         this.needUpdate = needUpdate;
     }

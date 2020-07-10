@@ -14,17 +14,19 @@ public class Unit implements Serializable {
     private int hp;
     private int atk;
     private int speed;
+    private int level;
     private Set<Skill> skills = new HashSet<>();
 
     public Unit(){
     }
 
-    public Unit(String type, String name, int hp, int atk, int speed, Set<Skill> skills){
+    public Unit(String type, String name, int hp, int atk, int speed, int level, Set<Skill> skills){
         this.type = type;
         this.name = name;
         this.hp = hp;
         this.atk = atk;
         this.speed = speed;
+        this.level = level;
         this.skills = skills;
     }
 
@@ -39,6 +41,7 @@ public class Unit implements Serializable {
         this.hp = unit.getHp();
         this.atk = unit.getAtk();
         this.speed = unit.getSpeed();
+        this.level = unit.getLevel();
         this.skills = skills;
     }
 
@@ -89,6 +92,10 @@ public class Unit implements Serializable {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+
+    public int getLevel() { return level; }
+
+    public void setLevel(int level) { this.level = level; }
 
     public Set<Skill> getSkills() { return skills; }
 
