@@ -21,4 +21,11 @@
         android:paddingEnd="10dp"
         android:background="#e8eeff"/>
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:tag="TEXT"/>
+
 </LinearLayout>

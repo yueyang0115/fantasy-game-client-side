@@ -20,6 +20,8 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private int width = WIDTH;
     private int height = HEIGHT;
     private int center = width * height / 2;
+    private int offsetX = 0;
+    private int offsetY = 0;
     private int screenWidth;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
@@ -52,8 +54,8 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //change position to relative coordinates to center
-        int dx = position % width - width / 2;
-        int dy = height / 2 - position / width;
+        int dx = position % width - width / 2 + offsetX;
+        int dy = height / 2 - position / width + offsetY;
 
         ImageView imageView;
 
@@ -116,7 +118,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public void updateQuery(int width, int height, boolean ifCheckMap){
         for(int i = - width / 2; i <= width / 2; i++){
             for(int j = - height / 2; j <= height / 2; j++){
-                WorldCoord tempCoord = new WorldCoord(currCoord.getX() + i, currCoord.getY() + j);
+                WorldCoord tempCoord = new WorldCoord(currCoord.getX() + i + offsetX, currCoord.getY() + j + offsetY);
                 if(ifCheckMap) {
                     //need to check if coordinate has been cached
                     checkMapThenAddQueriedCoord(tempCoord);
@@ -200,5 +202,14 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
 
     public int getWidth(){
         return width;
+    }
+
+    /**
+     * Drag screen
+     */
+    public void updateOffset(int offsetX, int offsetY){
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        updateQuery(width, height, true);
     }
 }

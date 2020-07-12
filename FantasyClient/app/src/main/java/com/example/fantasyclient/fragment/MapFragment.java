@@ -92,6 +92,18 @@ public class MapFragment extends Fragment {
         buildingGridView.setNumColumns(buildingAdapter.getWidth());
     }
 
+    public void dragScreenByOffsets(int offsetX, int offsetY){
+        territoryAdapter.updateOffset(offsetX, offsetY);
+        unitAdapter.updateOffset(offsetX, offsetY);
+        buildingAdapter.updateOffset(offsetX, offsetY);
+    }
+
+    public void resetScreen(){
+        territoryAdapter.updateOffset(0, 0);
+        unitAdapter.updateOffset(0, 0);
+        buildingAdapter.updateOffset(0, 0);
+    }
+
     public List<WorldCoord> getQueriedCoords(){
         return territoryAdapter.getQueriedCoords();
     }
