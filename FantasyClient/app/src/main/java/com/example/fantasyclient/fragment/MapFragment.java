@@ -151,4 +151,28 @@ public class MapFragment extends Fragment {
         unitAdapter.updateCurrCoord(coord);
         buildingAdapter.updateCurrCoord(coord);
     }
+
+    public void updateTerritoryQueryAfterBattle(){
+        territoryAdapter.updateQuery(3, 3, false);
+    }
+
+    public void removeUnitByCoordAfterBattle(WorldCoord coord){
+        unitAdapter.removeFromCacheByCoords(coord);
+    }
+
+    public boolean checkUnitCacheByCoord(WorldCoord coord){
+        return unitAdapter.checkCacheByCoords(coord);
+    }
+
+    public boolean checkBuildingCacheByCoord(WorldCoord coord){
+        return buildingAdapter.checkCacheByCoords(coord);
+    }
+
+    public Territory getTerritoryByPosition(int position){
+        return territoryAdapter.getItem(position);
+    }
+
+    public Building getBuildingByPosition(int position){
+        return buildingAdapter.getItem(position);
+    }
 }
