@@ -190,5 +190,11 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         WIDTH += 2 * zoomLevel;
         HEIGHT += 2 * zoomLevel;
         CENTER = WIDTH * HEIGHT / 2;
+        highlightedPosition = CENTER;
+        updateQuery(WIDTH, HEIGHT, true);
+    }
+
+    public int getWIDTH(){
+        return WIDTH;
     }
 }

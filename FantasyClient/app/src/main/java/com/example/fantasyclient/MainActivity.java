@@ -189,11 +189,12 @@ public class MainActivity extends BaseActivity {
         //check if current location has changed
         if(!tempCoord.equals(currCoord)) {
             //update current coordinate of all layers of map, and queryList as well
-            currCoord = tempCoord;
+
             for (MapAdapter adapter : adapterList) {
-                adapter.updateCurrCoord(currCoord);
+                adapter.updateCurrCoord(tempCoord);
             }
             enqueuePositionRequest();
+            currCoord = tempCoord;
         }
     }
 
@@ -471,7 +472,8 @@ public class MainActivity extends BaseActivity {
             terrainGridView.setNumColumns(7);
             unitGridView.setNumColumns(7);
             buildingGridView.setNumColumns(7);
-            //m.zoomUp();
+            m.zoom(1);
+            enqueuePositionRequest();
         }
     }
 

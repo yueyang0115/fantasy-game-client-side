@@ -2,37 +2,36 @@ package com.example.fantasyclient;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fantasyclient.fragment.MapFragment;
 
 public class TestActivity extends BaseActivity {
 
-    FragmentManager fragmentManager;
+    MapFragment mapFragment = new MapFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.test);
-        fragmentManager = getSupportFragmentManager();
-        findView();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.frameLayout,mapFragment);
+        ft.commit();
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
         setOnClickListener();
     }
 
-    @Override
-    protected void findView(){
-        fragmentManager.beginTransaction()
-                .add(R.id.fragmentContainerView, new MapFragment())
-                .commit();
-    }
-
-    @Override
     protected void setOnClickListener(){
-        final MapFragment mapFragment = (MapFragment)fragmentManager.findFragmentByTag("mapFragment");
-        mapFragment.getClickableGridView().setOnClickListener(new View.OnClickListener() {
+        mapFragment.getClickableGridView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mapFragment.zoomUp();
             }
         });
