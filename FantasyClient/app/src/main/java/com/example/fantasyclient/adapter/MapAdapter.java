@@ -1,6 +1,7 @@
 package com.example.fantasyclient.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private int width = WIDTH;
     private int height = HEIGHT;
     private int center = width * height / 2;
+    private int screenWidth;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
     private BidirectionalMap<WorldCoord,T> imageMap = new BidirectionalMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
@@ -29,6 +31,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         super(context, new ArrayList<T>());
         currCoord = coord;
         highlightedPosition = center;
+        screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
     public int getCount() {
@@ -56,7 +59,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
 
         if (convertView == null) {
             imageView = new ImageView(getContext());
-            imageView.setLayoutParams(new GridView.LayoutParams(1100/ width, 1100/ width));
+            imageView.setLayoutParams(new GridView.LayoutParams(screenWidth / width, screenWidth / width));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         }
