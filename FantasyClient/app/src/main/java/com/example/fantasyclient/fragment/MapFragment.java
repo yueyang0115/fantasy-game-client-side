@@ -10,12 +10,14 @@ import android.widget.GridView;
 import androidx.fragment.app.Fragment;
 
 import com.example.fantasyclient.R;
+import com.example.fantasyclient.SocketService;
 import com.example.fantasyclient.adapter.MapBuildingAdapter;
 import com.example.fantasyclient.adapter.MapTerritoryAdapter;
 import com.example.fantasyclient.adapter.MapUnitAdapter;
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
+import com.example.fantasyclient.model.Unit;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.List;
@@ -25,13 +27,20 @@ public class MapFragment extends Fragment {
     private static final int TERRAIN_INIT = R.drawable.base01;
     private static final int UNIT_INIT = R.drawable.transparent;
 
+    private WorldCoord currCoord;
+
     //fields to show map
     private MapTerritoryAdapter territoryAdapter;
     private MapUnitAdapter unitAdapter;
     private MapBuildingAdapter buildingAdapter;//Adapters for map
     private GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
-    private WorldCoord currCoord = new WorldCoord(0,0);
-    private int zoomLevel = 0;
+
+    //Communicator
+    private SocketService socketService;
+
+    public MapFragment(WorldCoord currCoord) {
+        this.currCoord = currCoord;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,9 +55,8 @@ public class MapFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         // Setup any handles to view objects here
         initAdapter();
-        initGridView(view);
+        initView(view);
     }
-
 
     private void initAdapter(){
         Context context = getContext();
@@ -61,7 +69,7 @@ public class MapFragment extends Fragment {
         buildingAdapter.initImage(UNIT_INIT);
     }
 
-    private void initGridView(View v){
+    private void initView(View v){
         terrainGridView = (GridView) v.findViewById(R.id.terrainGridView);
         unitGridView = (GridView) v.findViewById(R.id.unitGridView);
         buildingGridView = (GridView) v.findViewById(R.id.buildingGridView);
@@ -75,29 +83,13 @@ public class MapFragment extends Fragment {
         return unitGridView;
     }
 
-    public void zoomUp(){
-        if(zoomLevel<1) {
-            int tempZoomLevel = zoomLevel + 1;
-            zoom(tempZoomLevel);
-            zoomLevel = tempZoomLevel;
-        }
-    }
-
-    public void zoomDown(){
-        if(zoomLevel > -1) {
-            int tempZoomLevel = zoomLevel + 1;
-            zoom(tempZoomLevel);
-            zoomLevel = tempZoomLevel;
-        }
-    }
-
-    private void zoom(int zoomLevel){
+    public void zoom(int zoomLevel){
         territoryAdapter.zoom(zoomLevel);
         unitAdapter.zoom(zoomLevel);
         buildingAdapter.zoom(zoomLevel);
-        terrainGridView.setNumColumns(territoryAdapter.getWIDTH());
-        unitGridView.setNumColumns(unitAdapter.getWIDTH());
-        buildingGridView.setNumColumns(buildingAdapter.getWIDTH());
+        terrainGridView.setNumColumns(territoryAdapter.getWidth());
+        unitGridView.setNumColumns(unitAdapter.getWidth());
+        buildingGridView.setNumColumns(buildingAdapter.getWidth());
     }
 
     public List<WorldCoord> getQueriedCoords(){
@@ -160,6 +152,11 @@ public class MapFragment extends Fragment {
         unitAdapter.removeFromCacheByCoords(coord);
     }
 
+    /**
+     * Check cache map by coordinates
+     * @param coord
+     * @return
+     */
     public boolean checkUnitCacheByCoord(WorldCoord coord){
         return unitAdapter.checkCacheByCoords(coord);
     }
@@ -168,11 +165,21 @@ public class MapFragment extends Fragment {
         return buildingAdapter.checkCacheByCoords(coord);
     }
 
+
+    /**
+     * Get elements of specific position
+     * @param position
+     * @return
+     */
     public Territory getTerritoryByPosition(int position){
         return territoryAdapter.getItem(position);
     }
 
     public Building getBuildingByPosition(int position){
         return buildingAdapter.getItem(position);
+    }
+
+    public Unit getUnitByPosition(int position){
+        return unitAdapter.getItem(position);
     }
 }

@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MapAdapter<T> extends HighlightAdapter<T> {
-    private int WIDTH = 5;
-    private int HEIGHT = 7;
-    private int CENTER = WIDTH * HEIGHT / 2;
+    private static final int WIDTH = 5;
+    private static final int HEIGHT = 7;
+    private int width = WIDTH;
+    private int height = HEIGHT;
+    private int center = width * height / 2;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
     private BidirectionalMap<WorldCoord,T> imageMap = new BidirectionalMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
@@ -26,16 +28,16 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     MapAdapter(Context context, WorldCoord coord) {
         super(context, new ArrayList<T>());
         currCoord = coord;
-        highlightedPosition = CENTER;
+        highlightedPosition = center;
     }
 
     public int getCount() {
-        return WIDTH * HEIGHT;
+        return width * height;
     }
 
     public T getItem(int position) {
-        int dx = position % WIDTH - WIDTH / 2;
-        int dy = HEIGHT / 2 - position / WIDTH;
+        int dx = position % width - width / 2;
+        int dy = height / 2 - position / width;
         return imageMap.get(new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY()));
     }
 
@@ -47,14 +49,14 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //change position to relative coordinates to center
-        int dx = position % WIDTH - WIDTH / 2;
-        int dy = HEIGHT / 2 - position / WIDTH;
+        int dx = position % width - width / 2;
+        int dy = height / 2 - position / width;
 
         ImageView imageView;
 
         if (convertView == null) {
             imageView = new ImageView(getContext());
-            imageView.setLayoutParams(new GridView.LayoutParams(1100/WIDTH, 1100/WIDTH));
+            imageView.setLayoutParams(new GridView.LayoutParams(1100/ width, 1100/ width));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         }
@@ -95,10 +97,9 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
      * @param coord current coordinate
      */
     public void updateCurrCoord(WorldCoord coord){
-        currCoord.setX(coord.getX());
-        currCoord.setY(coord.getY());
+        currCoord.setByCoord(coord);
         //query for the territories if not cached
-        updateQuery(WIDTH, HEIGHT, true);
+        updateQuery(width, height, true);
     }
 
     /**
@@ -187,14 +188,14 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
      * zoom up and down
      */
     public void zoom(int zoomLevel){
-        WIDTH += 2 * zoomLevel;
-        HEIGHT += 2 * zoomLevel;
-        CENTER = WIDTH * HEIGHT / 2;
-        highlightedPosition = CENTER;
-        updateQuery(WIDTH, HEIGHT, true);
+        width = WIDTH + 2 * zoomLevel;
+        height = HEIGHT + 2 * zoomLevel;
+        center = width * height / 2;
+        highlightedPosition = center;
+        updateQuery(width, height, true);
     }
 
-    public int getWIDTH(){
-        return WIDTH;
+    public int getWidth(){
+        return width;
     }
 }

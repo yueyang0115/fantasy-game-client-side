@@ -2,6 +2,8 @@ package com.example.fantasyclient.adapter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.Log;
@@ -86,7 +88,11 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
         for(int i=0; i<drawables.length; i++){
             layers[i] = drawables[i];
         }
-        layers[drawables.length] = r.getDrawable(R.drawable.green_frame);
+        Drawable tempDrawable = r.getDrawable(R.drawable.green_frame);
+        Bitmap bitmap = ((BitmapDrawable) tempDrawable).getBitmap();
+        // Scale it to 32 x 32
+        Drawable drawable = new BitmapDrawable(r, Bitmap.createScaledBitmap(bitmap, 32, 32, true));
+        layers[drawables.length] = drawable;
         return new LayerDrawable(layers);
     }
 }

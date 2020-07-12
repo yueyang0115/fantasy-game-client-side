@@ -10,4 +10,15 @@
         android:layout_height="560dp">
     </FrameLayout>
 
+    <SeekBar
+        android:id="@+id/zoomBar"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="290dp"
+        android:max="3"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:background="#e8eeff"/>
+
 </LinearLayout>

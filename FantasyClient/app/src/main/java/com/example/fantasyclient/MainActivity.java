@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -54,15 +55,14 @@ public class MainActivity extends BaseActivity {
 
     //final constant
     static final String TAG = "MainActivity";//tag for log
-    static final int TERRAIN_INIT = R.drawable.base01;
-    static final int UNIT_INIT = R.drawable.transparent;
     static final int PERMISSIONS_REQUEST_LOCATION = 1;//request code for location permission
 
     //map data
     SimpleLocation location;//used to track current location
 
     //fields to show map
-    MapFragment map = new MapFragment();
+    MapFragment map;
+    private SeekBar zoomBar;
 
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
@@ -187,7 +187,7 @@ public class MainActivity extends BaseActivity {
             //update current coordinate of all layers of map, and queryList as well
             map.updateCurrCoord(tempCoord);
             enqueuePositionRequest();
-            currCoord = tempCoord;
+            currCoord.setByCoord(tempCoord);
         }
     }
 
@@ -391,6 +391,7 @@ public class MainActivity extends BaseActivity {
     }
 
     protected void initFragment(){
+        map = new MapFragment(currCoord);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.frameLayout,map);
         ft.commit();
@@ -403,6 +404,7 @@ public class MainActivity extends BaseActivity {
         //btnBag = (Button) findViewById(R.id.btn_bag);
         bagImg = (ImageView) findViewById(R.id.bagImg);
         settingsImg = (ImageView) findViewById(R.id.settingsImg);
+        zoomBar = (SeekBar) findViewById(R.id.zoomBar);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -480,11 +482,22 @@ public class MainActivity extends BaseActivity {
                 socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
             }
         });
-        settingsImg.setOnClickListener(new View.OnClickListener() {
+        zoomBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int zoomLevel = 0;
             @Override
-            public void onClick(View v) {
-                map.zoomUp();
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                zoomLevel = progress;
+                map.zoom(zoomLevel);
                 enqueuePositionRequest();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
     }
