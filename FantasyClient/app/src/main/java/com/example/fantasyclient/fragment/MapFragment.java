@@ -10,10 +10,10 @@ import android.widget.GridView;
 import androidx.fragment.app.Fragment;
 
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.SocketService;
 import com.example.fantasyclient.adapter.MapBuildingAdapter;
 import com.example.fantasyclient.adapter.MapTerritoryAdapter;
 import com.example.fantasyclient.adapter.MapUnitAdapter;
+import com.example.fantasyclient.helper.MapMoveTool;
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
@@ -28,15 +28,13 @@ public class MapFragment extends Fragment {
     private static final int UNIT_INIT = R.drawable.transparent;
 
     private WorldCoord currCoord;
+    private MapMoveTool mapMoveTool = new MapMoveTool();
 
     //fields to show map
     private MapTerritoryAdapter territoryAdapter;
     private MapUnitAdapter unitAdapter;
     private MapBuildingAdapter buildingAdapter;//Adapters for map
     private GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
-
-    //Communicator
-    private SocketService socketService;
 
     public MapFragment(WorldCoord currCoord) {
         this.currCoord = currCoord;
@@ -90,18 +88,21 @@ public class MapFragment extends Fragment {
         terrainGridView.setNumColumns(territoryAdapter.getWidth());
         unitGridView.setNumColumns(unitAdapter.getWidth());
         buildingGridView.setNumColumns(buildingAdapter.getWidth());
+        mapMoveTool.setAmplificationFactor(zoomLevel);
     }
 
     public void dragScreenByOffsets(int offsetX, int offsetY){
         territoryAdapter.updateOffset(offsetX, offsetY);
         unitAdapter.updateOffset(offsetX, offsetY);
         buildingAdapter.updateOffset(offsetX, offsetY);
+        updateMapLayers();
     }
 
     public void resetScreen(){
         territoryAdapter.updateOffset(0, 0);
         unitAdapter.updateOffset(0, 0);
         buildingAdapter.updateOffset(0, 0);
+        updateMapLayers();
     }
 
     public List<WorldCoord> getQueriedCoords(){
@@ -193,5 +194,26 @@ public class MapFragment extends Fragment {
 
     public Unit getUnitByPosition(int position){
         return unitAdapter.getItem(position);
+    }
+
+    /**
+     * MapMoveTool related methods
+     */
+    public void setMoveStartPoint(int startX, int startY){
+        mapMoveTool.setStartX(startX);
+        mapMoveTool.setStartY(startY);
+    }
+
+    public void setMoveDestinationPoint(int destX, int destY){
+        mapMoveTool.setDestX(destX);
+        mapMoveTool.setDestY(destY);
+    }
+
+    public int getMoveOffsetX(){
+        return mapMoveTool.getOffsetX();
+    }
+
+    public int getMoveOffsetY(){
+        return mapMoveTool.getOffsetY();
     }
 }

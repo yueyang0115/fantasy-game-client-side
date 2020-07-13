@@ -54,7 +54,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //change position to relative coordinates to center
-        int dx = position % width - width / 2 + offsetX;
+        int dx = position % width - width / 2 - offsetX;
         int dy = height / 2 - position / width + offsetY;
 
         ImageView imageView;
@@ -118,7 +118,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public void updateQuery(int width, int height, boolean ifCheckMap){
         for(int i = - width / 2; i <= width / 2; i++){
             for(int j = - height / 2; j <= height / 2; j++){
-                WorldCoord tempCoord = new WorldCoord(currCoord.getX() + i + offsetX, currCoord.getY() + j + offsetY);
+                WorldCoord tempCoord = new WorldCoord(currCoord.getX() + i - offsetX, currCoord.getY() + j + offsetY);
                 if(ifCheckMap) {
                     //need to check if coordinate has been cached
                     checkMapThenAddQueriedCoord(tempCoord);

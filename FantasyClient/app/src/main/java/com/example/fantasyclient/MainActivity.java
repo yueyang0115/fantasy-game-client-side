@@ -3,12 +3,15 @@ package com.example.fantasyclient;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -186,7 +189,7 @@ public class MainActivity extends BaseActivity {
         if(!tempCoord.equals(currCoord)) {
             //update current coordinate of all layers of map, and queryList as well
             map.updateCurrCoord(tempCoord);
-            enqueuePositionRequest();
+            enqueuePositionRequest(false);
             currCoord.setByCoord(tempCoord);
         }
     }
@@ -376,15 +379,19 @@ public class MainActivity extends BaseActivity {
                 Log.e(TAG,"Invalid request code");
         }
         //inform server that the player has switch to the map
-        enqueuePositionRequest();
+        enqueuePositionRequest(false);
     }
 
     /**
      * This method enqueue position request to be sent to server
      */
-    protected void enqueuePositionRequest(){
+    protected void enqueuePositionRequest(boolean ifCheckEmptyQuery){
         //get the coordinates which need to be queried from server
         List<WorldCoord> queriedCoords = map.getQueriedCoords();
+        //if need to check query and query is empty, do not send message
+        if(ifCheckEmptyQuery && queriedCoords.isEmpty()) {
+            return;
+        }
         //enqueue query message in order to send to server
         PositionRequestMessage p = new PositionRequestMessage(queriedCoords, currCoord);
         socketService.enqueue(new MessagesC2S(p));
@@ -469,9 +476,55 @@ public class MainActivity extends BaseActivity {
             }
         });
         gridView.setOnTouchListener(new View.OnTouchListener() {
+            //Max allowed duration for a "click", in milliseconds.
+            private static final int MAX_CLICK_DURATION = 1000;
+            //Max allowed distance to move during a "click", in DP.
+            private static final int MAX_CLICK_DISTANCE = 15;
+            private long pressStartTime;
+            private float pressedX;
+            private float pressedY;
+            private boolean stayedWithinClickDistance;
+
+            @SuppressLint("SetTextI18n")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return false;
+                ClipData.Item item = new ClipData.Item("MAP");
+                String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+
+                ClipData dragData = new ClipData("MAP",mimeTypes, item);
+                View.DragShadowBuilder myShadow = new View.DragShadowBuilder();
+
+                event.offsetLocation(0,-66);//error compensation for difference between event of OnTouch and OnDrag
+
+                map.setMoveStartPoint((int)event.getX(),(int)event.getY());
+                textVLocation.setText("X:" + (int)event.getX() + ",Y:" + (int)event.getY() );
+
+                v.startDrag(dragData,myShadow,null,0);
+                return true;
+            }
+        });
+        gridView.setOnDragListener(new View.OnDragListener() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int offsetX, offsetY;
+                switch (event.getAction()) {
+                    case DragEvent.ACTION_DRAG_LOCATION:
+                        map.setMoveDestinationPoint((int)event.getX(),(int)event.getY());
+                        offsetX = map.getMoveOffsetX();
+                        offsetY = map.getMoveOffsetY();
+                        textLocation.setText("X:" + (int)event.getX() + ",Y:" + (int)event.getY());
+                        map.dragScreenByOffsets(offsetX, offsetY);
+                        enqueuePositionRequest(true);
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        // Dropped, reassign View to ViewGroup
+                        map.resetScreen();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
             }
         });
         bagImg.setOnClickListener(new View.OnClickListener() {
@@ -483,22 +536,28 @@ public class MainActivity extends BaseActivity {
             }
         });
         zoomBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int zoomLevel = 0;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                zoomLevel = progress;
-                map.zoom(zoomLevel);
-                enqueuePositionRequest();
+                map.zoom(progress);
+                enqueuePositionRequest(true);
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) { }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) { }
         });
+    }
+
+    private float distance(float x1, float y1, float x2, float y2) {
+        float dx = x1 - x2;
+        float dy = y1 - y2;
+        float distanceInPx = (float) Math.sqrt(dx * dx + dy * dy);
+        return pxToDp(distanceInPx);
+    }
+
+    private float pxToDp(float px) {
+        return px / getResources().getDisplayMetrics().density;
     }
 }

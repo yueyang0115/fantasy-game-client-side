@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fantasyclient.fragment.MapFragment;
+import com.example.fantasyclient.model.WorldCoord;
 
 public class TestActivity extends BaseActivity {
 
@@ -81,6 +82,7 @@ public class TestActivity extends BaseActivity {
                 switch (event.getAction()) {
                     case DragEvent.ACTION_DRAG_LOCATION:
                         textView.setText("X:" + event.getX() + ", Y:" + event.getY());
+                        mapFragment.updateCurrCoord(new WorldCoord(currCoord.getX()+1, currCoord.getY()+1));
                         break;
                     case DragEvent.ACTION_DROP:
                         // Dropped, reassign View to ViewGroup
