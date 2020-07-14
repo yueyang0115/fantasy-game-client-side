@@ -327,6 +327,7 @@ public class BattleActivity extends BaseActivity{
 
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
+        super.checkAttributeResult(m);
         soldierList = new ArrayList<Unit>(m.getSoldiers());
         runOnUiThread(new Runnable() {
             @Override

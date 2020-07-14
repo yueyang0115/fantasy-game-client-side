@@ -431,6 +431,7 @@ public class MainActivity extends BaseActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN: {
+                        //cache start point and time of touch
                         pressStartTime = System.currentTimeMillis();
                         startX = event.getX();
                         startY = event.getY();
@@ -452,13 +453,16 @@ public class MainActivity extends BaseActivity {
                     }
                     case MotionEvent.ACTION_UP: {
                         long pressDuration = System.currentTimeMillis() - pressStartTime;
+                        //check drag distance to differentiate drag and click
                         if(stayedWithinClickDistance) {
                             int position =  map.dpToPosition(startX, startY);
+                            //check press duration time to differentiate click and long click
                             if (pressDuration < MAX_CLICK_DURATION) {
                                 // Click event has occurred
                                 performMapOnClick(position);
                             }
                             else{
+                                // Long click event has occurred
                                 performMapOnLongClick(position);
                             }
                         }
