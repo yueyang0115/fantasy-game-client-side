@@ -33,6 +33,7 @@ public abstract class UnitAdapter extends ElementAdapter<Unit> {
         // Lookup view for data population
         UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
         viewHolder.baseText = (TextView) convertView.findViewById(R.id.unitID);
+        viewHolder.unitLevel = (TextView) convertView.findViewById(R.id.unitLevel);
         viewHolder.unitHp = (TextView) convertView.findViewById(R.id.unitHp);
         viewHolder.unitAtk = (TextView) convertView.findViewById(R.id.unitAtk);
         viewHolder.unitSpeed = (TextView) convertView.findViewById(R.id.unitSpeed);
