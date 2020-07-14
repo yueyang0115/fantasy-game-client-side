@@ -16,6 +16,7 @@ import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
@@ -140,6 +141,9 @@ public abstract class BaseActivity extends FragmentActivity {
             if (m.getRedirectMessage() != null){
                 checkRedirectResult(m.getRedirectMessage());
             }
+            if (m.getLevelUpResultMessage() != null) {
+                checkLevelUpResult(m.getLevelUpResultMessage());
+            }
         }
     }
 
@@ -216,6 +220,8 @@ public abstract class BaseActivity extends FragmentActivity {
     }
 
     protected void checkBuildingResult(BuildingResultMessage m){}
+
+    protected void checkLevelUpResult(LevelUpResultMessage m){}
 
     /**
      * This method updates target adapter to show updated data

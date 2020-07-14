@@ -24,6 +24,13 @@
             android:progress="100"
             android:progressDrawable="@drawable/soldier" />-->
         <TextView
+            android:id="@+id/unitLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ID"
+            android:layout_weight="1"
+            tools:ignore="NestedWeights" />
+        <TextView
             android:id="@+id/unitID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

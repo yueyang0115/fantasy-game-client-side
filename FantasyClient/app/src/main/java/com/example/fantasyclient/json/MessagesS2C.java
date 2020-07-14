@@ -12,6 +12,9 @@ public class MessagesS2C implements Serializable {
     private InventoryResultMessage inventoryResultMessage;
     private BuildingResultMessage buildingResultMessage;
     private RedirectMessage redirectMessage;
+    private LevelUpResultMessage levelUpResultMessage;
+
+    //constructors
 
     public MessagesS2C(){
     }
@@ -51,6 +54,12 @@ public class MessagesS2C implements Serializable {
     public MessagesS2C(RedirectMessage redirectMessage) {
         this.redirectMessage = redirectMessage;
     }
+
+    public MessagesS2C(LevelUpResultMessage levelUpResultMessage) {
+        this.levelUpResultMessage = levelUpResultMessage;
+    }
+
+    //Getters and setters
 
     public PositionResultMessage getPositionResultMessage() {
         return positionResultMessage;
@@ -122,5 +131,13 @@ public class MessagesS2C implements Serializable {
 
     public void setRedirectMessage(RedirectMessage redirectMessage) {
         this.redirectMessage = redirectMessage;
+    }
+
+    public LevelUpResultMessage getLevelUpResultMessage() {
+        return levelUpResultMessage;
+    }
+
+    public void setLevelUpResultMessage(LevelUpResultMessage levelUpResultMessage) {
+        this.levelUpResultMessage = levelUpResultMessage;
     }
 }

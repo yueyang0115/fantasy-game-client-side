@@ -15,6 +15,8 @@ public class Unit implements Serializable {
     private int atk;
     private int speed;
     private int level;
+    private List<UnitEquipment> equipments = new ArrayList<>();
+    private int skillPoint = 1;
     private Set<Skill> skills = new HashSet<>();
 
     public Unit(){
@@ -96,6 +98,22 @@ public class Unit implements Serializable {
     public int getLevel() { return level; }
 
     public void setLevel(int level) { this.level = level; }
+
+    public List<UnitEquipment> getEquipments() {
+        return equipments;
+    }
+
+    public void setEquipments(List<UnitEquipment> equipments) {
+        this.equipments = equipments;
+    }
+
+    public int getSkillPoint() {
+        return skillPoint;
+    }
+
+    public void setSkillPoint(int skillPoint) {
+        this.skillPoint = skillPoint;
+    }
 
     public Set<Skill> getSkills() { return skills; }
 

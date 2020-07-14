@@ -9,6 +9,7 @@ public class MessagesC2S {
     private ShopRequestMessage shopRequestMessage;
     private InventoryRequestMessage inventoryRequestMessage;
     private BuildingRequestMessage buildingRequestMessage;
+    private LevelUpRequestMessage levelUpRequestMessage;
 
     //constructors
     public MessagesC2S() {
@@ -44,6 +45,10 @@ public class MessagesC2S {
 
     public MessagesC2S(BuildingRequestMessage buildingRequestMessage) {
         this.buildingRequestMessage = buildingRequestMessage;
+    }
+
+    public MessagesC2S(LevelUpRequestMessage levelUpRequestMessage) {
+        this.levelUpRequestMessage = levelUpRequestMessage;
     }
 
     //getter and setter
@@ -110,5 +115,13 @@ public class MessagesC2S {
 
     public void setBuildingRequestMessage(BuildingRequestMessage buildingRequestMessage) {
         this.buildingRequestMessage = buildingRequestMessage;
+    }
+
+    public LevelUpRequestMessage getLevelUpRequestMessage() {
+        return levelUpRequestMessage;
+    }
+
+    public void setLevelUpRequestMessage(LevelUpRequestMessage levelUpRequestMessage) {
+        this.levelUpRequestMessage = levelUpRequestMessage;
     }
 }
