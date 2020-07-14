@@ -85,9 +85,9 @@ public class MapFragment extends Fragment {
         territoryAdapter.zoom(zoomLevel);
         unitAdapter.zoom(zoomLevel);
         buildingAdapter.zoom(zoomLevel);
-        terrainGridView.setNumColumns(territoryAdapter.getWidth());
-        unitGridView.setNumColumns(unitAdapter.getWidth());
-        buildingGridView.setNumColumns(buildingAdapter.getWidth());
+        terrainGridView.setNumColumns(territoryAdapter.getNumColumn());
+        unitGridView.setNumColumns(unitAdapter.getNumColumn());
+        buildingGridView.setNumColumns(buildingAdapter.getNumColumn());
         mapMoveTool.setAmplificationFactor(zoomLevel);
     }
 
@@ -199,12 +199,12 @@ public class MapFragment extends Fragment {
     /**
      * MapMoveTool related methods
      */
-    public void setMoveStartPoint(int startX, int startY){
+    public void setMoveStartPoint(float startX, float startY){
         mapMoveTool.setStartX(startX);
         mapMoveTool.setStartY(startY);
     }
 
-    public void setMoveDestinationPoint(int destX, int destY){
+    public void setMoveDestinationPoint(float destX, float destY){
         mapMoveTool.setDestX(destX);
         mapMoveTool.setDestY(destY);
     }
@@ -215,5 +215,30 @@ public class MapFragment extends Fragment {
 
     public int getMoveOffsetY(){
         return mapMoveTool.getOffsetY();
+    }
+
+    public int getColumnWidth(){
+        return territoryAdapter.getColumnWidth();
+    }
+
+    public int getColumnNum(){
+        return territoryAdapter.getNumColumn();
+    }
+
+    public boolean ifStayedWithinClickDistance(float density){
+        return mapMoveTool.ifStayedWithinClickDistance(density);
+    }
+
+    /**
+     * This method convert the touch point location (dp) to position of GridView (int) on map
+     * @param x of touch point (dp)
+     * @param y of touch point (dp)
+     * @return position of GridView (int) on map
+     */
+    public int dpToPosition(float x, float y){
+        int columnWidth = getColumnWidth();
+        int column = (int) x / columnWidth;
+        int row = (int) y / columnWidth;
+        return row * getColumnNum() + column;
     }
 }

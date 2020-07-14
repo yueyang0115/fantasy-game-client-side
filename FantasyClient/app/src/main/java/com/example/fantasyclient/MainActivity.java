@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -418,103 +417,66 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void setOnClickListener(){
         //Get clickable gridView from mapFragment;
-        GridView gridView = map.getClickableGridView();
-        //short click on GridView
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //check if click on the center territory
-                if(position==CENTER) {
-                    //check if current territory has monsters
-                    if(map.checkUnitCacheByCoord(currCoord)){
-                        socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currCoord, "start")));
-                    }
-                    //check if current territory has buildings
-                    else if(map.checkBuildingCacheByCoord(currCoord)){
-                        switch (map.getBuildingByPosition(position).getName()) {
-                            case "shop":
-                            case "super_shop":
-                                socketService.enqueue(new MessagesC2S(
-                                        new ShopRequestMessage(currCoord, "list")));
-                                break;
-                        }
-                    }
-                    else{
-                        setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(map.getTerritoryByPosition(position))));
-                    }
-                }
-                else {
-                    setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(map.getTerritoryByPosition(position))));
-                }
-            }
-        });
-        //long click on GridView
-        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                //check if click on the center territory
-                if(position==CENTER){
-                    //check if current territory has monsters
-                    if(map.checkUnitCacheByCoord(currCoord)){
-                        socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currCoord, "start")));
-                    }
-                    //check if current territory has buildings
-                    else if(map.checkBuildingCacheByCoord(currCoord)){
-                        socketService.enqueue(new MessagesC2S(
-                                new BuildingRequestMessage(currCoord,"upgradeList")
-                        ));
-                    }
-                    else{
-                        socketService.enqueue(new MessagesC2S(
-                                new BuildingRequestMessage(currCoord,"createList")
-                        ));
-                    }
-                }
-                return true;
-            }
-        });
+        final GridView gridView = map.getClickableGridView();
         gridView.setOnTouchListener(new View.OnTouchListener() {
             //Max allowed duration for a "click", in milliseconds.
-            private static final int MAX_CLICK_DURATION = 1000;
-            //Max allowed distance to move during a "click", in DP.
-            private static final int MAX_CLICK_DISTANCE = 15;
+            private static final int MAX_CLICK_DURATION = 500;
             private long pressStartTime;
-            private float pressedX;
-            private float pressedY;
+            private float startX;
+            private float startY;
             private boolean stayedWithinClickDistance;
 
             @SuppressLint("SetTextI18n")
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                ClipData.Item item = new ClipData.Item("MAP");
-                String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-
-                ClipData dragData = new ClipData("MAP",mimeTypes, item);
-                View.DragShadowBuilder myShadow = new View.DragShadowBuilder();
-
-                event.offsetLocation(0,-66);//error compensation for difference between event of OnTouch and OnDrag
-
-                map.setMoveStartPoint((int)event.getX(),(int)event.getY());
-                textVLocation.setText("X:" + (int)event.getX() + ",Y:" + (int)event.getY() );
-
-                v.startDrag(dragData,myShadow,null,0);
-                return true;
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        pressStartTime = System.currentTimeMillis();
+                        startX = event.getX();
+                        startY = event.getY();
+                        stayedWithinClickDistance = true;
+                        break;
+                    }
+                    case MotionEvent.ACTION_MOVE: {
+                        map.setMoveStartPoint(startX,startY);
+                        if(stayedWithinClickDistance && !map.ifStayedWithinClickDistance(getResources().getDisplayMetrics().density)) {
+                            ClipData.Item item = new ClipData.Item("MAP");
+                            String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                            ClipData dragData = new ClipData("MAP",mimeTypes, item);
+                            event.offsetLocation(0,-66);//error compensation for difference between event of OnTouch and OnDrag
+                            textVLocation.setText("X:" + startX + ",Y:" + startY);
+                            stayedWithinClickDistance = false;
+                            v.startDrag(dragData,new View.DragShadowBuilder(),null,0);
+                        }
+                        break;
+                    }
+                    case MotionEvent.ACTION_UP: {
+                        long pressDuration = System.currentTimeMillis() - pressStartTime;
+                        if(stayedWithinClickDistance) {
+                            int position =  map.dpToPosition(startX, startY);
+                            if (pressDuration < MAX_CLICK_DURATION) {
+                                // Click event has occurred
+                                performMapOnClick(position);
+                            }
+                            else{
+                                performMapOnLongClick(position);
+                            }
+                        }
+                        break;
+                    }
+                }
+                return false;
             }
         });
         gridView.setOnDragListener(new View.OnDragListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public boolean onDrag(View v, DragEvent event) {
-                int offsetX, offsetY;
                 switch (event.getAction()) {
                     case DragEvent.ACTION_DRAG_LOCATION:
                         map.setMoveDestinationPoint((int)event.getX(),(int)event.getY());
-                        offsetX = map.getMoveOffsetX();
-                        offsetY = map.getMoveOffsetY();
                         textLocation.setText("X:" + (int)event.getX() + ",Y:" + (int)event.getY());
-                        map.dragScreenByOffsets(offsetX, offsetY);
+                        map.dragScreenByOffsets(map.getMoveOffsetX(), map.getMoveOffsetY());
                         enqueuePositionRequest(true);
                         break;
                     case DragEvent.ACTION_DROP:
@@ -550,14 +512,57 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private float distance(float x1, float y1, float x2, float y2) {
-        float dx = x1 - x2;
-        float dy = y1 - y2;
-        float distanceInPx = (float) Math.sqrt(dx * dx + dy * dy);
-        return pxToDp(distanceInPx);
+    /**
+     * This method performs a single click (less than MAX_CLICK_DURATION) on specific position of map
+     * @param position
+     */
+    private void performMapOnClick(int position){
+        //check if click on the center territory
+        if(position==CENTER) {
+            //check if current territory has monsters
+            if(map.checkUnitCacheByCoord(currCoord)){
+                socketService.enqueue(new MessagesC2S(
+                        new BattleRequestMessage(currCoord, "start")));
+            }
+            //check if current territory has buildings
+            else if(map.checkBuildingCacheByCoord(currCoord)){
+                switch (map.getBuildingByPosition(position).getName()) {
+                    case "shop":
+                    case "super_shop":
+                        socketService.enqueue(new MessagesC2S(
+                                new ShopRequestMessage(currCoord, "list")));
+                        break;
+                }
+            }
+            else{
+                setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(map.getTerritoryByPosition(position))));
+            }
+        }
     }
 
-    private float pxToDp(float px) {
-        return px / getResources().getDisplayMetrics().density;
+    /**
+     * This method performs a long click (more than MAX_CLICK_DURATION) on specific position of map
+     * @param position
+     */
+    private void performMapOnLongClick(int position){
+        //check if click on the center territory
+        if(position==CENTER){
+            //check if current territory has monsters
+            if(map.checkUnitCacheByCoord(currCoord)){
+                socketService.enqueue(new MessagesC2S(
+                        new BattleRequestMessage(currCoord, "start")));
+            }
+            //check if current territory has buildings
+            else if(map.checkBuildingCacheByCoord(currCoord)){
+                socketService.enqueue(new MessagesC2S(
+                        new BuildingRequestMessage(currCoord,"upgradeList")
+                ));
+            }
+            else{
+                socketService.enqueue(new MessagesC2S(
+                        new BuildingRequestMessage(currCoord,"createList")
+                ));
+            }
+        }
     }
 }

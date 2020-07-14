@@ -200,8 +200,12 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         updateQuery(width, height, true);
     }
 
-    public int getWidth(){
+    public int getNumColumn(){
         return width;
+    }
+
+    public int getColumnWidth(){
+        return screenWidth/width;
     }
 
     /**
