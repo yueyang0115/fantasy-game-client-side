@@ -36,6 +36,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
+    @Override
     public int getCount() {
         return width * height;
     }
