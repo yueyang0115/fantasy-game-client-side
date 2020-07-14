@@ -204,6 +204,10 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         return width;
     }
 
+    public int getCenter(){
+        return center;
+    }
+
     public int getColumnWidth(){
         return screenWidth/width;
     }

@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -64,7 +63,7 @@ public class MainActivity extends BaseActivity {
 
     //fields to show map
     MapFragment map;
-    private SeekBar zoomBar;
+    SeekBar zoomBar;
 
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
@@ -416,63 +415,8 @@ public class MainActivity extends BaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setOnClickListener(){
-        //Get clickable gridView from mapFragment;
-        final GridView gridView = map.getClickableGridView();
-        gridView.setOnTouchListener(new View.OnTouchListener() {
-            //Max allowed duration for a "click", in milliseconds.
-            private static final int MAX_CLICK_DURATION = 500;
-            private long pressStartTime;
-            private float startX;
-            private float startY;
-            private boolean stayedWithinClickDistance;
-
-            @SuppressLint("SetTextI18n")
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN: {
-                        //cache start point and time of touch
-                        pressStartTime = System.currentTimeMillis();
-                        startX = event.getX();
-                        startY = event.getY();
-                        stayedWithinClickDistance = true;
-                        break;
-                    }
-                    case MotionEvent.ACTION_MOVE: {
-                        map.setMoveStartPoint(startX,startY);
-                        if(stayedWithinClickDistance && !map.ifStayedWithinClickDistance(getResources().getDisplayMetrics().density)) {
-                            ClipData.Item item = new ClipData.Item("MAP");
-                            String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                            ClipData dragData = new ClipData("MAP",mimeTypes, item);
-                            event.offsetLocation(0,-66);//error compensation for difference between event of OnTouch and OnDrag
-                            textVLocation.setText("X:" + startX + ",Y:" + startY);
-                            stayedWithinClickDistance = false;
-                            v.startDrag(dragData,new View.DragShadowBuilder(),null,0);
-                        }
-                        break;
-                    }
-                    case MotionEvent.ACTION_UP: {
-                        long pressDuration = System.currentTimeMillis() - pressStartTime;
-                        //check drag distance to differentiate drag and click
-                        if(stayedWithinClickDistance) {
-                            int position =  map.dpToPosition(startX, startY);
-                            //check press duration time to differentiate click and long click
-                            if (pressDuration < MAX_CLICK_DURATION) {
-                                // Click event has occurred
-                                performMapOnClick(position);
-                            }
-                            else{
-                                // Long click event has occurred
-                                performMapOnLongClick(position);
-                            }
-                        }
-                        break;
-                    }
-                }
-                return false;
-            }
-        });
-        gridView.setOnDragListener(new View.OnDragListener() {
+        map.getClickableGridView().setOnTouchListener(new MapOnTouchListener());
+        map.getClickableGridView().setOnDragListener(new View.OnDragListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public boolean onDrag(View v, DragEvent event) {
@@ -522,7 +466,7 @@ public class MainActivity extends BaseActivity {
      */
     private void performMapOnClick(int position){
         //check if click on the center territory
-        if(position==CENTER) {
+        if(position==map.getCenter()) {
             //check if current territory has monsters
             if(map.checkUnitCacheByCoord(currCoord)){
                 socketService.enqueue(new MessagesC2S(
@@ -542,6 +486,9 @@ public class MainActivity extends BaseActivity {
                 setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(map.getTerritoryByPosition(position))));
             }
         }
+        else{
+            setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(map.getTerritoryByPosition(position))));
+        }
     }
 
     /**
@@ -550,7 +497,7 @@ public class MainActivity extends BaseActivity {
      */
     private void performMapOnLongClick(int position){
         //check if click on the center territory
-        if(position==CENTER){
+        if(position==map.getCenter()){
             //check if current territory has monsters
             if(map.checkUnitCacheByCoord(currCoord)){
                 socketService.enqueue(new MessagesC2S(
@@ -567,6 +514,62 @@ public class MainActivity extends BaseActivity {
                         new BuildingRequestMessage(currCoord,"createList")
                 ));
             }
+        }
+    }
+
+    private class MapOnTouchListener implements View.OnTouchListener{
+
+        //Max allowed duration for a "click", in milliseconds.
+        private static final int MAX_CLICK_DURATION = 500;
+        private long pressStartTime;
+        private float startX;
+        private float startY;
+        private boolean stayedWithinClickDistance;
+
+        @SuppressLint({"SetTextI18n", "ClickableViewAccessibility"})
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    //cache start point and time of touch
+                    pressStartTime = System.currentTimeMillis();
+                    startX = event.getX();
+                    startY = event.getY();
+                    stayedWithinClickDistance = true;
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    map.setMoveStartPoint(startX,startY);
+                    if(stayedWithinClickDistance && !map.ifStayedWithinClickDistance(getResources().getDisplayMetrics().density)) {
+                        ClipData.Item item = new ClipData.Item("MAP");
+                        String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                        ClipData dragData = new ClipData("MAP",mimeTypes, item);
+                        event.offsetLocation(0,-66);//error compensation for difference between event of OnTouch and OnDrag
+                        textVLocation.setText("X:" + startX + ",Y:" + startY);
+                        stayedWithinClickDistance = false;
+                        v.startDrag(dragData,new View.DragShadowBuilder(),null,0);
+                    }
+                    break;
+                }
+                case MotionEvent.ACTION_UP: {
+                    long pressDuration = System.currentTimeMillis() - pressStartTime;
+                    //check drag distance to differentiate drag and click
+                    if(stayedWithinClickDistance) {
+                        int position =  map.dpToPosition(startX, startY);
+                        //check press duration time to differentiate click and long click
+                        if (pressDuration < MAX_CLICK_DURATION) {
+                            // Click event has occurred
+                            performMapOnClick(position);
+                        }
+                        else{
+                            // Long click event has occurred
+                            performMapOnLongClick(position);
+                        }
+                    }
+                    break;
+                }
+            }
+            return false;
         }
     }
 }

@@ -46,7 +46,6 @@ public abstract class BaseActivity extends FragmentActivity {
     static final int BATTLE = 2;//request code for battle
     static final int SHOP = 3;//request code for Shop
     static final int INVENTORY = 4;//request code for inventory
-    static final int CENTER = 17;//center of the map
 
     //Cached messages
     protected MessagesS2C currMessage = new MessagesS2C();

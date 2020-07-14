@@ -225,6 +225,10 @@ public class MapFragment extends Fragment {
         return territoryAdapter.getNumColumn();
     }
 
+    public int getCenter(){
+        return territoryAdapter.getCenter();
+    }
+
     public boolean ifStayedWithinClickDistance(float density){
         return mapMoveTool.ifStayedWithinClickDistance(density);
     }
