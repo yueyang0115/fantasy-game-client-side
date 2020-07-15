@@ -19,7 +19,7 @@ public abstract class UnitAdapter extends ElementAdapter<Unit> {
 
     //initialize the unit layout
     UnitAdapter(Context context, List<Unit> objects) {
-        super(context, objects, R.layout.unit_layout);
+        super(context, objects, R.layout.element_unit);
     }
 
     @Override

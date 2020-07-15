@@ -20,7 +20,7 @@ public abstract class InventoryAdapter extends ElementAdapter<Inventory> {
 
     //initialize the inventory layout
     InventoryAdapter(Context context, List<Inventory> objects) {
-        super(context, objects, R.layout.item_layout);
+        super(context, objects, R.layout.element_inventory);
     }
 
     @Override
