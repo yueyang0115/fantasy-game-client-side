@@ -54,7 +54,7 @@ public class BattleActivity extends BaseActivity{
         initView();
         doBindService();
         getExtra();
-        setOnClickListener();
+        setListener();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class BattleActivity extends BaseActivity{
     }
 
     @Override
-    protected void setOnClickListener(){
+    protected void setListener(){
         attackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

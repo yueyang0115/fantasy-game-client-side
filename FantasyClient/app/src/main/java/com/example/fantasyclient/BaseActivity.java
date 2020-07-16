@@ -60,7 +60,7 @@ public abstract class BaseActivity extends FragmentActivity {
     /**
      * set required listeners, which may be overrode
      */
-    protected void setOnClickListener(){ }
+    protected void setListener(){ }
 
     /**
      * get extra information passed by calling activity

@@ -23,7 +23,6 @@ import com.example.fantasyclient.helper.MapMoveTool;
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
-import com.example.fantasyclient.model.Unit;
 import com.example.fantasyclient.model.WorldCoord;
 
 import java.util.List;
@@ -46,7 +45,6 @@ public class MapFragment extends Fragment {
     //activity which contains this fragment
     private OnMapSelectedListener listener;
 
-
     public MapFragment(WorldCoord currCoord) {
         this.currCoord = currCoord;
     }
@@ -63,13 +61,16 @@ public class MapFragment extends Fragment {
      * to realize data communication between activity and fragment
      */
     public interface OnMapSelectedListener {
-        void onMapClick(int position);
-        void onMapLongClick(int position);
+        void onMapBuildingCreate();
+        void onMapBuildingUpgrade();
+        void onMapUnitSelected();
+        void onMapShopSelected();
+        void onMapTerritorySelected(Territory territory);
         void onMapUpdate();
     }
 
     /**
-     * This method stores parent activity as listener
+     * This method stores touched activity as listener
      * @param context
      */
     @Override
@@ -90,7 +91,7 @@ public class MapFragment extends Fragment {
         // Setup any handles to view objects here
         initAdapter();
         initView(view);
-        setOnClickListener();
+        setListener();
     }
 
     private void initAdapter(){
@@ -116,7 +117,7 @@ public class MapFragment extends Fragment {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void setOnClickListener(){
+    private void setListener(){
         getClickableGridView().setOnTouchListener(new MapOnTouchListener());
         getClickableGridView().setOnDragListener(new MapOnDragListener());
         mapZoomTool.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -209,6 +210,7 @@ public class MapFragment extends Fragment {
     }
 
     public void updateCurrCoord(WorldCoord coord){
+        currCoord.setByCoord(coord);
         territoryAdapter.updateCurrCoord(coord);
         unitAdapter.updateCurrCoord(coord);
         buildingAdapter.updateCurrCoord(coord);
@@ -223,86 +225,8 @@ public class MapFragment extends Fragment {
     }
 
     /**
-     * Check cache map by coordinates
-     * @param coord
-     * @return
+     * Listeners
      */
-    public boolean checkUnitCacheByCoord(WorldCoord coord){
-        return unitAdapter.checkCacheByCoords(coord);
-    }
-
-    public boolean checkBuildingCacheByCoord(WorldCoord coord){
-        return buildingAdapter.checkCacheByCoords(coord);
-    }
-
-
-    /**
-     * Get elements of specific position
-     * @param position
-     * @return
-     */
-    public Territory getTerritoryByPosition(int position){
-        return territoryAdapter.getItem(position);
-    }
-
-    public Building getBuildingByPosition(int position){
-        return buildingAdapter.getItem(position);
-    }
-
-    public Unit getUnitByPosition(int position){
-        return unitAdapter.getItem(position);
-    }
-
-    /**
-     * MapMoveTool related methods
-     */
-    public void setMoveStartPoint(float startX, float startY){
-        mapMoveTool.setStartX(startX);
-        mapMoveTool.setStartY(startY);
-    }
-
-    public void setMoveDestinationPoint(float destX, float destY){
-        mapMoveTool.setDestX(destX);
-        mapMoveTool.setDestY(destY);
-    }
-
-    public int getMoveOffsetX(){
-        return mapMoveTool.getOffsetX();
-    }
-
-    public int getMoveOffsetY(){
-        return mapMoveTool.getOffsetY();
-    }
-
-    public int getColumnWidth(){
-        return territoryAdapter.getColumnWidth();
-    }
-
-    public int getColumnNum(){
-        return territoryAdapter.getNumColumn();
-    }
-
-    public int getCenter(){
-        return territoryAdapter.getCenter();
-    }
-
-    public boolean ifStayedWithinClickDistance(float density){
-        return mapMoveTool.ifStayedWithinClickDistance(density);
-    }
-
-    /**
-     * This method convert the touch point location (dp) to position of GridView (int) on map
-     * @param x of touch point (dp)
-     * @param y of touch point (dp)
-     * @return position of GridView (int) on map
-     */
-    public int dpToPosition(float x, float y){
-        int columnWidth = getColumnWidth();
-        int column = (int) x / columnWidth;
-        int row = (int) y / columnWidth;
-        return row * getColumnNum() + column;
-    }
-
     private class MapOnTouchListener implements View.OnTouchListener{
 
         //Max allowed duration for a "click", in milliseconds.
@@ -325,8 +249,10 @@ public class MapFragment extends Fragment {
                     break;
                 }
                 case MotionEvent.ACTION_MOVE: {
-                    setMoveStartPoint(startX,startY);
-                    if(stayedWithinClickDistance && !ifStayedWithinClickDistance(getResources().getDisplayMetrics().density)) {
+                    mapMoveTool.setStartX(startX);
+                    mapMoveTool.setStartY(startY);
+                    if(stayedWithinClickDistance && !mapMoveTool.ifStayedWithinClickDistance(getResources().getDisplayMetrics().density)) {
+                        // Drag event has occurred
                         ClipData.Item item = new ClipData.Item("MAP");
                         String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
                         ClipData dragData = new ClipData("MAP",mimeTypes, item);
@@ -344,11 +270,11 @@ public class MapFragment extends Fragment {
                         //check press duration time to differentiate click and long click
                         if (pressDuration < MAX_CLICK_DURATION) {
                             // Click event has occurred
-                            listener.onMapClick(position);
+                            performMapOnClick(position);
                         }
                         else{
                             // Long click event has occurred
-                            listener.onMapLongClick(position);
+                            performMapOnLongClick(position);
                         }
                     }
                     break;
@@ -364,8 +290,9 @@ public class MapFragment extends Fragment {
         public boolean onDrag(View v, DragEvent event) {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    setMoveDestinationPoint((int)event.getX(),(int)event.getY());
-                    dragScreenByOffsets(getMoveOffsetX(), getMoveOffsetY());
+                    mapMoveTool.setDestX(event.getX());
+                    mapMoveTool.setDestY(event.getY());
+                    dragScreenByOffsets(mapMoveTool.getOffsetX(), mapMoveTool.getOffsetY());
                     listener.onMapUpdate();
                     break;
                 case DragEvent.ACTION_DROP:
@@ -377,5 +304,65 @@ public class MapFragment extends Fragment {
             }
             return true;
         }
+    }
+
+    /**
+     * This method performs a single click (less than MAX_CLICK_DURATION) on specific position of map
+     * @param position
+     */
+    private void performMapOnClick(int position){
+        //check if click on the center territory
+        if(position==territoryAdapter.getCenter()) {
+            //check if current territory has monsters
+            if(unitAdapter.checkCacheByCoords(currCoord)){
+                listener.onMapUnitSelected();
+                return;
+            }
+            //check if current territory has buildings
+            else if(buildingAdapter.checkCacheByCoords(currCoord)){
+                switch (buildingAdapter.getItem(position).getName()) {
+                    case "shop":
+                    case "super_shop":
+                        listener.onMapShopSelected();
+                        break;
+                }
+                return;
+            }
+        }
+        listener.onMapTerritorySelected(territoryAdapter.getItem(position));
+    }
+
+    /**
+     * This method performs a long click (more than MAX_CLICK_DURATION) on specific position of map
+     * @param position
+     */
+    private void performMapOnLongClick(int position){
+        //check if click on the center territory
+        if(position==territoryAdapter.getCenter()){
+            //check if current territory has monsters
+            if(unitAdapter.checkCacheByCoords(currCoord)){
+                listener.onMapUnitSelected();
+            }
+            //check if current territory has buildings
+            else if(buildingAdapter.checkCacheByCoords(currCoord)){
+                listener.onMapBuildingUpgrade();
+            }
+            else{
+                listener.onMapBuildingCreate();
+            }
+        }
+    }
+
+    /**
+     * This method convert the touch point location (dp) to position of GridView (int) on map
+     * @param x of touch point (dp)
+     * @param y of touch point (dp)
+     * @return position of GridView (int) on map
+     */
+    public int dpToPosition(float x, float y){
+        int columnWidth = territoryAdapter.getColumnWidth();
+        int column = (int) x / columnWidth;
+        int row = (int) y / columnWidth;
+        return row * territoryAdapter.getNumColumn() + column;
     }
 }

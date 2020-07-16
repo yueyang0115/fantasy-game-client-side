@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
             }
         }.start();
 
-        setOnClickListener();
+        setListener();
     }
 
     @Override
@@ -128,13 +128,34 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
     }
 
     @Override
-    public void onMapClick(int position) {
-        performMapOnClick(position);
+    public void onMapBuildingCreate() {
+        socketService.enqueue(new MessagesC2S(
+                new BuildingRequestMessage(currCoord,"createList")
+        ));
     }
 
     @Override
-    public void onMapLongClick(int position) {
-        performMapOnLongClick(position);
+    public void onMapBuildingUpgrade() {
+        socketService.enqueue(new MessagesC2S(
+                new BuildingRequestMessage(currCoord,"upgradeList")
+        ));
+    }
+
+    @Override
+    public void onMapUnitSelected() {
+        socketService.enqueue(new MessagesC2S(
+                new BattleRequestMessage(currCoord, "start")));
+    }
+
+    @Override
+    public void onMapShopSelected() {
+        socketService.enqueue(new MessagesC2S(
+                new ShopRequestMessage(currCoord, "list")));
+    }
+
+    @Override
+    public void onMapTerritorySelected(Territory territory) {
+        setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territory)));
     }
 
     @Override
@@ -418,7 +439,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void setOnClickListener(){
+    protected void setListener(){
         bagImg.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -427,62 +448,5 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
                 socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
             }
         });
-    }
-
-    /**
-     * This method performs a single click (less than MAX_CLICK_DURATION) on specific position of map
-     * @param position
-     */
-    private void performMapOnClick(int position){
-        //check if click on the center territory
-        if(position==map.getCenter()) {
-            //check if current territory has monsters
-            if(map.checkUnitCacheByCoord(currCoord)){
-                socketService.enqueue(new MessagesC2S(
-                        new BattleRequestMessage(currCoord, "start")));
-            }
-            //check if current territory has buildings
-            else if(map.checkBuildingCacheByCoord(currCoord)){
-                switch (map.getBuildingByPosition(position).getName()) {
-                    case "shop":
-                    case "super_shop":
-                        socketService.enqueue(new MessagesC2S(
-                                new ShopRequestMessage(currCoord, "list")));
-                        break;
-                }
-            }
-            else{
-                setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(map.getTerritoryByPosition(position))));
-            }
-        }
-        else{
-            setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(map.getTerritoryByPosition(position))));
-        }
-    }
-
-    /**
-     * This method performs a long click (more than MAX_CLICK_DURATION) on specific position of map
-     * @param position
-     */
-    private void performMapOnLongClick(int position){
-        //check if click on the center territory
-        if(position==map.getCenter()){
-            //check if current territory has monsters
-            if(map.checkUnitCacheByCoord(currCoord)){
-                socketService.enqueue(new MessagesC2S(
-                        new BattleRequestMessage(currCoord, "start")));
-            }
-            //check if current territory has buildings
-            else if(map.checkBuildingCacheByCoord(currCoord)){
-                socketService.enqueue(new MessagesC2S(
-                        new BuildingRequestMessage(currCoord,"upgradeList")
-                ));
-            }
-            else{
-                socketService.enqueue(new MessagesC2S(
-                        new BuildingRequestMessage(currCoord,"createList")
-                ));
-            }
-        }
     }
 }

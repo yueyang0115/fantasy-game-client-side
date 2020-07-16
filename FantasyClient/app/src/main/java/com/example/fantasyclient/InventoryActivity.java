@@ -56,7 +56,7 @@ public class InventoryActivity extends BaseActivity {
         initView();
         doBindService();
         getExtra();
-        setOnClickListener();
+        setListener();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class InventoryActivity extends BaseActivity {
     }
 
     @Override
-    protected void setOnClickListener(){
+    protected void setListener(){
         //Buttons OnClickListener
         btn_use.setOnClickListener(new View.OnClickListener() {
             @Override

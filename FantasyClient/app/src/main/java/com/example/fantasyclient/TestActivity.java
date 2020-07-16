@@ -36,10 +36,10 @@ public class TestActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setOnClickListener();
+        setListener();
     }
 
-    protected void setOnClickListener(){
+    protected void setListener(){
         zoomBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int zoomLevel = 0;
             @Override

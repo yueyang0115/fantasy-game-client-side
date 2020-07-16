@@ -30,7 +30,7 @@ public class SkillActivity extends BaseActivity {
         initView();
         doBindService();
         getExtra();
-        setOnClickListener();
+        setListener();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class SkillActivity extends BaseActivity {
     }
 
     @Override
-    protected void setOnClickListener(){
+    protected void setListener(){
         skillListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

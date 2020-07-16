@@ -47,7 +47,7 @@ public class ShopActivity extends BaseActivity {
         initView();
         doBindService();
         getExtra();
-        setOnClickListener();
+        setListener();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ShopActivity extends BaseActivity {
     }
 
     @Override
-    protected void setOnClickListener(){
+    protected void setListener(){
         btn_buy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
