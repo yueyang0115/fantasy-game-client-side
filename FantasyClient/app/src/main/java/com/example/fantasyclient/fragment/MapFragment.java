@@ -43,7 +43,7 @@ public class MapFragment extends Fragment {
     private GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
 
     //activity which contains this fragment
-    private OnMapSelectedListener listener;
+    private OnMapListener listener;
 
     public MapFragment(WorldCoord currCoord) {
         this.currCoord = currCoord;
@@ -60,7 +60,7 @@ public class MapFragment extends Fragment {
      * This is an interface for activity to implement
      * to realize data communication between activity and fragment
      */
-    public interface OnMapSelectedListener {
+    public interface OnMapListener {
         void onMapBuildingCreate();
         void onMapBuildingUpgrade();
         void onMapUnitSelected();
@@ -76,11 +76,11 @@ public class MapFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnMapSelectedListener) {
-            listener = (OnMapSelectedListener) context;
+        if (context instanceof OnMapListener) {
+            listener = (OnMapListener) context;
         } else {
             throw new ClassCastException(context.toString()
-                    + " must implement MapFragment.OnMapItemClickListener");
+                    + " must implement MapFragment.OnMapListener");
         }
     }
 

@@ -15,12 +15,16 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fantasyclient.adapter.BuildingInfoAdapter;
 import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
 import com.example.fantasyclient.fragment.MapFragment;
+import com.example.fantasyclient.fragment.MenuDialogFragment;
 import com.example.fantasyclient.helper.PositionHelper;
+import com.example.fantasyclient.json.AttributeRequestMessage;
+import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BuildingRequestMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
@@ -47,7 +51,7 @@ import im.delight.android.location.SimpleLocation;
  * 3. A location variable to track players' current locations
  * 4. A SocketService to keep sending to and receiving from the server
  */
-public class MainActivity extends BaseActivity implements MapFragment.OnMapSelectedListener {
+public class MainActivity extends BaseActivity implements MapFragment.OnMapListener, MenuDialogFragment.OnMenuListener {
 
     //final constant
     static final String TAG = "MainActivity";//tag for log
@@ -161,6 +165,16 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
     @Override
     public void onMapUpdate(){
         enqueuePositionRequest(true);
+    }
+
+    @Override
+    public void onSoldierSelected() {
+        socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("list")));
+    }
+
+    @Override
+    public void onInventorySelected() {
+        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
     }
 
     /**
@@ -305,6 +319,11 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
         }
     }
 
+    @Override
+    protected void checkAttributeResult(AttributeResultMessage m){
+
+    }
+
     protected void setUpBuildingDialog(final List<Building> list, final String title){
 
         runOnUiThread(new Runnable() {
@@ -445,8 +464,14 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
             @Override
             public void onClick(View v) {
                 // TODO
-                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack(null);
+
+                // Create and show the dialog.
+                DialogFragment newFragment = new MenuDialogFragment();
+                newFragment.show(ft, "dialog");
             }
         });
     }
+
 }
