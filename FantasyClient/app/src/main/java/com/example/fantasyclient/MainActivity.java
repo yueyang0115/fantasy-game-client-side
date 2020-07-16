@@ -3,16 +3,12 @@ package com.example.fantasyclient;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -52,7 +48,7 @@ import im.delight.android.location.SimpleLocation;
  * 3. A location variable to track players' current locations
  * 4. A SocketService to keep sending to and receiving from the server
  */
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MapFragment.OnMapSelectedListener {
 
     //final constant
     static final String TAG = "MainActivity";//tag for log
@@ -131,6 +127,21 @@ public class MainActivity extends BaseActivity {
         //stop location updates and background threads
         location.endUpdates();
         ifPause = true;
+    }
+
+    @Override
+    public void onMapClick(int position) {
+        performMapOnClick(position);
+    }
+
+    @Override
+    public void onMapLongClick(int position) {
+        performMapOnLongClick(position);
+    }
+
+    @Override
+    public void onMapDrag(){
+        enqueuePositionRequest(true);
     }
 
     /**
@@ -415,28 +426,6 @@ public class MainActivity extends BaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setOnClickListener(){
-        map.getClickableGridView().setOnTouchListener(new MapOnTouchListener());
-        map.getClickableGridView().setOnDragListener(new View.OnDragListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_LOCATION:
-                        map.setMoveDestinationPoint((int)event.getX(),(int)event.getY());
-                        textLocation.setText("X:" + (int)event.getX() + ",Y:" + (int)event.getY());
-                        map.dragScreenByOffsets(map.getMoveOffsetX(), map.getMoveOffsetY());
-                        enqueuePositionRequest(true);
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        // Dropped, reassign View to ViewGroup
-                        map.resetScreen();
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
         bagImg.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -514,62 +503,6 @@ public class MainActivity extends BaseActivity {
                         new BuildingRequestMessage(currCoord,"createList")
                 ));
             }
-        }
-    }
-
-    private class MapOnTouchListener implements View.OnTouchListener{
-
-        //Max allowed duration for a "click", in milliseconds.
-        private static final int MAX_CLICK_DURATION = 500;
-        private long pressStartTime;
-        private float startX;
-        private float startY;
-        private boolean stayedWithinClickDistance;
-
-        @SuppressLint({"SetTextI18n", "ClickableViewAccessibility"})
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN: {
-                    //cache start point and time of touch
-                    pressStartTime = System.currentTimeMillis();
-                    startX = event.getX();
-                    startY = event.getY();
-                    stayedWithinClickDistance = true;
-                    break;
-                }
-                case MotionEvent.ACTION_MOVE: {
-                    map.setMoveStartPoint(startX,startY);
-                    if(stayedWithinClickDistance && !map.ifStayedWithinClickDistance(getResources().getDisplayMetrics().density)) {
-                        ClipData.Item item = new ClipData.Item("MAP");
-                        String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
-                        ClipData dragData = new ClipData("MAP",mimeTypes, item);
-                        event.offsetLocation(0,-66);//error compensation for difference between event of OnTouch and OnDrag
-                        textVLocation.setText("X:" + startX + ",Y:" + startY);
-                        stayedWithinClickDistance = false;
-                        v.startDrag(dragData,new View.DragShadowBuilder(),null,0);
-                    }
-                    break;
-                }
-                case MotionEvent.ACTION_UP: {
-                    long pressDuration = System.currentTimeMillis() - pressStartTime;
-                    //check drag distance to differentiate drag and click
-                    if(stayedWithinClickDistance) {
-                        int position =  map.dpToPosition(startX, startY);
-                        //check press duration time to differentiate click and long click
-                        if (pressDuration < MAX_CLICK_DURATION) {
-                            // Click event has occurred
-                            performMapOnClick(position);
-                        }
-                        else{
-                            // Long click event has occurred
-                            performMapOnLongClick(position);
-                        }
-                    }
-                    break;
-                }
-            }
-            return false;
         }
     }
 }

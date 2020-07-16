@@ -1,8 +1,13 @@
 package com.example.fantasyclient.fragment;
 
+import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -36,6 +41,10 @@ public class MapFragment extends Fragment {
     private MapBuildingAdapter buildingAdapter;//Adapters for map
     private GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
 
+    //activity which contains this fragment
+    private OnMapSelectedListener listener;
+
+
     public MapFragment(WorldCoord currCoord) {
         this.currCoord = currCoord;
     }
@@ -47,6 +56,31 @@ public class MapFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
+    /**
+     * This is an interface for activity to implement
+     * to realize data communication between activity and fragment
+     */
+    public interface OnMapSelectedListener {
+        void onMapClick(int position);
+        void onMapLongClick(int position);
+        void onMapDrag();
+    }
+
+    /**
+     * This method stores parent activity as listener
+     * @param context
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnMapSelectedListener) {
+            listener = (OnMapSelectedListener) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement MapFragment.OnMapItemClickListener");
+        }
+    }
+
     // This event is triggered soon after onCreateView().
     // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
     @Override
@@ -54,6 +88,7 @@ public class MapFragment extends Fragment {
         // Setup any handles to view objects here
         initAdapter();
         initView(view);
+        setOnClickListener();
     }
 
     private void initAdapter(){
@@ -75,6 +110,12 @@ public class MapFragment extends Fragment {
         terrainGridView.setAdapter(territoryAdapter);
         unitGridView.setAdapter(unitAdapter);
         buildingGridView.setAdapter(buildingAdapter);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setOnClickListener(){
+        getClickableGridView().setOnTouchListener(new MapOnTouchListener());
+        getClickableGridView().setOnDragListener(new MapOnDragListener());
     }
 
     public GridView getClickableGridView(){
@@ -244,5 +285,81 @@ public class MapFragment extends Fragment {
         int column = (int) x / columnWidth;
         int row = (int) y / columnWidth;
         return row * getColumnNum() + column;
+    }
+
+    private class MapOnTouchListener implements View.OnTouchListener{
+
+        //Max allowed duration for a "click", in milliseconds.
+        private static final int MAX_CLICK_DURATION = 500;
+        private long pressStartTime;
+        private float startX;
+        private float startY;
+        private boolean stayedWithinClickDistance;
+
+        @SuppressLint({"SetTextI18n", "ClickableViewAccessibility"})
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    //cache start point and time of touch
+                    pressStartTime = System.currentTimeMillis();
+                    startX = event.getX();
+                    startY = event.getY();
+                    stayedWithinClickDistance = true;
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    setMoveStartPoint(startX,startY);
+                    if(stayedWithinClickDistance && !ifStayedWithinClickDistance(getResources().getDisplayMetrics().density)) {
+                        ClipData.Item item = new ClipData.Item("MAP");
+                        String[] mimeTypes = {ClipDescription.MIMETYPE_TEXT_PLAIN};
+                        ClipData dragData = new ClipData("MAP",mimeTypes, item);
+                        event.offsetLocation(0,-66);//error compensation for difference between event of OnTouch and OnDrag
+                        stayedWithinClickDistance = false;
+                        v.startDrag(dragData,new View.DragShadowBuilder(),null,0);
+                    }
+                    break;
+                }
+                case MotionEvent.ACTION_UP: {
+                    long pressDuration = System.currentTimeMillis() - pressStartTime;
+                    //check drag distance to differentiate drag and click
+                    if(stayedWithinClickDistance) {
+                        int position =  dpToPosition(startX, startY);
+                        //check press duration time to differentiate click and long click
+                        if (pressDuration < MAX_CLICK_DURATION) {
+                            // Click event has occurred
+                            listener.onMapClick(position);
+                        }
+                        else{
+                            // Long click event has occurred
+                            listener.onMapLongClick(position);
+                        }
+                    }
+                    break;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class MapOnDragListener implements View.OnDragListener{
+
+        @Override
+        public boolean onDrag(View v, DragEvent event) {
+            switch (event.getAction()) {
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    setMoveDestinationPoint((int)event.getX(),(int)event.getY());
+                    dragScreenByOffsets(getMoveOffsetX(), getMoveOffsetY());
+                    listener.onMapDrag();
+                    break;
+                case DragEvent.ACTION_DROP:
+                    // Dropped, reassign View to ViewGroup
+                    resetScreen();
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
     }
 }
