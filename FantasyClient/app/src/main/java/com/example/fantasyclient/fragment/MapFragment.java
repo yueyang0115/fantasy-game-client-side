@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.SeekBar;
 
 import androidx.fragment.app.Fragment;
 
@@ -33,6 +34,7 @@ public class MapFragment extends Fragment {
     private static final int UNIT_INIT = R.drawable.transparent;
 
     private WorldCoord currCoord;
+    private SeekBar mapZoomTool;
     private MapMoveTool mapMoveTool = new MapMoveTool();
 
     //fields to show map
@@ -63,7 +65,7 @@ public class MapFragment extends Fragment {
     public interface OnMapSelectedListener {
         void onMapClick(int position);
         void onMapLongClick(int position);
-        void onMapDrag();
+        void onMapUpdate();
     }
 
     /**
@@ -103,6 +105,7 @@ public class MapFragment extends Fragment {
     }
 
     private void initView(View v){
+        mapZoomTool = (SeekBar) v.findViewById(R.id.zoomBar);
         terrainGridView = (GridView) v.findViewById(R.id.terrainGridView);
         unitGridView = (GridView) v.findViewById(R.id.unitGridView);
         buildingGridView = (GridView) v.findViewById(R.id.buildingGridView);
@@ -116,6 +119,19 @@ public class MapFragment extends Fragment {
     private void setOnClickListener(){
         getClickableGridView().setOnTouchListener(new MapOnTouchListener());
         getClickableGridView().setOnDragListener(new MapOnDragListener());
+        mapZoomTool.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                zoom(progress);
+                listener.onMapUpdate();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
     }
 
     public GridView getClickableGridView(){
@@ -350,7 +366,7 @@ public class MapFragment extends Fragment {
                 case DragEvent.ACTION_DRAG_LOCATION:
                     setMoveDestinationPoint((int)event.getX(),(int)event.getY());
                     dragScreenByOffsets(getMoveOffsetX(), getMoveOffsetY());
-                    listener.onMapDrag();
+                    listener.onMapUpdate();
                     break;
                 case DragEvent.ACTION_DROP:
                     // Dropped, reassign View to ViewGroup

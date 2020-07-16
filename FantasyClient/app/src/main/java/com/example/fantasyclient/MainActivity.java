@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -59,7 +58,6 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
 
     //fields to show map
     MapFragment map;
-    SeekBar zoomBar;
 
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
@@ -140,7 +138,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
     }
 
     @Override
-    public void onMapDrag(){
+    public void onMapUpdate(){
         enqueuePositionRequest(true);
     }
 
@@ -210,17 +208,13 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    // permission was granted, yay! Do the contacts-related task you need to do.
                     location.beginUpdates();
                 } else {
-                    // permission denied, disable the
-                    // functionality that depends on this permission.
+                    // permission denied, disable the functionality that depends on this permission.
                 }
-                return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request.
+            // other 'case' lines to check for other permissions this app might request.
         }
     }
 
@@ -420,7 +414,6 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
         //btnBag = (Button) findViewById(R.id.btn_bag);
         bagImg = (ImageView) findViewById(R.id.bagImg);
         settingsImg = (ImageView) findViewById(R.id.settingsImg);
-        zoomBar = (SeekBar) findViewById(R.id.zoomBar);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -433,19 +426,6 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapSelec
                 // TODO
                 socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
             }
-        });
-        zoomBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                map.zoom(progress);
-                enqueuePositionRequest(true);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) { }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) { }
         });
     }
 
