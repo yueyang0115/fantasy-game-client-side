@@ -7,11 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import com.example.fantasyclient.R;
 
-public class MenuDialogFragment extends DialogFragment {
+public class MenuButtonFragment extends Fragment {
 
     //activity which contains this fragment
     private OnMenuListener listener;
@@ -25,13 +25,13 @@ public class MenuDialogFragment extends DialogFragment {
         inventoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onInventorySelected();
+                listener.onMenuInventory();
             }
         });
         soldierButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onSoldierSelected();
+                listener.onMenuSoldier();
             }
         });
         return v;
@@ -42,8 +42,8 @@ public class MenuDialogFragment extends DialogFragment {
      * to realize data communication between activity and fragment
      */
     public interface OnMenuListener {
-        void onSoldierSelected();
-        void onInventorySelected();
+        void onMenuSoldier();
+        void onMenuInventory();
     }
 
     /**

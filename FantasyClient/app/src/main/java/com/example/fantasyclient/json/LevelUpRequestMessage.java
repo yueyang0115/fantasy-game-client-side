@@ -9,6 +9,11 @@ public class LevelUpRequestMessage {
 
     public LevelUpRequestMessage(){}
 
+    public LevelUpRequestMessage(String action, int unitID) {
+        this.action = action;
+        this.unitID = unitID;
+    }
+
     public LevelUpRequestMessage(String action, int unitID, Skill skill) {
         this.action = action;
         this.unitID = unitID;

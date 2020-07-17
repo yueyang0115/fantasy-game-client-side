@@ -15,13 +15,12 @@ import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fantasyclient.adapter.BuildingInfoAdapter;
 import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
 import com.example.fantasyclient.fragment.MapFragment;
-import com.example.fantasyclient.fragment.MenuDialogFragment;
+import com.example.fantasyclient.fragment.MenuButtonFragment;
 import com.example.fantasyclient.helper.PositionHelper;
 import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.AttributeResultMessage;
@@ -51,7 +50,7 @@ import im.delight.android.location.SimpleLocation;
  * 3. A location variable to track players' current locations
  * 4. A SocketService to keep sending to and receiving from the server
  */
-public class MainActivity extends BaseActivity implements MapFragment.OnMapListener, MenuDialogFragment.OnMenuListener {
+public class MainActivity extends BaseActivity implements MapFragment.OnMapListener, MenuButtonFragment.OnMenuListener {
 
     //final constant
     static final String TAG = "MainActivity";//tag for log
@@ -168,12 +167,12 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
     }
 
     @Override
-    public void onSoldierSelected() {
+    public void onMenuSoldier() {
         socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("list")));
     }
 
     @Override
-    public void onInventorySelected() {
+    public void onMenuInventory() {
         socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
     }
 
@@ -456,20 +455,12 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
         settingsImg = (ImageView) findViewById(R.id.settingsImg);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setListener(){
         bagImg.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                // TODO
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.addToBackStack(null);
-
-                // Create and show the dialog.
-                DialogFragment newFragment = new MenuDialogFragment();
-                newFragment.show(ft, "dialog");
+                launchMenu();
             }
         });
     }

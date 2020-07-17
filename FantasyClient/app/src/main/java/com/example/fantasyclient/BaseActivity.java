@@ -82,6 +82,11 @@ public abstract class BaseActivity extends FragmentActivity {
         startActivity(intent);
     }
 
+    protected void launchMenu(){
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
+    }
+
     protected void launchBattle(){
         Intent intent = new Intent(this,BattleActivity.class);
         intent.putExtra("CurrentMessage", (Serializable) currMessage);
