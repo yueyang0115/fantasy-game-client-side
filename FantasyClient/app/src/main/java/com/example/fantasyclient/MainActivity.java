@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,14 +19,11 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.fantasyclient.adapter.BuildingInfoAdapter;
 import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
 import com.example.fantasyclient.fragment.MapFragment;
-import com.example.fantasyclient.fragment.MenuButtonFragment;
 import com.example.fantasyclient.helper.PositionHelper;
-import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BuildingRequestMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
-import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
@@ -50,7 +46,7 @@ import im.delight.android.location.SimpleLocation;
  * 3. A location variable to track players' current locations
  * 4. A SocketService to keep sending to and receiving from the server
  */
-public class MainActivity extends BaseActivity implements MapFragment.OnMapListener, MenuButtonFragment.OnMenuListener {
+public class MainActivity extends BaseActivity implements MapFragment.OnMapListener {
 
     //final constant
     static final String TAG = "MainActivity";//tag for log
@@ -164,16 +160,6 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
     @Override
     public void onMapUpdate(){
         enqueuePositionRequest(true);
-    }
-
-    @Override
-    public void onMenuSoldier() {
-        socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("list")));
-    }
-
-    @Override
-    public void onMenuInventory() {
-        socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
     }
 
     /**
@@ -457,12 +443,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
 
     @Override
     protected void setListener(){
-        bagImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchMenu();
-            }
-        });
+        bagImg.setOnClickListener(v -> launchMenu());
     }
 
 }

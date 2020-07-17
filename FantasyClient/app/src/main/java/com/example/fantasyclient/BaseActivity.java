@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.fantasyclient.adapter.HighlightAdapter;
+import com.example.fantasyclient.fragment.ActivityWithService;
+import com.example.fantasyclient.fragment.ServiceFunction;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
@@ -34,7 +36,7 @@ import java.util.List;
  * 2.Redirect to other activities
  */
 @SuppressLint("Registered")
-public abstract class BaseActivity extends FragmentActivity {
+public abstract class BaseActivity extends FragmentActivity implements ActivityWithService {
 
     SocketService socketService;
     boolean mIsBound;
@@ -51,6 +53,12 @@ public abstract class BaseActivity extends FragmentActivity {
     protected MessagesS2C currMessage = new MessagesS2C();
     //Current coordinate
     protected WorldCoord currCoord = new WorldCoord(0,0);
+
+    @Override
+    public void doServiceFunction(ServiceFunction sf){
+        sf.doWithService(socketService);
+        handleRecvMessage(socketService.dequeue());
+    }
 
     /**
      * find and init required common views, which may be overrode

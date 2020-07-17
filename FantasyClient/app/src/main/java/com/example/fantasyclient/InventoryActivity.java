@@ -3,8 +3,6 @@ package com.example.fantasyclient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -92,69 +90,54 @@ public class InventoryActivity extends BaseActivity {
     @Override
     protected void setListener(){
         //Buttons OnClickListener
-        btn_use.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(inventoryItemList.isEmpty()){
-                    toastAlert("Nothing to use");
+        btn_use.setOnClickListener(v -> {
+            if(inventoryItemList.isEmpty()){
+                toastAlert("Nothing to use");
+            }
+            else if(soldierList.isEmpty()){
+                toastAlert("No soldier to use on");
+            }
+            else {
+                if(currInventory == null) {
+                    currInventory = inventoryItemList.get(0);
                 }
-                else if(soldierList.isEmpty()){
-                    toastAlert("No soldier to use on");
+                if(currSoldier == null){
+                    currSoldier = (Soldier) soldierList.get(0);
                 }
-                else {
-                    if(currInventory == null) {
-                        currInventory = inventoryItemList.get(0);
-                    }
-                    if(currSoldier == null){
-                        currSoldier = (Soldier) soldierList.get(0);
-                    }
-                    socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currInventory.getId(), currSoldier.getId())));
-                    handleRecvMessage(socketService.dequeue());
-                }
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", currInventory.getId(), currSoldier.getId())));
+                handleRecvMessage(socketService.dequeue());
             }
         });
-        btn_drop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(inventoryItemList.isEmpty()){
-                    toastAlert("Nothing to use");
+        btn_drop.setOnClickListener(v -> {
+            if(inventoryItemList.isEmpty()){
+                toastAlert("Nothing to use");
+            }
+            else {
+                if(currInventory == null) {
+                    currInventory = inventoryItemList.get(0);
                 }
-                else {
-                    if(currInventory == null) {
-                        currInventory = inventoryItemList.get(0);
-                    }
-                    /*socketService.clearQueue();
-                    socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("drop", currInventory.getId(), currSoldier.getId())));
-                    handleRecvMessage(socketService.dequeue());*/
-                }
+                /*socketService.clearQueue();
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("drop", currInventory.getId(), currSoldier.getId())));
+                handleRecvMessage(socketService.dequeue());*/
             }
         });
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //clear queue before change activities
-                socketService.clearQueue();
-                doUnbindService();
-                Intent intent = new Intent();
-                setResult(RESULT_CANCELED,intent);
-                finish();
-            }
+        btn_cancel.setOnClickListener(v -> {
+            //clear queue before change activities
+            socketService.clearQueue();
+            doUnbindService();
+            Intent intent = new Intent();
+            setResult(RESULT_CANCELED,intent);
+            finish();
         });
 
         //ListViews OnClickListener
-        soldierListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currSoldier = (Soldier) parent.getItemAtPosition(position);
-                selectSoldier(position);
-            }
+        soldierListView.setOnItemClickListener((parent, view, position, id) -> {
+            currSoldier = (Soldier) parent.getItemAtPosition(position);
+            selectSoldier(position);
         });
-        inventoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currInventory = (Inventory) parent.getItemAtPosition(position);
-                selectInventory(position);
-            }
+        inventoryListView.setOnItemClickListener((parent, view, position, id) -> {
+            currInventory = (Inventory) parent.getItemAtPosition(position);
+            selectInventory(position);
         });
     }
 
@@ -197,20 +180,10 @@ public class InventoryActivity extends BaseActivity {
      * These methods update adapters on UI thread
      */
     private void updateSoldierAdapter(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateAdapter(soldierAdapter, soldierList);
-            }
-        });
+        runOnUiThread(() -> updateAdapter(soldierAdapter, soldierList));
     }
 
     private void updateInventoryAdapter(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateAdapter(inventoryAdapter,inventoryItemList);
-            }
-        });
+        runOnUiThread(() -> updateAdapter(inventoryAdapter,inventoryItemList));
     }
 }

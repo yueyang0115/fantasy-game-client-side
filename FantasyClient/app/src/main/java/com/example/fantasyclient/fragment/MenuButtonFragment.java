@@ -1,63 +1,44 @@
 package com.example.fantasyclient.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import androidx.fragment.app.Fragment;
-
 import com.example.fantasyclient.R;
+import com.example.fantasyclient.SocketService;
+import com.example.fantasyclient.json.AttributeRequestMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.MessagesC2S;
 
-public class MenuButtonFragment extends Fragment {
+public class MenuButtonFragment extends BaseFragment {
 
-    //activity which contains this fragment
-    private OnMenuListener listener;
+    Button inventoryButton, soldierButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_menu, container, false);
-        Button inventoryButton = (Button) v.findViewById(R.id.inventoryButton);
-        Button soldierButton = (Button) v.findViewById(R.id.soldierButton);
-        inventoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onMenuInventory();
-            }
-        });
-        soldierButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onMenuSoldier();
-            }
-        });
-        return v;
+        return inflater.inflate(R.layout.fragment_menu, container, false);
     }
 
-    /**
-     * This is an interface for activity to implement
-     * to realize data communication between activity and fragment
-     */
-    public interface OnMenuListener {
-        void onMenuSoldier();
-        void onMenuInventory();
-    }
 
-    /**
-     * This method stores touched activity as listener
-     * @param context
-     */
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnMenuListener) {
-            listener = (OnMenuListener) context;
-        } else {
-            throw new ClassCastException(context.toString()
-                    + " must implement MenuDialogFragment.OnMenuListener");
-        }
+    protected void initAdapter() { }
+
+    @Override
+    protected void initView(View v) {
+        inventoryButton = (Button) v.findViewById(R.id.inventoryButton);
+        soldierButton = (Button) v.findViewById(R.id.soldierButton);
+    }
+
+    @Override
+    protected void setListener() {
+        inventoryButton.setOnClickListener(v -> listener.doServiceFunction((SocketService socketService)->{
+            socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
+        }));
+        soldierButton.setOnClickListener(v -> listener.doServiceFunction((SocketService socketService)->{
+            socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("list")));
+        }));
     }
 }

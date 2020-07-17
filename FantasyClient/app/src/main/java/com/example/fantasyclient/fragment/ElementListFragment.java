@@ -6,14 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import androidx.fragment.app.Fragment;
-
 import com.example.fantasyclient.R;
 import com.example.fantasyclient.adapter.ElementAdapter;
 
 import java.util.List;
 
-public abstract class ElementListFragment<T> extends Fragment {
+public abstract class ElementListFragment<T> extends BaseFragment {
 
     protected List<T> list;
     protected ListView listView;
@@ -28,16 +26,6 @@ public abstract class ElementListFragment<T> extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_element_list, container, false);
-    }
-
-    // This event is triggered soon after onCreateView().
-    // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        // Setup any handles to view objects here
-        initAdapter();
-        initView(view);
-        setListener();
     }
 
     protected abstract void initAdapter();
