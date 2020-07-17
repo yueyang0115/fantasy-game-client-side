@@ -14,21 +14,20 @@ public class Unit implements Serializable {
     private int hp;
     private int atk;
     private int speed;
-    private int level;
+    private Experience experience = new Experience();
     private List<UnitEquipment> equipments = new ArrayList<>();
-    private int skillPoint = 1;
     private Set<Skill> skills = new HashSet<>();
 
     public Unit(){
     }
 
-    public Unit(String type, String name, int hp, int atk, int speed, int level, Set<Skill> skills){
+    public Unit(String type, String name, int hp, int atk, int speed, Experience experience, Set<Skill> skills){
         this.type = type;
         this.name = name;
         this.hp = hp;
         this.atk = atk;
         this.speed = speed;
-        this.level = level;
+        this.experience = new Experience(experience.getExperience(),experience.getLevel(),experience.getSkillPoint());
         this.skills = skills;
     }
 
@@ -43,8 +42,8 @@ public class Unit implements Serializable {
         this.hp = unit.getHp();
         this.atk = unit.getAtk();
         this.speed = unit.getSpeed();
-        this.level = unit.getLevel();
-        this.skills = skills;
+        this.experience = new Experience(unit.getExperience().getExperience(),unit.getExperience().getLevel(),unit.getExperience().getSkillPoint());
+        this.skills = unit.getSkills();
     }
 
     public int getId() {
@@ -95,9 +94,9 @@ public class Unit implements Serializable {
         this.speed = speed;
     }
 
-    public int getLevel() { return level; }
+    public Experience getExperience() { return experience; }
 
-    public void setLevel(int level) { this.level = level; }
+    public void setExperience(Experience experience) { this.experience = experience; }
 
     public List<UnitEquipment> getEquipments() {
         return equipments;
@@ -107,13 +106,6 @@ public class Unit implements Serializable {
         this.equipments = equipments;
     }
 
-    public int getSkillPoint() {
-        return skillPoint;
-    }
-
-    public void setSkillPoint(int skillPoint) {
-        this.skillPoint = skillPoint;
-    }
 
     public Set<Skill> getSkills() { return skills; }
 
