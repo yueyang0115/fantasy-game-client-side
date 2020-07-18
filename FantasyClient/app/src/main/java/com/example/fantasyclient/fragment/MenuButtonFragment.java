@@ -22,7 +22,6 @@ public class MenuButtonFragment extends BaseFragment {
         return inflater.inflate(R.layout.fragment_menu, container, false);
     }
 
-
     @Override
     protected void initAdapter() { }
 

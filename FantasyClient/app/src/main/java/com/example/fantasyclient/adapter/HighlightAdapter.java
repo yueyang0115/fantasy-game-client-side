@@ -52,7 +52,7 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
         String resourceName = ImageName;
         switch(ImageName){
             case "miniFireBall":
-                resourceName = "fireball1";
+                resourceName = "fireball_mini";
         }
         Resources resources = getContext().getResources();
         try{

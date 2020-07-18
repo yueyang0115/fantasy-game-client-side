@@ -48,6 +48,7 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
     static final int BATTLE = 2;//request code for battle
     static final int SHOP = 3;//request code for Shop
     static final int INVENTORY = 4;//request code for inventory
+    static final int SOLDIER_DETAIL = 5;//request code for soldier detail
 
     //Cached messages
     protected MessagesS2C currMessage = new MessagesS2C();
@@ -113,6 +114,12 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
         Intent intent = new Intent(this, InventoryActivity.class);
         intent.putExtra("CurrentMessage", currMessage);
         startActivityForResult(intent, INVENTORY);
+    }
+
+    protected void launchSoldierDetail(){
+        Intent intent = new Intent(this, SoldierDetailActivity.class);
+        intent.putExtra("CurrentMessage", currMessage);
+        startActivityForResult(intent, SOLDIER_DETAIL);
     }
 
     /**
@@ -227,13 +234,18 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
             case "inventory":
                 launchInventory();
                 break;
+            case "levelup":
+                launchSoldierDetail();
+                break;
             default:
         }
     }
 
     protected void checkBuildingResult(BuildingResultMessage m){}
 
-    protected void checkLevelUpResult(LevelUpResultMessage m){}
+    protected void checkLevelUpResult(LevelUpResultMessage m){
+        currMessage.setLevelUpResultMessage(m);
+    }
 
     /**
      * This method updates target adapter to show updated data
