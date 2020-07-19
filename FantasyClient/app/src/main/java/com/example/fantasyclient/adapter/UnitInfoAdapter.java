@@ -31,6 +31,7 @@ public class UnitInfoAdapter extends UnitAdapter {
         viewHolder.unitHp.setText("HP: "+ unit.getHp());
         viewHolder.unitAtk.setText("ATK: "+ unit.getAtk());
         viewHolder.unitSpeed.setText("SPD: "+ unit.getSpeed());
+        viewHolder.unitExpBar.setProgress(unit.getExperience().getExperience());
         // add frame to selected image
         setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(unit.getName())});
     }

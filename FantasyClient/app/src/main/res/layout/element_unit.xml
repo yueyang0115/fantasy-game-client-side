@@ -16,20 +16,20 @@
         android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_weight="1">
-        <!--<ProgressBar
-            android:id="@+id/pb_loading"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:indeterminate="false"
-            android:progress="100"
-            android:progressDrawable="@drawable/soldier" />-->
         <TextView
             android:id="@+id/unitLevel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ID"
+            android:text="Level"
             android:layout_weight="1"
             tools:ignore="NestedWeights" />
+        <ProgressBar
+            android:id="@+id/unitExpBar"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:indeterminate="false"
+            android:max="10"
+            android:progressDrawable="@drawable/ocean02" />
         <TextView
             android:id="@+id/unitID"
             android:layout_width="wrap_content"

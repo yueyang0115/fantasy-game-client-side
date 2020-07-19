@@ -231,12 +231,12 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
             case "shop":
                 launchShop();
                 break;
-            case "inventory":
+            /*case "inventory":
                 launchInventory();
-                break;
-            case "levelup":
+                break;*/
+            /*case "levelup":
                 launchSoldierDetail();
-                break;
+                break;*/
             default:
         }
     }

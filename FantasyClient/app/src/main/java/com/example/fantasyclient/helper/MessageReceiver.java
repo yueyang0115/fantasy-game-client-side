@@ -26,7 +26,6 @@ public class MessageReceiver<T> extends MessageQueue<T>{
                 queue.add((T) c.recvMsg());
             } catch (Exception e) {
                 e.printStackTrace();
-                break;
             }
         }
     }

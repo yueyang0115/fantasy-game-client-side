@@ -3,6 +3,7 @@ package com.example.fantasyclient.adapter;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.fantasyclient.R;
@@ -37,6 +38,7 @@ public abstract class UnitAdapter extends ElementAdapter<Unit> {
         viewHolder.unitHp = (TextView) convertView.findViewById(R.id.unitHp);
         viewHolder.unitAtk = (TextView) convertView.findViewById(R.id.unitAtk);
         viewHolder.unitSpeed = (TextView) convertView.findViewById(R.id.unitSpeed);
+        viewHolder.unitExpBar = (ProgressBar) convertView.findViewById(R.id.unitExpBar);
         viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImg);
     }
 }

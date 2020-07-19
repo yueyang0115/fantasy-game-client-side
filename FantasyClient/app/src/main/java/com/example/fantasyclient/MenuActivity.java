@@ -3,7 +3,6 @@ package com.example.fantasyclient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.fragment.app.FragmentTransaction;
@@ -15,7 +14,6 @@ import com.example.fantasyclient.fragment.SoldierListFragment;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
-import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.model.Unit;
 
 import java.util.ArrayList;
@@ -46,25 +44,23 @@ public class MenuActivity extends BaseActivity {
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.detailLayout, new SoldierListFragment(new ArrayList<Unit>(m.getSoldiers())));
+        ft.replace(R.id.elementListLayout, new SoldierListFragment(new ArrayList<Unit>(m.getSoldiers())));
         ft.commit();
     }
 
     @Override
     protected void checkInventoryResult(InventoryResultMessage m){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.detailLayout, new InventoryListFragment(m.getItems()));
+        ft.replace(R.id.elementListLayout, new InventoryListFragment(m.getItems()));
         ft.commit();
     }
 
     @Override
     protected void checkLevelUpResult(LevelUpResultMessage m){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.detailLayout, new SkillListFragment(m.getAvailableSkills()));
+        ft.replace(R.id.elementDetailLayout, new SkillListFragment(m.getAvailableSkills(),m.getUnit()));
+        ft.replace(R.id.elementExtraLayout, new SkillListFragment(m.getUnit().getSkills(),m.getUnit()));
         ft.commit();
-    }
-
-    protected void checkRedirectResult(RedirectMessage m){
     }
 
     protected void initFragment(){
@@ -81,17 +77,13 @@ public class MenuActivity extends BaseActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void setListener(){
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                // TODO
-                socketService.clearQueue();
-                doUnbindService();
-                Intent intent = new Intent();
-                setResult(RESULT_CANCELED,intent);
-                finish();
-            }
+        btnBack.setOnClickListener(v -> {
+            // TODO
+            socketService.clearQueue();
+            doUnbindService();
+            Intent intent = new Intent();
+            setResult(RESULT_CANCELED,intent);
+            finish();
         });
     }
 

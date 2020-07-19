@@ -3,7 +3,6 @@ package com.example.fantasyclient;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -311,51 +310,42 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
 
     protected void setUpBuildingDialog(final List<Building> list, final String title){
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // setup the alert builder
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Please choose a building to " + title);
-                // add a radio button list
-                final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
-                int checkedItem = 0; // default is the first choice
-                final Building[] currBuilding = new Building[1];
-                //set initial selected building to be the first
-                if(!list.isEmpty()) {
-                    currBuilding[0] = adapter.getItem(checkedItem);
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Please choose a building to " + title);
+        // add a radio button list
+        final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
+        int checkedItem = 0; // default is the first choice
+        final Building[] currBuilding = new Building[1];
+        //set initial selected building to be the first
+        if(!list.isEmpty()) {
+            currBuilding[0] = adapter.getItem(checkedItem);
+        }
+        builder.setSingleChoiceItems(adapter, checkedItem, (dialog, which) -> {
+            // user checked an item
+            currBuilding[0] = adapter.getItem(which);
+            //highlight selected item
+            adapter.setHighlightedPosition(which);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                    //updateAdapter(adapter, list);
                 }
-                builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // user checked an item
-                        currBuilding[0] = adapter.getItem(which);
-                        //highlight selected item
-                        adapter.setHighlightedPosition(which);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                                //updateAdapter(adapter, list);
-                            }
-                        });
-                    }
-                });
-                // add OK and Cancel buttons
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // user clicked OK
-                        if(currBuilding[0]!=null) {
-                            socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, currBuilding[0].getName())));
-                        }
-                    }
-                });
-                builder.setNegativeButton("Cancel", null);
-                // create and show the alert dialog
-                AlertDialog dialog = builder.create();
-                dialog.show();
+            });
+        });
+        // add OK and Cancel buttons
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            // user clicked OK
+            if(currBuilding[0]!=null) {
+                socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, currBuilding[0].getName())));
             }
+        });
+        builder.setNegativeButton("Cancel", null);
+        // create and show the alert dialog
+        runOnUiThread(()->{
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
     }
 

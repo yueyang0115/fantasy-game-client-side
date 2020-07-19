@@ -19,7 +19,6 @@ public class MessageSender<T> extends MessageQueue<T>{
                 c.sendMsg(queue.take());//queue.take() will
             } catch (InterruptedException e) {
                 Log.e(TAG,"SendLoop fails");
-                break;
             }
         }
     }
