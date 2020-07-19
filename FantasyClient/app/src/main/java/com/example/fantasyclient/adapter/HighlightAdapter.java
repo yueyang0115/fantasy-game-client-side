@@ -50,11 +50,13 @@ public abstract class HighlightAdapter<T> extends ArrayAdapter<T> {
      */
     Drawable getDrawableByName(String ImageName){
         String resourceName = ImageName;
-        switch(ImageName){
-            case "miniFireBall":
-                resourceName = "fireball_mini";
-        }
         Resources resources = getContext().getResources();
+        try{
+            int identifier = resources.getIdentifier(ImageName,"string", getContext().getPackageName());
+            resourceName = resources.getString(identifier);
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Error: Resources names not found");
+        }
         try{
             return resources.getDrawable(resources.getIdentifier(resourceName, "drawable", getContext().getPackageName()));
         } catch (Resources.NotFoundException e) {
