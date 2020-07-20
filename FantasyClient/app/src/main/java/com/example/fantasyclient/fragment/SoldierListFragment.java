@@ -21,12 +21,22 @@ public class SoldierListFragment extends ElementListFragment<Unit> {
 
     @Override
     protected void setListener(){
-
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Unit unit = (Unit) parent.getItemAtPosition(position);
-            FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.elementDetailLayout, new SoldierDetailFragment(unit));
-            ft.commit();
+            loadSoldierDetail(unit);
         });
+    }
+
+    public void updateSoldier(Unit unit){
+        if(list.contains(unit)){
+            list.get(list.indexOf(unit)).setSkills(unit.getSkills());
+        }
+        loadSoldierDetail(unit);
+    }
+
+    protected void loadSoldierDetail(Unit unit){
+        FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.elementDetailLayout, new SoldierDetailFragment(unit));
+        ft.commit();
     }
 }

@@ -12,7 +12,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.fantasyclient.adapter.SkillInfoAdapter;
 import com.example.fantasyclient.fragment.InventoryListFragment;
 import com.example.fantasyclient.fragment.MenuButtonFragment;
-import com.example.fantasyclient.fragment.SoldierDetailFragment;
 import com.example.fantasyclient.fragment.SoldierListFragment;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
@@ -31,6 +30,7 @@ public class MenuActivity extends BaseActivity {
     static final String TAG = "MenuActivity";//tag for log
     Button btnBack;
     FragmentTransaction ft;
+    SoldierListFragment soldierListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,8 @@ public class MenuActivity extends BaseActivity {
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.elementListLayout, new SoldierListFragment(new ArrayList<Unit>(m.getSoldiers())));
+        soldierListFragment = new SoldierListFragment(new ArrayList<>(m.getSoldiers()));
+        ft.replace(R.id.elementListLayout, soldierListFragment);
         removeDetailFragment(ft);
         ft.commit();
     }
@@ -77,10 +78,7 @@ public class MenuActivity extends BaseActivity {
             setUpSkillDialog(new ArrayList<>(m.getAvailableSkills()),m.getUnit());
         }
         else {
-            Unit unit = (Unit) m.getUnit();
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.elementDetailLayout, new SoldierDetailFragment(unit));
-            ft.commit();
+            soldierListFragment.updateSoldier((Unit) m.getUnit());
         }
     }
 
@@ -134,6 +132,7 @@ public class MenuActivity extends BaseActivity {
             // user clicked OK
             if(currSkill[0]!=null) {
                 socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("choose", unit.getId(), currSkill[0])));
+                handleRecvMessage(socketService.dequeue());
             }
         });
         builder.setNegativeButton("Cancel", null);

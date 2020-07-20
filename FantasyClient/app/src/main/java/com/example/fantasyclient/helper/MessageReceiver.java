@@ -24,6 +24,7 @@ public class MessageReceiver<T> extends MessageQueue<T>{
         while(!ifClosed){
             try {
                 queue.add((T) c.recvMsg());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

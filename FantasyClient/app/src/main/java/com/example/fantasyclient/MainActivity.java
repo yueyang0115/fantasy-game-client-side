@@ -267,12 +267,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
     }
 
     protected void updateMapLayers(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                map.updateMapLayers();
-            }
-        });
+        runOnUiThread(() -> map.updateMapLayers());
     }
 
     @Override
@@ -289,12 +284,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
                 case "create":
                 case "upgrade":
                     map.updateBuilding(m.getBuilding());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            map.updateMapLayers();
-                        }
-                    });
+                    runOnUiThread(() -> map.updateMapLayers());
                     break;
             }
         }
@@ -326,13 +316,8 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
             currBuilding[0] = adapter.getItem(which);
             //highlight selected item
             adapter.setHighlightedPosition(which);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                    //updateAdapter(adapter, list);
-                }
-            });
+            //updateAdapter(adapter, list);
+            runOnUiThread(adapter::notifyDataSetChanged);
         });
         // add OK and Cancel buttons
         builder.setPositiveButton("OK", (dialog, which) -> {

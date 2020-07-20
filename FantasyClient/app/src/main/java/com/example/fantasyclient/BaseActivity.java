@@ -98,6 +98,7 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
     }
 
     protected void launchMenu(){
+        socketService.clearQueue();
         Intent intent = new Intent(this, MenuActivity.class);
         startActivity(intent);
     }
