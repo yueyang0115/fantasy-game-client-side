@@ -72,16 +72,13 @@ public class SocketService extends Service implements BidirectionalMessageQueue<
 
     @Override
     public void initCommunicator(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Socket socket = new Socket(SocketService.SERVER_IP, SocketService.TCP_PORT);
-                    communicator = new Communicator<>(socket, new MessagesS2C());
-                    Log.d("Connection", "Succeed");
-                } catch (IOException e) {
-                    Log.e("Connection", "Error", e);
-                }
+        new Thread(() -> {
+            try {
+                Socket socket = new Socket(SocketService.SERVER_IP, SocketService.TCP_PORT);
+                communicator = new Communicator<>(socket, new MessagesS2C());
+                Log.d("Connection", "Succeed");
+            } catch (IOException e) {
+                Log.e("Connection", "Error", e);
             }
         }).start();
         new Thread(){

@@ -78,7 +78,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
     @Override
     protected void onResume() {
         super.onResume();
-
+        ifPause = false;
         //Thread to update location and send to server
         new Thread() {
             @Override
@@ -90,11 +90,8 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
                 Looper.prepare();
                 sendLocationRequest();
                 //send location request when players change their location
-                location.setListener(new SimpleLocation.Listener() {
-                    @Override
-                    public void onPositionChanged() {
-                        sendLocationRequest();
-                    }
+                location.setListener(() -> {
+                    sendLocationRequest();
                 });
                 Looper.loop();
             }
