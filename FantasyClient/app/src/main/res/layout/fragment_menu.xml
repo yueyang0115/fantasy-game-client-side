@@ -10,16 +10,15 @@
         android:paddingTop="20dp">
 
         <Button
-            android:id="@+id/inventoryButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Inventory" />
-
-        <Button
             android:id="@+id/soldierButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Soldier" />
+        <Button
+            android:id="@+id/inventoryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inventory" />
     </LinearLayout>
 
 </FrameLayout>

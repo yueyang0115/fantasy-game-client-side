@@ -4,21 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.adapter.ElementAdapter;
 
 import java.util.List;
 
-public abstract class ElementListFragment<T> extends BaseFragment {
-
-    protected List<T> list;
-    protected ListView listView;
-    protected ElementAdapter<T> adapter;
+public abstract class ElementListFragment<T> extends ElementFragment<T> {
 
     public ElementListFragment(List<T> list) {
-        this.list = list;
+        super(list);
     }
 
     @Override
@@ -27,13 +21,4 @@ public abstract class ElementListFragment<T> extends BaseFragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_element_list, container, false);
     }
-
-    protected abstract void initAdapter();
-
-    protected void initView(View v){
-        listView = (ListView) v.findViewById(R.id.elementList);
-        listView.setAdapter(adapter);
-    };
-
-    protected abstract void setListener();
 }

@@ -39,6 +39,6 @@ public abstract class UnitAdapter extends ElementAdapter<Unit> {
         viewHolder.unitAtk = (TextView) convertView.findViewById(R.id.unitAtk);
         viewHolder.unitSpeed = (TextView) convertView.findViewById(R.id.unitSpeed);
         viewHolder.unitExpBar = (ProgressBar) convertView.findViewById(R.id.unitExpBar);
-        viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImg);
+        viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImage);
     }
 }

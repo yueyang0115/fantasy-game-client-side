@@ -1,9 +1,9 @@
 package com.example.fantasyclient.fragment;
 
-import com.example.fantasyclient.SocketService;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.fantasyclient.R;
 import com.example.fantasyclient.adapter.UnitInfoAdapter;
-import com.example.fantasyclient.json.LevelUpRequestMessage;
-import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.model.Unit;
 
 import java.util.List;
@@ -21,9 +21,12 @@ public class SoldierListFragment extends ElementListFragment<Unit> {
 
     @Override
     protected void setListener(){
-        listView.setOnItemClickListener((parent, view, position, id) -> listener.doServiceFunction((SocketService socketService)->{
+
+        listView.setOnItemClickListener((parent, view, position, id) -> {
             Unit unit = (Unit) parent.getItemAtPosition(position);
-            socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("start", unit.getId())));
-        }));
+            FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.elementDetailLayout, new SoldierDetailFragment(unit));
+            ft.commit();
+        });
     }
 }

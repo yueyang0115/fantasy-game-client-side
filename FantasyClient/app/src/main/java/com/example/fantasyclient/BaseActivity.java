@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.fantasyclient.adapter.HighlightAdapter;
 import com.example.fantasyclient.fragment.ActivityWithService;
+import com.example.fantasyclient.fragment.CommonFunction;
 import com.example.fantasyclient.fragment.ServiceFunction;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
@@ -57,8 +58,13 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
 
     @Override
     public void doServiceFunction(ServiceFunction sf){
-        sf.doWithService(socketService);
+        sf.doServiceFunction(socketService);
         handleRecvMessage(socketService.dequeue());
+    }
+
+    @Override
+    public void doCommonFunction(CommonFunction cf){
+        cf.doFunction();
     }
 
     /**
