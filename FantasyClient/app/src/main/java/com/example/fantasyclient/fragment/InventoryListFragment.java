@@ -1,6 +1,8 @@
 package com.example.fantasyclient.fragment;
 
-import com.example.fantasyclient.SocketService;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.fantasyclient.R;
 import com.example.fantasyclient.adapter.InventoryInfoAdapter;
 import com.example.fantasyclient.model.Inventory;
 
@@ -19,8 +21,15 @@ public class InventoryListFragment extends ElementListFragment<Inventory> {
 
     @Override
     protected void setListener() {
-        listView.setOnItemClickListener((parent, view, position, id) -> listener.doServiceFunction((SocketService socketService)->{
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Inventory inventory = (Inventory) parent.getItemAtPosition(position);
+            loadSoldierDetail(inventory);
+        });
+    }
 
-        }));
+    protected void loadSoldierDetail(Inventory inventory){
+        FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.elementDetailLayout, new InventoryDetailFragment(inventory));
+        ft.commit();
     }
 }

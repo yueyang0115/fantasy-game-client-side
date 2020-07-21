@@ -33,10 +33,10 @@ public class MenuButtonFragment extends BaseFragment {
 
     @Override
     protected void setListener() {
-        inventoryButton.setOnClickListener(v -> listener.doServiceFunction((SocketService socketService)->{
+        inventoryButton.setOnClickListener(v -> activityListener.doServiceFunction((SocketService socketService)->{
             socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
         }));
-        soldierButton.setOnClickListener(v -> listener.doServiceFunction((SocketService socketService)->{
+        soldierButton.setOnClickListener(v -> activityListener.doServiceFunction((SocketService socketService)->{
             socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("list")));
         }));
     }

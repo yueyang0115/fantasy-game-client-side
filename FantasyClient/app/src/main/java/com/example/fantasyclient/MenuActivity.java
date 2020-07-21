@@ -78,7 +78,7 @@ public class MenuActivity extends BaseActivity {
             setUpSkillDialog(new ArrayList<>(m.getAvailableSkills()),m.getUnit());
         }
         else {
-            soldierListFragment.updateSoldier((Unit) m.getUnit());
+            soldierListFragment.updateSoldier(m.getUnit());
         }
     }
 

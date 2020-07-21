@@ -13,9 +13,12 @@ import com.example.fantasyclient.SocketService;
 import com.example.fantasyclient.adapter.UnitInfoAdapter;
 import com.example.fantasyclient.json.LevelUpRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
 
-public class SoldierDetailFragment extends ElementDetailFragment<Unit> {
+import java.util.ArrayList;
+
+public class SoldierDetailFragment extends ElementDetailFragment<Unit> implements ElementSelector<Skill> {
 
     Button buttonLearn;
 
@@ -35,7 +38,7 @@ public class SoldierDetailFragment extends ElementDetailFragment<Unit> {
         super.onViewCreated(view, savedInstanceState);
         Unit unit = (Unit) list.get(0);
         FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.skillListLayout, new SkillListFragment(unit.getSkills(),unit));
+        ft.replace(R.id.skillListLayout, new SkillListFragment(new ArrayList<>(unit.getSkills()),unit, this));
         ft.commit();
     }
 
@@ -52,8 +55,14 @@ public class SoldierDetailFragment extends ElementDetailFragment<Unit> {
 
     @Override
     protected void setListener(){
-        buttonLearn.setOnClickListener(v -> listener.doServiceFunction((SocketService socketService)->{
-            socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("start", ((Unit)list.get(0)).getId())));
-        }));
+        buttonLearn.setOnClickListener(v
+                -> activityListener.doServiceFunction((SocketService socketService)
+                -> socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("start", list.get(0).getId())))));
+    }
+
+    @Override
+    public void doWithSelectedElement(Skill skill) {
+        activityListener.doServiceFunction((SocketService socketService)
+                -> socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("choose", list.get(0).getId(), skill))));
     }
 }

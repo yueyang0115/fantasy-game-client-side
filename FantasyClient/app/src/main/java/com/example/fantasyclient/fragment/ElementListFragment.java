@@ -11,6 +11,8 @@ import java.util.List;
 
 public abstract class ElementListFragment<T> extends ElementFragment<T> {
 
+    protected ElementSelector<T> elementListener;
+
     public ElementListFragment(List<T> list) {
         super(list);
     }

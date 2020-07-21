@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment;
 
 public abstract class BaseFragment extends Fragment {
 
-    protected ActivityWithService listener;
+    protected ActivityWithService activityListener;
 
     /**
      * This method stores touched activity as listener
@@ -18,7 +18,7 @@ public abstract class BaseFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof ActivityWithService) {
-            listener = (ActivityWithService) context;
+            activityListener = (ActivityWithService) context;
         } else {
             throw new ClassCastException(context.toString()
                     + " must implement ActivityWithService");

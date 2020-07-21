@@ -7,8 +7,11 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 
+import androidx.fragment.app.FragmentTransaction;
+
 import com.example.fantasyclient.adapter.UnitImageAdapter;
 import com.example.fantasyclient.adapter.UnitInfoAdapter;
+import com.example.fantasyclient.fragment.BattleButtonFragment;
 import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
@@ -43,16 +46,24 @@ public class BattleActivity extends BaseActivity{
     boolean ifStop = false;
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
+    FragmentTransaction ft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battle);
+        initFragment();
         findView();
         initView();
         doBindService();
         getExtra();
         setListener();
+    }
+
+    protected void initFragment(){
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.buttonLayout, new BattleButtonFragment());
+        ft.commit();
     }
 
     @Override
