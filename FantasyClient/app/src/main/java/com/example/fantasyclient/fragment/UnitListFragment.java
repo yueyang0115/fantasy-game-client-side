@@ -8,10 +8,17 @@ import com.example.fantasyclient.model.Unit;
 
 import java.util.List;
 
-public class SoldierListFragment extends ElementListFragment<Unit> {
+public class UnitListFragment extends ElementListFragment<Unit> {
 
-    public SoldierListFragment(List<Unit> list) {
+    UnitSelector unitSelector;
+
+    public UnitListFragment(List<Unit> list, UnitSelector unitSelector) {
         super(list);
+        this.unitSelector = unitSelector;
+    }
+
+    public interface UnitSelector{
+        void doWithSelectedUnit(Unit unit);
     }
 
     @Override
@@ -23,20 +30,21 @@ public class SoldierListFragment extends ElementListFragment<Unit> {
     protected void setListener(){
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Unit unit = (Unit) parent.getItemAtPosition(position);
-            loadSoldierDetail(unit);
+            adapter.setHighlightedPosition(position);
+            updateAdapter(adapter, list);
+            unitSelector.doWithSelectedUnit(unit);
         });
     }
 
-    public void updateSoldier(Unit unit){
-        if(list.contains(unit)){
-            list.get(list.indexOf(unit)).setSkills(unit.getSkills());
-        }
+    @Override
+    public void updateByElement(Unit unit){
+        super.updateByElement(unit);
         loadSoldierDetail(unit);
     }
 
     protected void loadSoldierDetail(Unit unit){
         FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.elementDetailLayout, new SoldierDetailFragment(unit));
+        ft.replace(R.id.elementDetailLayout, new UnitDetailFragment(unit));
         ft.commit();
     }
 }

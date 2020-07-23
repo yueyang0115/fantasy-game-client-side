@@ -1,5 +1,9 @@
 package com.example.fantasyclient.fragment;
 
-public interface ElementSelector<T>{
-    void doWithSelectedElement(T t);
+import com.example.fantasyclient.model.Skill;
+import com.example.fantasyclient.model.Unit;
+
+public interface ElementSelector{
+    void doWithSelectedSkill(Skill skill);
+    void doWithSelectedUnit(Unit unit);
 }

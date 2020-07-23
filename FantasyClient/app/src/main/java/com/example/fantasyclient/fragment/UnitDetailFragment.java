@@ -18,11 +18,11 @@ import com.example.fantasyclient.model.Unit;
 
 import java.util.ArrayList;
 
-public class SoldierDetailFragment extends ElementDetailFragment<Unit> implements ElementSelector<Skill> {
+public class UnitDetailFragment extends ElementDetailFragment<Unit> implements SkillListFragment.SkillSelector {
 
     Button buttonLearn;
 
-    public SoldierDetailFragment(Unit unit) {
+    public UnitDetailFragment(Unit unit) {
         super(unit);
     }
 
@@ -36,7 +36,7 @@ public class SoldierDetailFragment extends ElementDetailFragment<Unit> implement
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Unit unit = (Unit) list.get(0);
+        Unit unit = list.get(0);
         FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.skillListLayout, new SkillListFragment(new ArrayList<>(unit.getSkills()),unit, this));
         ft.commit();
@@ -61,8 +61,8 @@ public class SoldierDetailFragment extends ElementDetailFragment<Unit> implement
     }
 
     @Override
-    public void doWithSelectedElement(Skill skill) {
-        activityListener.doServiceFunction((SocketService socketService)
-                -> socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("choose", list.get(0).getId(), skill))));
+    public void doWithSelectedSkill(Skill skill) {
+        //do nothing here if click on learned skill
+        //but can know which skill is selected
     }
 }

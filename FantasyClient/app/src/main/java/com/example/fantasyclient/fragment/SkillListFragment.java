@@ -9,9 +9,13 @@ import java.util.List;
 public class SkillListFragment extends ElementListFragment<Skill> {
 
     private Unit unit;
-    private ElementSelector<Skill> skillSelector;
+    protected SkillSelector skillSelector;
 
-    public SkillListFragment(List<Skill> list, Unit unit, ElementSelector<Skill> skillSelector) {
+    public interface SkillSelector{
+        void doWithSelectedSkill(Skill skill);
+    }
+
+    public SkillListFragment(List<Skill> list, Unit unit, SkillSelector skillSelector) {
         super(list);
         this.unit = unit;
         this.skillSelector = skillSelector;
@@ -24,7 +28,10 @@ public class SkillListFragment extends ElementListFragment<Skill> {
 
     @Override
     protected void setListener() {
-        listView.setOnItemClickListener((parent, view, position, id) ->
-                skillSelector.doWithSelectedElement((Skill) parent.getItemAtPosition(position)));
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            adapter.setHighlightedPosition(position);
+            updateAdapter(adapter, list);
+            skillSelector.doWithSelectedSkill((Skill) parent.getItemAtPosition(position));
+        });
     }
 }

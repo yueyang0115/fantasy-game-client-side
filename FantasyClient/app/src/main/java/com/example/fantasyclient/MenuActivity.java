@@ -12,7 +12,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.fantasyclient.adapter.SkillInfoAdapter;
 import com.example.fantasyclient.fragment.InventoryListFragment;
 import com.example.fantasyclient.fragment.MenuButtonFragment;
-import com.example.fantasyclient.fragment.SoldierListFragment;
+import com.example.fantasyclient.fragment.UnitDetailFragment;
+import com.example.fantasyclient.fragment.UnitListFragment;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpRequestMessage;
@@ -24,13 +25,13 @@ import com.example.fantasyclient.model.Unit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuActivity extends BaseActivity {
+public class MenuActivity extends BaseActivity implements UnitListFragment.UnitSelector {
 
     //final constant
     static final String TAG = "MenuActivity";//tag for log
     Button btnBack;
     FragmentTransaction ft;
-    SoldierListFragment soldierListFragment;
+    UnitListFragment unitListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +52,8 @@ public class MenuActivity extends BaseActivity {
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        soldierListFragment = new SoldierListFragment(new ArrayList<>(m.getSoldiers()));
-        ft.replace(R.id.elementListLayout, soldierListFragment);
+        unitListFragment = new UnitListFragment(new ArrayList<>(m.getSoldiers()),this);
+        ft.replace(R.id.elementListLayout, unitListFragment);
         removeDetailFragment(ft);
         ft.commit();
     }
@@ -78,7 +79,7 @@ public class MenuActivity extends BaseActivity {
             setUpSkillDialog(new ArrayList<>(m.getAvailableSkills()),m.getUnit());
         }
         else {
-            soldierListFragment.updateSoldier(m.getUnit());
+            unitListFragment.updateByElement(m.getUnit());
         }
     }
 
@@ -141,5 +142,12 @@ public class MenuActivity extends BaseActivity {
             AlertDialog dialog = builder.create();
             dialog.show();
         });
+    }
+
+    @Override
+    public void doWithSelectedUnit(Unit unit) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.elementDetailLayout, new UnitDetailFragment(unit));
+        ft.commit();
     }
 }
