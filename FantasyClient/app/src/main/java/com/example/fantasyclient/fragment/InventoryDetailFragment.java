@@ -23,7 +23,7 @@ public class InventoryDetailFragment extends ElementDetailFragment<Inventory> im
 
     Button buttonUse, buttonDrop;
     NumberPicker numberPicker;
-    int amount = 0;
+    int amount = 1;
     List<Unit> targetList;
     Unit targetUnit;
 
@@ -62,7 +62,7 @@ public class InventoryDetailFragment extends ElementDetailFragment<Inventory> im
         numberPicker = (NumberPicker) v.findViewById(R.id.numberPicker);
         numberPicker.setMaxValue(inventory.getAmount());
         numberPicker.setMinValue(0);
-        numberPicker.setValue(0);
+        numberPicker.setValue(1);
         numberPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             amount = numberPicker.getValue();
         });

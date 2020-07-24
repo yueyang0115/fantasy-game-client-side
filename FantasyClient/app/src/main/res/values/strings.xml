@@ -3,4 +3,5 @@
     <string name="title_activity_maps">Map</string>
     <string name="miniFireBall">fireball_mini</string>
     <string name="miniFireBall_unlearned">fireball_mini_unlearned</string>
+    <string name="edu.duke.ece.fantasy.Item.Sword">sword</string>
 </resources>

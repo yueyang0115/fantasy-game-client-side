@@ -97,6 +97,7 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     @Override
     protected void checkInventoryResult(InventoryResultMessage m){
         inventoryListFragment.updateByList(m.getItems());
+        doWithSelectedInventory(m.getItems().get(0));
     }
 
     @Override
@@ -166,6 +167,7 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     @Override
     public void doWithSelectedInventory(Inventory inventory) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        removeDetailFragment(ft);
         ft.replace(R.id.elementDetailLayout, new InventoryDetailFragment(inventory, new ArrayList<>(currMessage.getAttributeResultMessage().getSoldiers())));
         ft.commit();
     }
@@ -173,6 +175,7 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     @Override
     public void doWithSelectedUnit(Unit unit) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        removeDetailFragment(ft);
         ft.replace(R.id.elementDetailLayout, new UnitDetailFragment(unit));
         ft.commit();
     }
