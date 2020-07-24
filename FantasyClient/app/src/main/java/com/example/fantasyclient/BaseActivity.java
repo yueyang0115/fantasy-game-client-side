@@ -94,10 +94,12 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
     protected void launchMenu(){
         socketService.clearQueue();
         Intent intent = new Intent(this, MenuActivity.class);
+        intent.putExtra("CurrentMessage", (Serializable) currMessage);
         startActivity(intent);
     }
 
     protected void launchBattle(){
+        socketService.clearQueue();
         Intent intent = new Intent(this,BattleActivity.class);
         intent.putExtra("CurrentMessage", (Serializable) currMessage);
         intent.putExtra("territoryCoord", currCoord);
@@ -105,23 +107,14 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
     }
 
     protected void launchShop(){
+        socketService.clearQueue();
         Intent intent = new Intent(this, ShopActivity.class);
         intent.putExtra("CurrentMessage", (Serializable) currMessage);
         intent.putExtra("ShopCoord", currCoord);
         startActivityForResult(intent, SHOP);
     }
 
-    protected void launchInventory(){
-        Intent intent = new Intent(this, InventoryActivity.class);
-        intent.putExtra("CurrentMessage", currMessage);
-        startActivityForResult(intent, INVENTORY);
-    }
-
-    protected void launchSoldierDetail(){
-        Intent intent = new Intent(this, SoldierDetailActivity.class);
-        intent.putExtra("CurrentMessage", currMessage);
-        startActivityForResult(intent, SOLDIER_DETAIL);
-    }
+    protected void finishActivity(){}
 
     /**
      * This is the only interface to handle received message(MessageS2C) from server
@@ -226,10 +219,10 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
         //clear queue before change activities
         socketService.clearQueue();
         switch (m.getDestination()){
-            case "battle":
+            case "BATTLE":
                 launchBattle();
                 break;
-            case "shop":
+            case "SHOP":
                 launchShop();
                 break;
             /*case "inventory":
@@ -238,9 +231,11 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
             /*case "levelup":
                 launchSoldierDetail();
                 break;*/
-            case "menu":
+            case "MENU":
                 launchMenu();
                 break;
+            case "MAIN":
+                finishActivity();
             default:
         }
     }

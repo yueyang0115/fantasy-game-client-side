@@ -5,34 +5,47 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.NumberPicker;
+
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fantasyclient.R;
 import com.example.fantasyclient.SocketService;
 import com.example.fantasyclient.adapter.InventoryInfoAdapter;
+import com.example.fantasyclient.json.InventoryRequestMessage;
+import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.model.Inventory;
+import com.example.fantasyclient.model.Unit;
 
-public class InventoryDetailFragment extends ElementDetailFragment<Inventory> {
+import java.util.List;
 
-    Button buttonLearn;
+public class InventoryDetailFragment extends ElementDetailFragment<Inventory> implements UnitListFragment.UnitSelector {
 
-    public InventoryDetailFragment(Inventory inventory) {
+    Button buttonUse, buttonDrop;
+    NumberPicker numberPicker;
+    int amount = 0;
+    List<Unit> targetList;
+    Unit targetUnit;
+
+    public InventoryDetailFragment(Inventory inventory, List<Unit> targetList) {
         super(inventory);
+        this.targetList = targetList;
+        targetUnit = this.targetList.get(0);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_unit_detail, container, false);
+        return inflater.inflate(R.layout.fragment_inventory_detail, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        /*Unit unit = (Unit) list.get(0);
         FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.skillListLayout, new SkillListFragment(unit.getSkills(),unit));
-        ft.commit();*/
+        ft.replace(R.id.skillListLayout, new UnitListFragment(targetList, this));
+        ft.commit();
     }
 
     @Override
@@ -43,13 +56,29 @@ public class InventoryDetailFragment extends ElementDetailFragment<Inventory> {
     @Override
     protected void initView(View v) {
         super.initView(v);
-        buttonLearn = (Button) v.findViewById(R.id.buttonLearn);
+        Inventory inventory = list.get(0);
+        buttonUse = (Button) v.findViewById(R.id.buttonUse);
+        buttonDrop = (Button) v.findViewById(R.id.buttonDrop);
+        numberPicker = (NumberPicker) v.findViewById(R.id.numberPicker);
+        numberPicker.setMaxValue(inventory.getAmount());
+        numberPicker.setMinValue(0);
+        numberPicker.setValue(0);
+        numberPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            amount = numberPicker.getValue();
+        });
     }
 
     @Override
     protected void setListener(){
-        buttonLearn.setOnClickListener(v -> activityListener.doServiceFunction((SocketService socketService)->{
-            //socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("start", ((Unit)list.get(0)).getId())));
-        }));
+        buttonUse.setOnClickListener(v -> {
+            activityListener.doServiceFunction((SocketService socketService)->{
+                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", list.get(0).getId(), targetUnit.getId())));
+            });
+        });
+    }
+
+    @Override
+    public void doWithSelectedUnit(Unit unit) {
+        targetUnit = unit;
     }
 }

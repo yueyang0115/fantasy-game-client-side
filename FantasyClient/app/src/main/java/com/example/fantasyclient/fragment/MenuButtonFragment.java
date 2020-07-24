@@ -8,10 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.fantasyclient.R;
-import com.example.fantasyclient.SocketService;
-import com.example.fantasyclient.json.AttributeRequestMessage;
-import com.example.fantasyclient.json.InventoryRequestMessage;
-import com.example.fantasyclient.json.MessagesC2S;
 
 public class MenuButtonFragment extends BaseFragment {
 
@@ -53,11 +49,5 @@ public class MenuButtonFragment extends BaseFragment {
     protected void setListener() {
         inventoryButton.setOnClickListener(v -> menuButtonListener.doWithInventoryButton());
         soldierButton.setOnClickListener(v -> menuButtonListener.doWithSoldierButton());
-        inventoryButton.setOnClickListener(v -> activityListener.doServiceFunction((SocketService socketService)->{
-            socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
-        }));
-        soldierButton.setOnClickListener(v -> activityListener.doServiceFunction((SocketService socketService)->{
-            socketService.enqueue(new MessagesC2S(new AttributeRequestMessage("list")));
-        }));
     }
 }

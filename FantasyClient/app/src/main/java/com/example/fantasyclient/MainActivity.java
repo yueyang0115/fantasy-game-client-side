@@ -19,10 +19,11 @@ import com.example.fantasyclient.adapter.BuildingInfoAdapter;
 import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
 import com.example.fantasyclient.fragment.MapFragment;
 import com.example.fantasyclient.helper.PositionHelper;
-import com.example.fantasyclient.json.AttributeResultMessage;
+import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BuildingRequestMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
+import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
@@ -147,8 +148,10 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
 
     @Override
     public void onMapShopSelected() {
-        socketService.enqueue(new MessagesC2S(
-                new ShopRequestMessage(currCoord, "list")));
+        MessagesC2S messagesC2S = new MessagesC2S();
+        messagesC2S.setShopRequestMessage(new ShopRequestMessage(currCoord, "list"));
+        messagesC2S.setRedirectMessage(new RedirectMessage("SHOP"));
+        socketService.enqueue(messagesC2S);
     }
 
     @Override
@@ -293,11 +296,6 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
         }
     }
 
-    @Override
-    protected void checkAttributeResult(AttributeResultMessage m){
-
-    }
-
     protected void setUpBuildingDialog(final List<Building> list, final String title){
 
         // setup the alert builder
@@ -418,7 +416,13 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
 
     @Override
     protected void setListener(){
-        bagImg.setOnClickListener(v -> launchMenu());
+        bagImg.setOnClickListener(v -> {
+            MessagesC2S messagesC2S = new MessagesC2S();
+            messagesC2S.setInventoryRequestMessage(new InventoryRequestMessage("list"));
+            messagesC2S.setAttributeRequestMessage(new AttributeRequestMessage("list"));
+            messagesC2S.setRedirectMessage(new RedirectMessage("MENU"));
+            socketService.enqueue(messagesC2S);
+        });
     }
 
 }

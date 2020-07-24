@@ -43,8 +43,6 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     String actionType = "normal";
     UnitListFragment soldierListFragment, monsterListFragment, battleSequenceFragment;
 
-
-    boolean ifStop = false;
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
     FragmentTransaction ft;
@@ -145,27 +143,19 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
             //after animations are done
             //if battle ends, finish activity
             if(!m.getResult().equals("continue")){
-                socketService.enqueue(new MessagesC2S(new RedirectMessage("MENU")));
-                //finishActivity(m.getResult());
+                sendAndRecvRedirectMessage();
             }
         }
         else{
             //escaped, finish activity
-            socketService.enqueue(new MessagesC2S(new RedirectMessage("MENU")));
-            //finishActivity(m.getResult());
+            sendAndRecvRedirectMessage();
         }
     }
 
-    @Override
-    protected void checkRedirectResult(RedirectMessage m){
-        if(m.getDestination().equals("MAIN")){
-            finishActivity(battleResultMessage.getResult());
-        }
-        else{
-            Log.e(TAG, "Error: invalid redirect message received");
-        }
+    private void sendAndRecvRedirectMessage(){
+        socketService.enqueue(new MessagesC2S(new RedirectMessage("MAIN")));
+        handleRecvMessage(socketService.dequeue());
     }
-
 
     private void initElementList(BattleInitInfo initInfo){
         //At the start of battle, store initial units data into map
@@ -206,11 +196,15 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         battleSequenceFragment.updateByList(sequenceList);
     }
 
-    protected void finishActivity(String result){
+    @Override
+    protected void finishActivity(){
+        finishActivityByResult(battleResultMessage.getResult());
+    }
+
+    protected void finishActivityByResult(String result){
         //clear queue before change activities
         socketService.clearQueue();
         doUnbindService();
-        ifStop = true;
         Intent intent = new Intent();
         switch (result) {
             case "escaped":
