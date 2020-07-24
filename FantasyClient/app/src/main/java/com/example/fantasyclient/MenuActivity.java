@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
@@ -19,6 +20,7 @@ import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpRequestMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
 
@@ -83,6 +85,24 @@ public class MenuActivity extends BaseActivity implements UnitListFragment.UnitS
         }
     }
 
+    @Override
+    protected void checkRedirectResult(RedirectMessage m){
+        if(m.getDestination().equals("MAIN")){
+            finishActivity();
+        }
+        else{
+            Log.e(TAG, "Error: invalid redirect message received");
+        }
+    }
+
+    protected void finishActivity(){
+        socketService.clearQueue();
+        doUnbindService();
+        Intent intent = new Intent();
+        setResult(RESULT_CANCELED,intent);
+        finish();
+    }
+
     protected void initFragment(){
         ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.buttonLayout, new MenuButtonFragment());
@@ -98,12 +118,7 @@ public class MenuActivity extends BaseActivity implements UnitListFragment.UnitS
     @Override
     protected void setListener(){
         btnBack.setOnClickListener(v -> {
-            // TODO
-            socketService.clearQueue();
-            doUnbindService();
-            Intent intent = new Intent();
-            setResult(RESULT_CANCELED,intent);
-            finish();
+            socketService.enqueue(new MessagesC2S(new RedirectMessage("MENU")));
         });
     }
 

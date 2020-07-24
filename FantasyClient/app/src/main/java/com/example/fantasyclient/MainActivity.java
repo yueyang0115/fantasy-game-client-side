@@ -26,6 +26,7 @@ import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
@@ -138,8 +139,10 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
 
     @Override
     public void onMapUnitSelected() {
-        socketService.enqueue(new MessagesC2S(
-                new BattleRequestMessage(currCoord, "start")));
+        MessagesC2S messagesC2S = new MessagesC2S();
+        messagesC2S.setBattleRequestMessage(new BattleRequestMessage(currCoord, "start"));
+        messagesC2S.setRedirectMessage(new RedirectMessage("BATTLE"));
+        socketService.enqueue(messagesC2S);
     }
 
     @Override

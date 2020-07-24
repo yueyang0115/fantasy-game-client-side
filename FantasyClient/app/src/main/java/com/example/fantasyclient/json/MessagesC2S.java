@@ -11,6 +11,8 @@ public class MessagesC2S {
     private BuildingRequestMessage buildingRequestMessage;
     private LevelUpRequestMessage levelUpRequestMessage;
 
+    private RedirectMessage redirectMessage;
+
     //constructors
     public MessagesC2S() {
     }
@@ -49,6 +51,10 @@ public class MessagesC2S {
 
     public MessagesC2S(LevelUpRequestMessage levelUpRequestMessage) {
         this.levelUpRequestMessage = levelUpRequestMessage;
+    }
+
+    public MessagesC2S(RedirectMessage redirectMessage) {
+        this.redirectMessage = redirectMessage;
     }
 
     //getter and setter
@@ -123,5 +129,13 @@ public class MessagesC2S {
 
     public void setLevelUpRequestMessage(LevelUpRequestMessage levelUpRequestMessage) {
         this.levelUpRequestMessage = levelUpRequestMessage;
+    }
+
+    public RedirectMessage getRedirectMessage() {
+        return redirectMessage;
+    }
+
+    public void setRedirectMessage(RedirectMessage redirectMessage) {
+        this.redirectMessage = redirectMessage;
     }
 }

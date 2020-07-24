@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.fragment.app.FragmentTransaction;
 
@@ -21,9 +22,11 @@ import java.util.ArrayList;
 public class UnitDetailFragment extends ElementDetailFragment<Unit> implements SkillListFragment.SkillSelector {
 
     Button buttonLearn;
+    ImageView imageWeapon;
 
     public UnitDetailFragment(Unit unit) {
         super(unit);
+        TAG = "UnitDetailFragment";
     }
 
     @Override
@@ -50,7 +53,12 @@ public class UnitDetailFragment extends ElementDetailFragment<Unit> implements S
     @Override
     protected void initView(View v) {
         super.initView(v);
+        Unit unit = list.get(0);
         buttonLearn = (Button) v.findViewById(R.id.buttonLearn);
+        imageWeapon = (ImageView) v.findViewById(R.id.imageWeapon);
+        if(unit.getWeapon()!=null) {
+            imageWeapon.setImageDrawable(getDrawableByName(list.get(0).getWeapon().getItem_class()));
+        }
     }
 
     @Override
@@ -65,4 +73,5 @@ public class UnitDetailFragment extends ElementDetailFragment<Unit> implements S
         //do nothing here if click on learned skill
         //but can know which skill is selected
     }
+
 }

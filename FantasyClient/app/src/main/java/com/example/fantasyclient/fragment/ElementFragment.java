@@ -41,6 +41,9 @@ public abstract class ElementFragment<T> extends BaseFragment {
     public void updateByList(List<T> list){
         this.list.clear();
         this.list.addAll(list);
+        if(adapter!=null){
+            updateAdapter(adapter,this.list);
+        }
     }
 
     protected void updateAdapter(HighlightAdapter adapter, List object){

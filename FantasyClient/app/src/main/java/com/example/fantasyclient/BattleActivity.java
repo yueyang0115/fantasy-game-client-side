@@ -17,6 +17,7 @@ import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
+import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.model.BattleAction;
 import com.example.fantasyclient.model.BattleInitInfo;
 import com.example.fantasyclient.model.Skill;
@@ -129,6 +130,7 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     @SuppressLint("SetTextI18n")
     @Override
     protected void checkBattleResult(final BattleResultMessage m){
+        battleResultMessage = m;
         if(!m.getResult().equals("escaped")) {
             BattleInitInfo initInfo = m.getBattleInitInfo();
             if (initInfo != null) {
@@ -144,14 +146,27 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
             //after animations are done
             //if battle ends, finish activity
             if(!m.getResult().equals("continue")){
-                finishActivity(m.getResult());
+                socketService.enqueue(new MessagesC2S(new RedirectMessage("MENU")));
+                //finishActivity(m.getResult());
             }
         }
         else{
             //escaped, finish activity
-            finishActivity(m.getResult());
+            socketService.enqueue(new MessagesC2S(new RedirectMessage("MENU")));
+            //finishActivity(m.getResult());
         }
     }
+
+    @Override
+    protected void checkRedirectResult(RedirectMessage m){
+        if(m.getDestination().equals("MAIN")){
+            finishActivity(battleResultMessage.getResult());
+        }
+        else{
+            Log.e(TAG, "Error: invalid redirect message received");
+        }
+    }
+
 
     private void initElementList(BattleInitInfo initInfo){
         //At the start of battle, store initial units data into map
@@ -252,7 +267,6 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         if(unit.getType().equals("soldier")){
             updateUnitList(unit,soldierList);
             soldierListFragment.updateByList(soldierList);
-
         }
         else if(unit.getType().equals("monster")){
             updateUnitList(unit,monsterList);

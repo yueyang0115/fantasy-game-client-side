@@ -9,6 +9,10 @@ public class RedirectMessage implements Serializable {
     public RedirectMessage() {
     }
 
+    public RedirectMessage(String destination) {
+        this.destination = destination;
+    }
+
     public String getDestination() {
         return destination;
     }

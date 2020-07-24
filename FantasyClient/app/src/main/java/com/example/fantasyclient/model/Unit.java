@@ -1,9 +1,7 @@
 package com.example.fantasyclient.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Unit implements Serializable {
@@ -15,7 +13,8 @@ public class Unit implements Serializable {
     private int atk;
     private int speed;
     private Experience experience = new Experience();
-    private List<UnitEquipment> equipments = new ArrayList<>();
+    //private List<UnitEquipment> equipments = new ArrayList<>();
+    private DBItem weapon;
     private Set<Skill> skills = new HashSet<>();
 
     public Unit(){
@@ -98,14 +97,13 @@ public class Unit implements Serializable {
 
     public void setExperience(Experience experience) { this.experience = experience; }
 
-    public List<UnitEquipment> getEquipments() {
-        return equipments;
+    public DBItem getWeapon() {
+        return weapon;
     }
 
-    public void setEquipments(List<UnitEquipment> equipments) {
-        this.equipments = equipments;
+    public void setWeapon(DBItem weapon) {
+        this.weapon = weapon;
     }
-
 
     public Set<Skill> getSkills() { return skills; }
 
