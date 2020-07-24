@@ -59,7 +59,6 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         doBindService();
         getExtra();
         setListener();
-
     }
 
     /*protected void initFragment(){

@@ -13,13 +13,11 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.fantasyclient.adapter.SkillInfoAdapter;
 import com.example.fantasyclient.fragment.InventoryListFragment;
 import com.example.fantasyclient.fragment.MenuButtonFragment;
-import com.example.fantasyclient.fragment.UnitDetailFragment;
 import com.example.fantasyclient.fragment.UnitListFragment;
-import com.example.fantasyclient.json.AttributeResultMessage;
-import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpRequestMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
@@ -27,7 +25,7 @@ import com.example.fantasyclient.model.Unit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuActivity extends BaseActivity implements UnitListFragment.UnitSelector {
+public class MenuActivity extends BaseActivity implements MenuButtonFragment.MenuButtonListener {
 
     //final constant
     static final String TAG = "MenuActivity";//tag for log
@@ -42,37 +40,40 @@ public class MenuActivity extends BaseActivity implements UnitListFragment.UnitS
         initFragment();
         findView();
         initView();
+        getExtra();
         doBindService();
+        setListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setListener();
     }
 
-    @Override
-    protected void checkAttributeResult(AttributeResultMessage m){
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        unitListFragment = new UnitListFragment(new ArrayList<>(m.getSoldiers()),this);
-        ft.replace(R.id.elementListLayout, unitListFragment);
-        removeDetailFragment(ft);
+    protected void initFragment(){
+        ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.buttonLayout, new MenuButtonFragment());
         ft.commit();
     }
 
     @Override
-    protected void checkInventoryResult(InventoryResultMessage m){
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.elementListLayout, new InventoryListFragment(m.getItems()));
-        removeDetailFragment(ft);
-        ft.commit();
+    protected void findView(){
+        btnBack = (Button) findViewById(R.id.buttonBack);
     }
 
-    protected void removeDetailFragment(FragmentTransaction ft){
-        Fragment currDetailFragment = getSupportFragmentManager().findFragmentById(R.id.elementDetailLayout);
-        if(currDetailFragment!=null) {
-            ft.remove(currDetailFragment);
-        }
+    @Override
+    protected void getExtra(){
+        Intent intent = getIntent();
+        currMessage = (MessagesS2C) intent.getSerializableExtra("CurrentMessage");
+        assert currMessage != null;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    protected void setListener(){
+        btnBack.setOnClickListener(v -> {
+            socketService.enqueue(new MessagesC2S(new RedirectMessage("MENU")));
+        });
     }
 
     @Override
@@ -101,25 +102,6 @@ public class MenuActivity extends BaseActivity implements UnitListFragment.UnitS
         Intent intent = new Intent();
         setResult(RESULT_CANCELED,intent);
         finish();
-    }
-
-    protected void initFragment(){
-        ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.buttonLayout, new MenuButtonFragment());
-        ft.commit();
-    }
-
-    @Override
-    protected void findView(){
-        btnBack = (Button) findViewById(R.id.buttonBack);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    protected void setListener(){
-        btnBack.setOnClickListener(v -> {
-            socketService.enqueue(new MessagesC2S(new RedirectMessage("MENU")));
-        });
     }
 
     protected void setUpSkillDialog(final List<Skill> list, final Unit unit){
@@ -160,9 +142,25 @@ public class MenuActivity extends BaseActivity implements UnitListFragment.UnitS
     }
 
     @Override
-    public void doWithSelectedUnit(Unit unit) {
+    public void doWithInventoryButton() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.elementDetailLayout, new UnitDetailFragment(unit));
+        ft.replace(R.id.elementListLayout, new InventoryListFragment(currMessage.getInventoryResultMessage().getItems()));
+        removeDetailFragment(ft);
         ft.commit();
+    }
+
+    @Override
+    public void doWithSoldierButton() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.elementListLayout, new UnitListFragment(new ArrayList<>(currMessage.getAttributeResultMessage().getSoldiers())));
+        removeDetailFragment(ft);
+        ft.commit();
+    }
+
+    protected void removeDetailFragment(FragmentTransaction ft){
+        Fragment currDetailFragment = getSupportFragmentManager().findFragmentById(R.id.elementDetailLayout);
+        if(currDetailFragment!=null) {
+            ft.remove(currDetailFragment);
+        }
     }
 }

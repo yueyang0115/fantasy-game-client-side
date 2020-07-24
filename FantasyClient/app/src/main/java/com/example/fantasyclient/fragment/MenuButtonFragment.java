@@ -1,5 +1,6 @@
 package com.example.fantasyclient.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,23 @@ import com.example.fantasyclient.json.MessagesC2S;
 public class MenuButtonFragment extends BaseFragment {
 
     Button inventoryButton, soldierButton;
+    MenuButtonListener menuButtonListener;
+
+    public interface MenuButtonListener{
+        void doWithInventoryButton();
+        void doWithSoldierButton();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof MenuButtonListener) {
+            menuButtonListener = (MenuButtonListener) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement MenuButtonListener");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -33,6 +51,8 @@ public class MenuButtonFragment extends BaseFragment {
 
     @Override
     protected void setListener() {
+        inventoryButton.setOnClickListener(v -> menuButtonListener.doWithInventoryButton());
+        soldierButton.setOnClickListener(v -> menuButtonListener.doWithSoldierButton());
         inventoryButton.setOnClickListener(v -> activityListener.doServiceFunction((SocketService socketService)->{
             socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
         }));

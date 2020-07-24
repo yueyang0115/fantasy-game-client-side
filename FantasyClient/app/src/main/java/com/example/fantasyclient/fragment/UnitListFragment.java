@@ -10,15 +10,8 @@ import java.util.List;
 
 public class UnitListFragment extends ElementListFragment<Unit> {
 
-    UnitSelector unitSelector;
-
-    public UnitListFragment(List<Unit> list, UnitSelector unitSelector) {
+    public UnitListFragment(List<Unit> list) {
         super(list);
-        this.unitSelector = unitSelector;
-    }
-
-    public interface UnitSelector{
-        void doWithSelectedUnit(Unit unit);
     }
 
     @Override
@@ -32,7 +25,7 @@ public class UnitListFragment extends ElementListFragment<Unit> {
             Unit unit = (Unit) parent.getItemAtPosition(position);
             adapter.setHighlightedPosition(position);
             updateAdapter(adapter, list);
-            unitSelector.doWithSelectedUnit(unit);
+            loadSoldierDetail(unit);
         });
     }
 

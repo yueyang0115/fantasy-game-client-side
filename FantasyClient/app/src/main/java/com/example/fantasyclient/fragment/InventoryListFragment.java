@@ -23,11 +23,19 @@ public class InventoryListFragment extends ElementListFragment<Inventory> {
     protected void setListener() {
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Inventory inventory = (Inventory) parent.getItemAtPosition(position);
-            loadTargetList(inventory);
+            adapter.setHighlightedPosition(position);
+            updateAdapter(adapter, list);
+            loadInventoryDetail(inventory);
         });
     }
 
-    protected void loadTargetList(Inventory inventory){
+    @Override
+    public void updateByElement(Inventory inventory){
+        super.updateByElement(inventory);
+        loadInventoryDetail(inventory);
+    }
+
+    protected void loadInventoryDetail(Inventory inventory){
         FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.elementDetailLayout, new InventoryDetailFragment(inventory));
         ft.commit();
