@@ -84,11 +84,13 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
 
     @Override
     protected void checkLevelUpResult(LevelUpResultMessage m){
+        Unit unit = m.getUnit();
         if(m.getResult().equals("start")){
-            setUpSkillDialog(new ArrayList<>(m.getAvailableSkills()),m.getUnit());
+            setUpSkillDialog(new ArrayList<>(m.getAvailableSkills()),unit);
         }
         else {
-            unitListFragment.updateByElement(m.getUnit());
+            unitListFragment.updateByElement(unit);
+            unitListFragment.loadSoldierDetail(unit);
         }
     }
 

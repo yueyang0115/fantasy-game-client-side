@@ -51,4 +51,8 @@ public abstract class ElementFragment<T> extends BaseFragment {
         adapter.addAll(object);
         adapter.notifyDataSetChanged();
     }
+
+    public boolean isEmpty(){
+        return list.isEmpty();
+    }
 }

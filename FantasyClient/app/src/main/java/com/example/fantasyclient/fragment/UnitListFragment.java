@@ -30,21 +30,33 @@ public class UnitListFragment extends ElementListFragment<Unit> {
     protected void setListener(){
         listView.setOnItemClickListener((parent, view, position, id) -> {
             Unit unit = (Unit) parent.getItemAtPosition(position);
-            adapter.setHighlightedPosition(position);
-            updateAdapter(adapter, list);
+            if(unit.getHp()>0) {
+                adapter.setHighlightedPosition(position);
+                updateAdapter(adapter, list);
+            }
             unitSelector.doWithSelectedUnit(unit);
         });
     }
 
-    @Override
-    public void updateByElement(Unit unit){
-        super.updateByElement(unit);
-        loadSoldierDetail(unit);
-    }
-
-    protected void loadSoldierDetail(Unit unit){
+    public void loadSoldierDetail(Unit unit){
         FragmentTransaction ft = requireActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.elementDetailLayout, new UnitDetailFragment(unit));
         ft.commit();
+    }
+
+    @Override
+    public Unit getSelectedElement(){
+        Unit unit = super.getSelectedElement();
+        if(unit.getHp()<=0){
+            for(int i=0; i<list.size(); i++){
+                unit = list.get(i);
+                if(unit.getHp()>0){
+                    adapter.setHighlightedPosition(i);
+                    updateAdapter(adapter, list);
+                    break;
+                }
+            }
+        }
+        return unit;
     }
 }

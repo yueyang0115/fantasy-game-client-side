@@ -34,11 +34,9 @@ import java.util.List;
 public class BattleActivity extends BaseActivity implements UnitListFragment.UnitSelector, SkillListFragment.SkillSelector {
     Button attackBtn, itemBtn, escapeBtn;
     HashMap<Integer,Unit> unitMap = new HashMap<>();
-    List<Unit> soldierList = new ArrayList<>();
-    List<Unit> monsterList = new ArrayList<>();
-    List<Unit> sequenceList = new ArrayList<>();
+
     List<Integer> defeatedMonsters = new ArrayList<>();//List to store defeated monsters
-    Unit currSoldier, currMonster;//current attacker and attackee
+
     String actionType = "normal";
     UnitListFragment soldierListFragment, monsterListFragment, battleSequenceFragment;
 
@@ -57,17 +55,6 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         getExtra();
         setListener();
     }
-
-    /*protected void initFragment(){
-        ft = getSupportFragmentManager().beginTransaction();
-        soldierListFragment = new UnitListFragment(soldierList, this);
-        monsterListFragment = new UnitListFragment(monsterList, this);
-        battleSequenceFragment = new UnitListFragment(sequenceList, this);
-        ft.replace(R.id.soldierListLayout, soldierListFragment);
-        ft.replace(R.id.monsterListLayout, monsterListFragment);
-        ft.replace(R.id.battleSequenceLayout, battleSequenceFragment);
-        ft.commit();
-    }*/
 
     @Override
     protected void findView(){
@@ -89,18 +76,12 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     @Override
     protected void setListener(){
         attackBtn.setOnClickListener(v -> {
-            if(monsterList.isEmpty() || soldierList.isEmpty()){
+            if(monsterListFragment.isEmpty() || soldierListFragment.isEmpty()){
                 Log.e(TAG,"Battle has already ends");
             }
             else{
-                if(currMonster == null || currMonster.getHp() <= 0){
-                    currMonster = monsterList.get(0);
-                }
-                if(currSoldier == null || currSoldier.getHp() <= 0){
-                    currSoldier = soldierList.get(0);
-                }
                 socketService.enqueue(new MessagesC2S(new BattleRequestMessage(currCoord,"attack",
-                        new BattleAction(new Unit(currSoldier),new Unit(currMonster),actionType))));
+                        new BattleAction(new Unit(soldierListFragment.getSelectedElement()),new Unit(monsterListFragment.getSelectedElement()),actionType))));
                 handleRecvMessage(socketService.dequeue());
             }
 
@@ -130,9 +111,8 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         if(!m.getResult().equals("escaped")) {
             BattleInitInfo initInfo = m.getBattleInitInfo();
             if (initInfo != null) {
-                initElementList(initInfo);
-                initListFragment();
-                updateListFragment();
+                initListFragment(initInfo);
+                //updateListFragment();
             } else {
                 //battle has already begun, handle received battle actions
                 for (BattleAction action : m.getActions()) {
@@ -155,23 +135,20 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         prepareLaunchMain();
     }
 
-    private void initElementList(BattleInitInfo initInfo){
-        //At the start of battle, store initial units data into map
-        soldierList = new ArrayList<>(initInfo.getSoldiers());
+    private void initListFragment(BattleInitInfo initInfo){
+        List<Unit> soldierList = new ArrayList<>(initInfo.getSoldiers());
         for (Unit u : soldierList) {
             unitMap.put(u.getId(), u);
         }
-        monsterList = new ArrayList<>(initInfo.getMonsters());
+        List<Unit> monsterList = new ArrayList<>(initInfo.getMonsters());
         for (Unit u : monsterList) {
             unitMap.put(u.getId(), u);
         }
-        sequenceList.clear();
+        List<Unit> sequenceList = new ArrayList<>();
         for(Integer i : initInfo.getUnits()){
             sequenceList.add(new Unit(unitMap.get(i)));
         }
-    }
 
-    private void initListFragment(){
         ft = getSupportFragmentManager().beginTransaction();
         if(soldierListFragment == null) {
             soldierListFragment = new UnitListFragment(soldierList, this);
@@ -188,11 +165,11 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         ft.commit();
     }
 
-    private void updateListFragment(){
+    /*private void updateListFragment(){
         soldierListFragment.updateByList(soldierList);
         monsterListFragment.updateByList(monsterList);
         battleSequenceFragment.updateByList(sequenceList);
-    }
+    }*/
 
     @Override
     protected void finishActivity(){
@@ -234,10 +211,11 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
         unitMap.put(attacker.getId(),attacker);
         unitMap.put(attackee.getId(),attackee);
         //update sequence list
-        sequenceList.clear();
+        List<Unit> sequenceList = new ArrayList<>();
         for(Integer i : action.getUnits()){
             sequenceList.add(new Unit(unitMap.get(i)));
         }
+        battleSequenceFragment.updateByList(sequenceList);
         //update soldier and monster list
         updateUnitInfo(attacker);
         updateUnitInfo(attackee);
@@ -256,25 +234,11 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
      */
     protected void updateUnitInfo(Unit unit){
         if(unit.getType().equals("soldier")){
-            updateUnitList(unit,soldierList);
-            currSoldier = unit;
-            soldierListFragment.updateByList(soldierList);
+            soldierListFragment.updateByElement(unit);
         }
         else if(unit.getType().equals("monster")){
-            updateUnitList(unit,monsterList);
-            currMonster = unit;
-            monsterListFragment.updateByList(monsterList);
-        }
-    }
-
-    protected void updateUnitList(Unit unit, List<Unit> unitList){
-        //update unit data in list
-        unitList.set(unitList.indexOf(unit), unit);
-        //check if it dies in battle
-        if(unit.getHp() <= 0) {
-            unitList.remove(unit);
-            //if monsters are defeated, store in list and return back to main activity
-            if(unit.getType().equals("monster")) {
+            monsterListFragment.updateByElement(unit);
+            if(unit.getHp()<=0) {
                 defeatedMonsters.add(unit.getId());
             }
         }
@@ -304,8 +268,7 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
         super.checkAttributeResult(m);
-        soldierList = new ArrayList<>(m.getSoldiers());
-        soldierListFragment.updateByList(soldierList);
+        soldierListFragment.updateByList(new ArrayList<>(m.getSoldiers()));
     }
 
     @Override
@@ -316,10 +279,9 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     @Override
     public void doWithSelectedUnit(Unit unit) {
         if(unit.getType().equals("monster")){
-            currMonster = unit;
+            //do nothing here if just select a monster
         }
         else if(unit.getType().equals("soldier")){
-            currSoldier = unit;
             ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.skillListLayout, new SkillListFragment(new ArrayList<>(unit.getSkills()), unit, this));
             ft.commit();

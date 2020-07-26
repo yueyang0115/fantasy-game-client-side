@@ -21,4 +21,8 @@ public abstract class ElementListFragment<T> extends ElementFragment<T> {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_element_list, container, false);
     }
+
+    public T getSelectedElement(){
+        return list.get(adapter.getHighlightedPosition());
+    }
 }
