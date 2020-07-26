@@ -259,10 +259,12 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     protected void updateUnitInfo(Unit unit){
         if(unit.getType().equals("soldier")){
             updateUnitList(unit,soldierList);
+            currSoldier = unit;
             soldierListFragment.updateByList(soldierList);
         }
         else if(unit.getType().equals("monster")){
             updateUnitList(unit,monsterList);
+            currMonster = unit;
             monsterListFragment.updateByList(monsterList);
         }
     }

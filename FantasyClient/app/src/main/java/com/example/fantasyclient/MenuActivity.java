@@ -79,7 +79,7 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     @Override
     protected void setListener(){
         btnBack.setOnClickListener(v -> {
-            socketService.enqueue(new MessagesC2S(new RedirectMessage("MAIN")));
+            socketService.enqueue(new MessagesC2S(new RedirectMessage("mainWorld")));
             handleRecvMessage(socketService.dequeue());
         });
     }
