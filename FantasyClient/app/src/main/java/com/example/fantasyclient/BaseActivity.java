@@ -20,6 +20,7 @@ import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
+import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.RedirectMessage;
@@ -112,6 +113,11 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
         intent.putExtra("CurrentMessage", (Serializable) currMessage);
         intent.putExtra("ShopCoord", currCoord);
         startActivityForResult(intent, SHOP);
+    }
+
+    protected void prepareLaunchMain(){
+        socketService.enqueue(new MessagesC2S(new RedirectMessage("mainWorld")));
+        handleRecvMessage(socketService.dequeue());
     }
 
     protected void finishActivity(){}

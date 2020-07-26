@@ -20,7 +20,6 @@ import com.example.fantasyclient.json.LevelUpRequestMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
-import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.model.Inventory;
 import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
@@ -79,8 +78,7 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     @Override
     protected void setListener(){
         btnBack.setOnClickListener(v -> {
-            socketService.enqueue(new MessagesC2S(new RedirectMessage("mainWorld")));
-            handleRecvMessage(socketService.dequeue());
+            prepareLaunchMain();
         });
     }
 

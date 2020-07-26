@@ -17,7 +17,6 @@ import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
-import com.example.fantasyclient.json.RedirectMessage;
 import com.example.fantasyclient.model.BattleAction;
 import com.example.fantasyclient.model.BattleInitInfo;
 import com.example.fantasyclient.model.Skill;
@@ -153,8 +152,7 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     }
 
     private void sendAndRecvRedirectMessage(){
-        socketService.enqueue(new MessagesC2S(new RedirectMessage("MAIN")));
-        handleRecvMessage(socketService.dequeue());
+        prepareLaunchMain();
     }
 
     private void initElementList(BattleInitInfo initInfo){
