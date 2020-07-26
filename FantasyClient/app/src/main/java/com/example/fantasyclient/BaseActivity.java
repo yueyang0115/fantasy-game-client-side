@@ -234,7 +234,7 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
             case "MENU":
                 launchMenu();
                 break;
-            case "MAIN":
+            case "mainWorld":
                 finishActivity();
             default:
         }
