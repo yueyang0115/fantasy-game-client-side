@@ -78,7 +78,7 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     @Override
     protected void setListener(){
         btnBack.setOnClickListener(v -> {
-            prepareLaunchMain();
+            prepareLaunchMainWorld();
         });
     }
 

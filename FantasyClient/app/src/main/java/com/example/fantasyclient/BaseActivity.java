@@ -115,8 +115,13 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
         startActivityForResult(intent, SHOP);
     }
 
-    protected void prepareLaunchMain(){
+    protected void prepareLaunchMainWorld(){
         socketService.enqueue(new MessagesC2S(new RedirectMessage("mainWorld")));
+        handleRecvMessage(socketService.dequeue());
+    }
+
+    protected void prepareLaunchDeathWorld(){
+        socketService.enqueue(new MessagesC2S(new RedirectMessage("deathWorld")));
         handleRecvMessage(socketService.dequeue());
     }
 
@@ -241,7 +246,9 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
                 launchMenu();
                 break;
             case "mainWorld":
+            case "deathWorld":
                 finishActivity();
+                break;
             default:
         }
     }

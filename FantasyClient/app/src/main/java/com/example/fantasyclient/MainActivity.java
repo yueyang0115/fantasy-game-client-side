@@ -367,9 +367,13 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
                 if(resultCode == RESULT_WIN){
                     map.removeUnitByCoordAfterBattle(currCoord);
                     updateMapLayers();
+                    //tame may be changed after battle, enqueue request
+                    map.updateTerritoryQueryAfterBattle();
                 }
-                //tame may be changed after battle, ask for data again
-                map.updateTerritoryQueryAfterBattle();
+                else if(resultCode == RESULT_LOSE){
+                    map.setDeathMode();
+                }
+
                 break;
             case SHOP:
                 //check the result of purchase

@@ -25,7 +25,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     private int screenWidth;
     private Drawable initImage;
     private WorldCoord currCoord;//current virtual coordinate
-    private BidirectionalMap<WorldCoord,T> imageMap = new BidirectionalMap<WorldCoord, T>();//HashMap<VirtualCoord, TerritoryImage>
+    private BidirectionalMap<WorldCoord,T> cacheMap = new BidirectionalMap<WorldCoord, T>();//HashMap<VirtualCoord, Element>
     private List<WorldCoord> queriedCoords = new ArrayList<>();//coordinates to ask from server
 
     // Constructor
@@ -44,7 +44,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public T getItem(int position) {
         int dx = position % width - width / 2;
         int dy = height / 2 - position / width;
-        return imageMap.get(new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY()));
+        return cacheMap.get(new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY()));
     }
 
     public long getItemId(int position) {
@@ -74,7 +74,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         WorldCoord coord = new WorldCoord(dx + currCoord.getX(),dy + currCoord.getY());
         T currT;
         Drawable[] drawables;
-        if(imageMap.containsKey(coord)) {
+        if(cacheMap.containsKey(coord)) {
             //already cached, show the cached image
             currT = getCachedTargetByCoord(coord);
             drawables = getImageDrawables(imageView, position, currT);
@@ -105,7 +105,11 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public void updateCurrCoord(WorldCoord coord){
         currCoord.setByCoord(coord);
         //query for the territories if not cached
-        updateQuery(width, height, true);
+        updateQueryByMapSize();
+    }
+
+    public void updateQueryByMapSize(){
+        updateQueryByWidthAndHeight(width, height, true);
     }
 
     /**
@@ -116,7 +120,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
      *                   true: when players change location, same territory will not be queried again
      *                   false: when battle ends, tame of cached territories will change
      */
-    public void updateQuery(int width, int height, boolean ifCheckMap){
+    public void updateQueryByWidthAndHeight(int width, int height, boolean ifCheckMap){
         for(int i = - width / 2; i <= width / 2; i++){
             for(int j = - height / 2; j <= height / 2; j++){
                 WorldCoord tempCoord = new WorldCoord(currCoord.getX() + i - offsetX, currCoord.getY() + j + offsetY);
@@ -136,32 +140,36 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
      * Cache related methods
      */
     public void addToCacheByCoords(WorldCoord coord, T t) {
-        imageMap.put(coord, t);
+        cacheMap.put(coord, t);
         queriedCoords.remove(coord);
     }
 
     public void removeFromCacheByCoords(WorldCoord coord){
-        imageMap.remove(coord);
+        cacheMap.remove(coord);
     }
 
     public void removeFromCacheByTarget(T t){
-        imageMap.removeByValue(t);
+        cacheMap.removeByValue(t);
     }
 
     public boolean checkCacheByCoords(WorldCoord coord){
-        return imageMap.containsKey(coord);
+        return cacheMap.containsKey(coord);
     }
 
     public boolean checkCacheByTarget(T t){
-        return imageMap.containsValue(t);
+        return cacheMap.containsValue(t);
     }
 
     public T getCachedTargetByCoord(WorldCoord coord){
-        return imageMap.get(coord);
+        return cacheMap.get(coord);
     }
 
     public WorldCoord getCachedCoordByTarget(T t){
-        return imageMap.getKey(t);
+        return cacheMap.getKey(t);
+    }
+
+    public void clearCache(){
+        cacheMap.clear();
     }
 
     /**
@@ -169,7 +177,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
      * @param coord
      */
     private void checkMapThenAddQueriedCoord(WorldCoord coord){
-        if(!imageMap.containsKey(coord)) {
+        if(!cacheMap.containsKey(coord)) {
             //coordinate not cached yet
             addQueriedCoord(coord);
         }
@@ -198,7 +206,7 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
         height = HEIGHT + 2 * zoomLevel;
         center = width * height / 2;
         highlightedPosition = center;
-        updateQuery(width, height, true);
+        updateQueryByWidthAndHeight(width, height, true);
     }
 
     public int getNumColumn(){
@@ -219,6 +227,6 @@ public abstract class MapAdapter<T> extends HighlightAdapter<T> {
     public void updateOffset(int offsetX, int offsetY){
         this.offsetX = offsetX;
         this.offsetY = offsetY;
-        updateQuery(width, height, true);
+        updateQueryByWidthAndHeight(width, height, true);
     }
 }

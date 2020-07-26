@@ -108,31 +108,29 @@ public class BattleActivity extends BaseActivity implements UnitListFragment.Uni
     @Override
     protected void checkBattleResult(final BattleResultMessage m){
         battleResultMessage = m;
-        if(!m.getResult().equals("escaped")) {
-            BattleInitInfo initInfo = m.getBattleInitInfo();
-            if (initInfo != null) {
-                initListFragment(initInfo);
-                //updateListFragment();
-            } else {
-                //battle has already begun, handle received battle actions
-                for (BattleAction action : m.getActions()) {
-                    handleBattleAction(action);
+        String battleResult = m.getResult();
+        switch (battleResult){
+            case "continue":
+                BattleInitInfo initInfo = m.getBattleInitInfo();
+                if (initInfo != null) {
+                    initListFragment(initInfo);
+                    //updateListFragment();
+                } else {
+                    //battle has already begun, handle received battle actions
+                    for (BattleAction action : m.getActions()) {
+                        handleBattleAction(action);
+                    }
                 }
-            }
-            //after animations are done
-            //if battle ends, finish activity
-            if(!m.getResult().equals("continue")){
-                sendAndRecvRedirectMessage();
-            }
+                //after animations are done
+                break;
+            case "lose":
+                prepareLaunchDeathWorld();
+                break;
+            case "win":
+            case "escaped":
+                prepareLaunchMainWorld();
+                break;
         }
-        else{
-            //escaped, finish activity
-            sendAndRecvRedirectMessage();
-        }
-    }
-
-    private void sendAndRecvRedirectMessage(){
-        prepareLaunchMain();
     }
 
     private void initListFragment(BattleInitInfo initInfo){

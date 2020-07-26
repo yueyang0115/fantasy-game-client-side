@@ -217,7 +217,7 @@ public class MapFragment extends Fragment {
     }
 
     public void updateTerritoryQueryAfterBattle(){
-        territoryAdapter.updateQuery(3, 3, false);
+        territoryAdapter.updateQueryByWidthAndHeight(3, 3, false);
     }
 
     public void removeUnitByCoordAfterBattle(WorldCoord coord){
@@ -364,5 +364,17 @@ public class MapFragment extends Fragment {
         int column = (int) x / columnWidth;
         int row = (int) y / columnWidth;
         return row * territoryAdapter.getNumColumn() + column;
+    }
+
+    public void setDeathMode(){
+        clearAdapterCache();
+        territoryAdapter.updateQueryByMapSize();
+        updateMapLayers();
+    }
+
+    protected void clearAdapterCache(){
+        buildingAdapter.clearCache();
+        territoryAdapter.clearCache();
+        unitAdapter.clearCache();
     }
 }
