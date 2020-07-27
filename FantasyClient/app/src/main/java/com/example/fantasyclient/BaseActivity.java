@@ -259,7 +259,10 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
                 break;
             case "mainWorld":
             case "deathWorld":
-                finishActivity();
+                //finish activity if in other activity
+                if(!(this instanceof MainActivity)) {
+                    finishActivity();
+                }
                 break;
             default:
         }
