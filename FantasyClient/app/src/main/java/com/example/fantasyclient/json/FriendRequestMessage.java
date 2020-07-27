@@ -4,22 +4,32 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FriendRequestMessage {
+    public enum ActionType {
+        search, apply;
+    }
+
     String userName;
-    String action;//"apply" "search"
+    ActionType action;
+    int id;
 
     public FriendRequestMessage() {
     }
 
-    public FriendRequestMessage(String userName, String action) {
+    public FriendRequestMessage(ActionType action, int id) {
+        this.action = action;
+        this.id = id;
+    }
+
+    public FriendRequestMessage(String userName, ActionType action) {
         this.userName = userName;
         this.action = action;
     }
 
-    public String getAction() {
+    public ActionType getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(ActionType action) {
         this.action = action;
     }
 
@@ -29,5 +39,13 @@ public class FriendRequestMessage {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

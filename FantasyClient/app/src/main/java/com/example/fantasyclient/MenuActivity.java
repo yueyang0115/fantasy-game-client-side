@@ -13,6 +13,8 @@ import com.example.fantasyclient.adapter.SkillInfoAdapter;
 import com.example.fantasyclient.fragment.InventoryDetailFragment;
 import com.example.fantasyclient.fragment.InventoryListFragment;
 import com.example.fantasyclient.fragment.MenuButtonFragment;
+import com.example.fantasyclient.fragment.PlayerInfoDetailFragment;
+import com.example.fantasyclient.fragment.PlayerInfoListFragment;
 import com.example.fantasyclient.fragment.UnitDetailFragment;
 import com.example.fantasyclient.fragment.UnitListFragment;
 import com.example.fantasyclient.json.InventoryResultMessage;
@@ -21,13 +23,14 @@ import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.model.Inventory;
+import com.example.fantasyclient.model.PlayerInfo;
 import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuActivity extends BaseActivity implements InventoryListFragment.InventorySelector, UnitListFragment.UnitSelector, MenuButtonFragment.MenuButtonListener {
+public class MenuActivity extends BaseActivity implements PlayerInfoListFragment.PlayerSelector, InventoryListFragment.InventorySelector, UnitListFragment.UnitSelector, MenuButtonFragment.MenuButtonListener {
 
     //final constant
     static final String TAG = "MenuActivity";//tag for log
@@ -165,6 +168,10 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     }
 
     @Override
+    public void doWithFriendButton() {
+    }
+
+    @Override
     public void doWithSelectedInventory(Inventory inventory) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         removeDetailFragment(ft);
@@ -185,5 +192,13 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
         if(currDetailFragment!=null) {
             ft.remove(currDetailFragment);
         }
+    }
+
+    @Override
+    public void doWithSelectedPlayer(PlayerInfo playerInfo) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        removeDetailFragment(ft);
+        ft.replace(R.id.elementDetailLayout, new PlayerInfoDetailFragment(playerInfo));
+        ft.commit();
     }
 }

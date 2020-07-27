@@ -14,6 +14,7 @@ public class MessagesC2S {
     private BuildingRequestMessage buildingRequestMessage;
     private LevelUpRequestMessage levelUpRequestMessage;
     private ReviveRequestMessage reviveRequestMessage;
+    private FriendRequestMessage friendRequestMessage;
     private RedirectMessage redirectMessage;
 
     //constructors
@@ -58,6 +59,10 @@ public class MessagesC2S {
 
     public MessagesC2S(ReviveRequestMessage reviveRequestMessage) {
         this.reviveRequestMessage = reviveRequestMessage;
+    }
+
+    public MessagesC2S(FriendRequestMessage friendRequestMessage) {
+        this.friendRequestMessage = friendRequestMessage;
     }
 
     public MessagesC2S(RedirectMessage redirectMessage) {
@@ -144,6 +149,14 @@ public class MessagesC2S {
 
     public void setReviveRequestMessage(ReviveRequestMessage reviveRequestMessage) {
         this.reviveRequestMessage = reviveRequestMessage;
+    }
+
+    public FriendRequestMessage getFriendRequestMessage() {
+        return friendRequestMessage;
+    }
+
+    public void setFriendRequestMessage(FriendRequestMessage friendRequestMessage) {
+        this.friendRequestMessage = friendRequestMessage;
     }
 
     public RedirectMessage getRedirectMessage() {
