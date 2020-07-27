@@ -3,40 +3,34 @@ package com.example.fantasyclient;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fantasyclient.adapter.BuildingInfoAdapter;
-import com.example.fantasyclient.adapter.MapAdapter;
-import com.example.fantasyclient.adapter.MapBuildingAdapter;
-import com.example.fantasyclient.adapter.MapTerritoryAdapter;
-import com.example.fantasyclient.adapter.MapUnitAdapter;
 import com.example.fantasyclient.adapter.TerritoryInfoAdapter;
+import com.example.fantasyclient.fragment.MapFragment;
 import com.example.fantasyclient.helper.PositionHelper;
+import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
-import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingRequestMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.RedirectMessage;
+import com.example.fantasyclient.json.ReviveRequestMessage;
+import com.example.fantasyclient.json.ReviveResultMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
-import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
@@ -55,25 +49,17 @@ import im.delight.android.location.SimpleLocation;
  * 3. A location variable to track players' current locations
  * 4. A SocketService to keep sending to and receiving from the server
  */
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements MapFragment.OnMapListener {
 
     //final constant
     static final String TAG = "MainActivity";//tag for log
-    static final int TERRAIN_INIT = R.drawable.base01;
-    static final int UNIT_INIT = R.drawable.transparent;
     static final int PERMISSIONS_REQUEST_LOCATION = 1;//request code for location permission
 
     //map data
     SimpleLocation location;//used to track current location
 
-    WorldCoord currCoord = new WorldCoord(0,0);
-
     //fields to show map
-    MapTerritoryAdapter territoryAdapter;
-    MapUnitAdapter unitAdapter;
-    MapBuildingAdapter buildingAdapter;//Adapters for map
-    List<MapAdapter> adapterList = new ArrayList<>();
-    GridView terrainGridView, unitGridView, buildingGridView;//GridViews for map
+    MapFragment map;
 
     boolean ifPause = false;//flag to stop threads
     TextView textLocation, textVLocation;
@@ -84,19 +70,19 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initFragment();
         findView();
         initView();
         initLocation();
         //inform players to give location permission
         updateLocation();
         doBindService();
-        setOnClickListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
+        ifPause = false;
         //Thread to update location and send to server
         new Thread() {
             @Override
@@ -108,11 +94,8 @@ public class MainActivity extends BaseActivity {
                 Looper.prepare();
                 sendLocationRequest();
                 //send location request when players change their location
-                location.setListener(new SimpleLocation.Listener() {
-                    @Override
-                    public void onPositionChanged() {
-                        sendLocationRequest();
-                    }
+                location.setListener(() -> {
+                    sendLocationRequest();
                 });
                 Looper.loop();
             }
@@ -131,6 +114,8 @@ public class MainActivity extends BaseActivity {
                 }
             }
         }.start();
+
+        setListener();
     }
 
     @Override
@@ -139,6 +124,51 @@ public class MainActivity extends BaseActivity {
         //stop location updates and background threads
         location.endUpdates();
         ifPause = true;
+    }
+
+    @Override
+    public void onMapBuildingCreate() {
+        socketService.enqueue(new MessagesC2S(
+                new BuildingRequestMessage(currCoord,"createList")
+        ));
+    }
+
+    @Override
+    public void onMapBuildingUpgrade() {
+        socketService.enqueue(new MessagesC2S(
+                new BuildingRequestMessage(currCoord,"upgradeList")
+        ));
+    }
+
+    @Override
+    public void onMapUnitSelected() {
+        MessagesC2S messagesC2S = new MessagesC2S();
+        messagesC2S.setBattleRequestMessage(new BattleRequestMessage(currCoord, "start"));
+        messagesC2S.setRedirectMessage(new RedirectMessage("BATTLE"));
+        socketService.enqueue(messagesC2S);
+    }
+
+    @Override
+    public void onMapShopSelected() {
+        MessagesC2S messagesC2S = new MessagesC2S();
+        messagesC2S.setShopRequestMessage(new ShopRequestMessage(currCoord, "list"));
+        messagesC2S.setRedirectMessage(new RedirectMessage("SHOP"));
+        socketService.enqueue(messagesC2S);
+    }
+
+    @Override
+    public void onMapCastleSelected() {
+        socketService.enqueue(new MessagesC2S(new ReviveRequestMessage("revive")));
+    }
+
+    @Override
+    public void onMapTerritorySelected(Territory territory) {
+        setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territory)));
+    }
+
+    @Override
+    public void onMapUpdate(){
+        enqueuePositionRequest(true);
     }
 
     /**
@@ -194,11 +224,9 @@ public class MainActivity extends BaseActivity {
         //check if current location has changed
         if(!tempCoord.equals(currCoord)) {
             //update current coordinate of all layers of map, and queryList as well
-            currCoord = tempCoord;
-            for (MapAdapter adapter : adapterList) {
-                adapter.updateCurrCoord(currCoord);
-            }
-            enqueuePositionRequest();
+            map.updateCurrCoord(tempCoord);
+            enqueuePositionRequest(false);
+            currCoord.setByCoord(tempCoord);
         }
     }
 
@@ -209,17 +237,13 @@ public class MainActivity extends BaseActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    // permission was granted, yay! Do the contacts-related task you need to do.
                     location.beginUpdates();
                 } else {
-                    // permission denied, disable the
-                    // functionality that depends on this permission.
+                    // permission denied, disable the functionality that depends on this permission.
                 }
-                return;
             }
-            // other 'case' lines to check for other
-            // permissions this app might request.
+            // other 'case' lines to check for other permissions this app might request.
         }
     }
 
@@ -233,19 +257,19 @@ public class MainActivity extends BaseActivity {
         //update new terrains
         if(m.getTerritoryArray() != null) {
             for (Territory t : m.getTerritoryArray()) {
-                updateTerrain(t);
+                map.updateTerrain(t);
             }
         }
         //update new monsters
         if(m.getMonsterArray() != null) {
             for (Monster monster : m.getMonsterArray()) {
-                updateMonster(monster);
+                map.updateMonster(monster);
             }
         }
         //update new buildings
         if(m.getBuildingArray() != null) {
             for (Building b : m.getBuildingArray()) {
-                updateBuilding(b);
+                map.updateBuilding(b);
             }
         }
         //update UI
@@ -253,50 +277,7 @@ public class MainActivity extends BaseActivity {
     }
 
     protected void updateMapLayers(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                territoryAdapter.notifyDataSetChanged();
-                unitAdapter.notifyDataSetChanged();
-                buildingAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    /**
-     * This method is called after a MessageS2C with ShopResultMessage is received from server
-     * It happens in MainActivity only if players try to enter shops and send "list"
-     * After InventoryResultMessage is also received, ShopActivity will be launched
-     * @param m: received ShopResultMessage
-     */
-    @Override
-    protected void checkShopResult(final ShopResultMessage m){
-        if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this, ShopActivity.class);
-            intent.putExtra("ShopResultMessage", m);
-            intent.putExtra("ShopCoord", currCoord);
-            //clear queue before change activities
-            socketService.clearQueue();
-            startActivityForResult(intent, SHOP);
-        }
-    }
-
-    /**
-     * This method is called after a MessageS2C with BattleResultMessage is received from server
-     * It happens in MainActivity only if players try to battle with monsters and send "start"
-     * After permission from server, BattleActivity will be launched
-     * @param m: received BattleResultMessage
-     */
-    @Override
-    protected void checkBattleResult(final BattleResultMessage m){
-        if(m.getResult().equals("continue")){
-            Intent intent = new Intent(this,BattleActivity.class);
-            intent.putExtra("BattleResultMessage", m);
-            intent.putExtra("territoryCoord", currCoord);
-            //clear queue before change activities
-            socketService.clearQueue();
-            startActivityForResult(intent,BATTLE);
-        }
+        runOnUiThread(() -> map.updateMapLayers());
     }
 
     @Override
@@ -312,13 +293,8 @@ public class MainActivity extends BaseActivity {
                     break;
                 case "create":
                 case "upgrade":
-                    updateBuilding(m.getBuilding());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            buildingAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    map.updateBuilding(m.getBuilding());
+                    runOnUiThread(() -> map.updateMapLayers());
                     break;
             }
         }
@@ -329,51 +305,37 @@ public class MainActivity extends BaseActivity {
 
     protected void setUpBuildingDialog(final List<Building> list, final String title){
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // setup the alert builder
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Please choose a building to " + title);
-                // add a radio button list
-                final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
-                int checkedItem = 0; // default is the first choice
-                final Building[] currBuilding = new Building[1];
-                //set initial selected building to be the first
-                if(!list.isEmpty()) {
-                    currBuilding[0] = adapter.getItem(checkedItem);
-                }
-                builder.setSingleChoiceItems(adapter, checkedItem, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // user checked an item
-                        currBuilding[0] = adapter.getItem(which);
-                        //highlight selected item
-                        adapter.setHighlightedPosition(which);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.notifyDataSetChanged();
-                                //updateAdapter(adapter, list);
-                            }
-                        });
-                    }
-                });
-                // add OK and Cancel buttons
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // user clicked OK
-                        if(currBuilding[0]!=null) {
-                            socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, currBuilding[0].getName())));
-                        }
-                    }
-                });
-                builder.setNegativeButton("Cancel", null);
-                // create and show the alert dialog
-                AlertDialog dialog = builder.create();
-                dialog.show();
+        // setup the alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Please choose a building to " + title);
+        // add a radio button list
+        final BuildingInfoAdapter adapter = new BuildingInfoAdapter(MainActivity.this, list);
+        int checkedItem = 0; // default is the first choice
+        final Building[] currBuilding = new Building[1];
+        //set initial selected building to be the first
+        if(!list.isEmpty()) {
+            currBuilding[0] = adapter.getItem(checkedItem);
+        }
+        builder.setSingleChoiceItems(adapter, checkedItem, (dialog, which) -> {
+            // user checked an item
+            currBuilding[0] = adapter.getItem(which);
+            //highlight selected item
+            adapter.setHighlightedPosition(which);
+            //updateAdapter(adapter, list);
+            runOnUiThread(adapter::notifyDataSetChanged);
+        });
+        // add OK and Cancel buttons
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            // user clicked OK
+            if(currBuilding[0]!=null) {
+                socketService.enqueue(new MessagesC2S(new BuildingRequestMessage(currCoord, title, currBuilding[0].getName())));
             }
+        });
+        builder.setNegativeButton("Cancel", null);
+        // create and show the alert dialog
+        runOnUiThread(()->{
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
     }
 
@@ -390,40 +352,11 @@ public class MainActivity extends BaseActivity {
         dialog.show();
     }
 
-    /**
-     * This method changes the source file array in several adapters for corresponding map layers
-     * mainly including layers that are unlikely to change: terrain, building
-     * UI will be updated when adapter.notifyDataSetChanged() is called on UI thread
-     * @param t: target territory
-     */
-    protected void updateTerrain(Territory t){
-        WorldCoord targetCoord = t.getCoord();
-        //update terrain layer
-        territoryAdapter.addToCacheByCoords(targetCoord,t);
-    }
-
-    /**
-     * This method changes unit adapters with the following steps:
-     * 1. Check if the unit with this id has been cached before, if so, remove it
-     * 2. Update its new coordinate and add it the cache
-     */
-    protected void updateMonster(Monster m){
-        //remove from cache if cached
-        if(unitAdapter.checkCacheByTarget(m)){
-            unitAdapter.removeFromCacheByTarget(m);
+    @Override
+    protected void checkReviveResult(ReviveResultMessage m) {
+        if(m.getResult().equals("success")){
+            map.setLiveMode();
         }
-        //update coordinate and cache it
-        unitAdapter.addToCacheByCoords(m.getCoord(),m);
-    }
-
-    /**
-     * This method cache building data and update building layer
-     * Since building is unlikely to change territory, receiving new buildings does not require
-     * check existing building cache
-     * @param b
-     */
-    protected void updateBuilding(Building b){
-        buildingAdapter.addToCacheByCoords(b.getCoord(),b);
     }
 
     /**
@@ -446,8 +379,13 @@ public class MainActivity extends BaseActivity {
             case BATTLE:
                 //check the result of battle
                 if(resultCode == RESULT_WIN){
-                    unitAdapter.removeFromCacheByCoords(currCoord);
+                    map.removeUnitByCoordAfterBattle(currCoord);
                     updateMapLayers();
+                    //tame may be changed after battle, enqueue request
+                    map.updateTerritoryQueryAfterBattle();
+                }
+                else if(resultCode == RESULT_LOSE){
+                    map.setDeathMode();
                 }
                 break;
             case SHOP:
@@ -459,18 +397,29 @@ public class MainActivity extends BaseActivity {
                 Log.e(TAG,"Invalid request code");
         }
         //inform server that the player has switch to the map
-        enqueuePositionRequest();
+        enqueuePositionRequest(false);
     }
 
     /**
      * This method enqueue position request to be sent to server
      */
-    protected void enqueuePositionRequest(){
+    protected void enqueuePositionRequest(boolean ifCheckEmptyQuery){
         //get the coordinates which need to be queried from server
-        List<WorldCoord> queriedCoords = territoryAdapter.getQueriedCoords();
+        List<WorldCoord> queriedCoords = map.getQueriedCoords();
+        //if need to check query and query is empty, do not send message
+        if(ifCheckEmptyQuery && queriedCoords.isEmpty()) {
+            return;
+        }
         //enqueue query message in order to send to server
         PositionRequestMessage p = new PositionRequestMessage(queriedCoords, currCoord);
         socketService.enqueue(new MessagesC2S(p));
+    }
+
+    protected void initFragment(){
+        map = new MapFragment(currCoord);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.frameLayout,map);
+        ft.commit();
     }
 
     @Override
@@ -480,109 +429,17 @@ public class MainActivity extends BaseActivity {
         //btnBag = (Button) findViewById(R.id.btn_bag);
         bagImg = (ImageView) findViewById(R.id.bagImg);
         settingsImg = (ImageView) findViewById(R.id.settingsImg);
-        terrainGridView = (GridView) findViewById(R.id.terrainGridView);
-        unitGridView = (GridView) findViewById(R.id.unitGridView);
-        buildingGridView = (GridView) findViewById(R.id.buildingGridView);
-
     }
 
     @Override
-    protected void initView(){
-        territoryAdapter = new MapTerritoryAdapter(this, currCoord);
-        unitAdapter = new MapUnitAdapter(this, currCoord);
-        buildingAdapter = new MapBuildingAdapter(this, currCoord);
-
-        adapterList.add(territoryAdapter);
-        adapterList.add(unitAdapter);
-        adapterList.add(buildingAdapter);
-
-        territoryAdapter.initImage(TERRAIN_INIT);
-        unitAdapter.initImage(UNIT_INIT);
-        buildingAdapter.initImage(UNIT_INIT);
-
-        terrainGridView.setAdapter(territoryAdapter);
-        unitGridView.setAdapter(unitAdapter);
-        buildingGridView.setAdapter(buildingAdapter);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    protected void setOnClickListener(){
-        //short click on GridView
-        unitGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //check if click on the center territory
-                if(position==CENTER) {
-                    //check if current territory has monsters
-                    if(unitAdapter.checkCacheByCoords(currCoord)){
-                        socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currCoord, "start")));
-                    }
-                    //check if current territory has buildings
-                    else if(buildingAdapter.checkCacheByCoords(currCoord)){
-                        switch (buildingAdapter.getItem(position).getName()) {
-                            case "shop":
-                            case "super_shop":
-                                socketService.enqueue(new MessagesC2S(
-                                        new ShopRequestMessage(currCoord, "list")));
-                                break;
-                        }
-                    }
-                    else{
-                        setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
-                    }
-                }
-                else {
-                    setUpTerritoryDialog(new ArrayList<>(Collections.singletonList(territoryAdapter.getItem(position))));
-                }
-            }
-        });
-        //long click on GridView
-        unitGridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                //check if click on the center territory
-                if(position==CENTER){
-                    //check if current territory has monsters
-                    if(unitAdapter.checkCacheByCoords(currCoord)){
-                        socketService.enqueue(new MessagesC2S(
-                                new BattleRequestMessage(currCoord, "start")));
-                    }
-                    //check if current territory has buildings
-                    else if(buildingAdapter.checkCacheByCoords(currCoord)){
-                        socketService.enqueue(new MessagesC2S(
-                                new BuildingRequestMessage(currCoord,"upgradeList")
-                        ));
-                    }
-                    else{
-                        socketService.enqueue(new MessagesC2S(
-                                new BuildingRequestMessage(currCoord,"createList")
-                        ));
-                    }
-                }
-                return true;
-            }
-        });
-        unitGridView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });
-        bagImg.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                // TODO
-                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
-            }
-        });
-        settingsImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
+    protected void setListener(){
+        bagImg.setOnClickListener(v -> {
+            MessagesC2S messagesC2S = new MessagesC2S();
+            messagesC2S.setInventoryRequestMessage(new InventoryRequestMessage("list"));
+            messagesC2S.setAttributeRequestMessage(new AttributeRequestMessage("list"));
+            messagesC2S.setRedirectMessage(new RedirectMessage("MENU"));
+            socketService.enqueue(messagesC2S);
         });
     }
+
 }

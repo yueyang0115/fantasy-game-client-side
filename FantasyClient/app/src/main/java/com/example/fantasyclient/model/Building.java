@@ -1,9 +1,12 @@
 package com.example.fantasyclient.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Building implements Serializable {
 
     private WorldCoord coord;
@@ -23,7 +26,16 @@ public class Building implements Serializable {
         this.name = name;
     }
 
+    public Building(String name, int cost){
+        this.name = name;
+        this.cost = cost;
+    }
 
+    public Building(String name, int cost, WorldCoord coord){
+        this.name = name;
+        this.cost = cost;
+        this.coord = coord;
+    }
 
     public WorldCoord getCoord() {
         return coord;

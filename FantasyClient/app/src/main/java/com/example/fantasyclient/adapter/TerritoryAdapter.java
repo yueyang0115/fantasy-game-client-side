@@ -19,7 +19,7 @@ public abstract class TerritoryAdapter extends ElementAdapter<Territory> {
 
     //initialize the territory layout
     TerritoryAdapter(Context context, List<Territory> objects) {
-        super(context, objects, R.layout.territory_layout);
+        super(context, objects, R.layout.element_territory);
     }
 
     @Override

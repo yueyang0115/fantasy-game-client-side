@@ -27,11 +27,13 @@ public class UnitInfoAdapter extends UnitAdapter {
         UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
         // Populate the data into the template view using the data object
         viewHolder.baseText.setText("ID: "+ unit.getId());
+        viewHolder.unitLevel.setText("LVL: "+ unit.getExperience().getLevel());
         viewHolder.unitHp.setText("HP: "+ unit.getHp());
         viewHolder.unitAtk.setText("ATK: "+ unit.getAtk());
         viewHolder.unitSpeed.setText("SPD: "+ unit.getSpeed());
+        viewHolder.unitExpBar.setProgress(unit.getExperience().getExperience());
         // add frame to selected image
-        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(unit.getName())}, highlightedPosition);
+        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(unit.getName())});
     }
 
 }

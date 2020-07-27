@@ -1,7 +1,10 @@
 package com.example.fantasyclient.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Inventory implements Serializable {
     private int id;
 
@@ -14,6 +17,12 @@ public class Inventory implements Serializable {
 
     public Inventory(DBItem item, int amount) {
         this.item = item;
+        this.amount = amount;
+    }
+
+    public Inventory(Inventory inventory, int amount){
+        this.id = inventory.getId();
+        this.item = inventory.getDBItem();
         this.amount = amount;
     }
 
@@ -39,6 +48,21 @@ public class Inventory implements Serializable {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    @Override
+    public boolean equals(Object e) {
+        if ( e instanceof Inventory &&
+                this.id == ((Inventory)e).getId())
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public int hashCode() {
+        Integer tempID = id;
+        return tempID.hashCode();
     }
 
 }

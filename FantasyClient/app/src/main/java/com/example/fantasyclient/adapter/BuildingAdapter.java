@@ -19,7 +19,7 @@ public abstract class BuildingAdapter extends ElementAdapter<Building> {
 
     //initialize the building layout
     BuildingAdapter(Context context, List<Building> objects) {
-        super(context, objects, R.layout.building_layout);
+        super(context, objects, R.layout.element_building);
     }
 
     @Override

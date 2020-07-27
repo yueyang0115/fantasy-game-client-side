@@ -28,6 +28,7 @@ public class UnitImageAdapter extends UnitAdapter {
         viewHolder.unitAtk.setVisibility(View.GONE);
         viewHolder.unitHp.setVisibility(View.GONE);
         viewHolder.unitSpeed.setVisibility(View.GONE);
+        viewHolder.unitExpBar.setVisibility(View.GONE);
         // no need to select data object, not add frame here
         viewHolder.image.setImageDrawable(getDrawableByName(unit.getName()));
     }

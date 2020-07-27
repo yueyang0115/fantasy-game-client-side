@@ -1,9 +1,7 @@
 package com.example.fantasyclient;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 /**
@@ -23,12 +21,6 @@ public class StartActivity extends BaseActivity {
         startService(new Intent(StartActivity.this, SocketService.class));
         doBindService();
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                launchLogin();
-            }
-        });
+        btnStart.setOnClickListener(v -> launchLogin());
     }
 }

@@ -3,7 +3,6 @@ package com.example.fantasyclient.adapter;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.example.fantasyclient.R;
@@ -19,8 +18,8 @@ import java.util.List;
 public abstract class InventoryAdapter extends ElementAdapter<Inventory> {
 
     //initialize the inventory layout
-    InventoryAdapter(Context context, List<Inventory> objects) {
-        super(context, objects, R.layout.item_layout);
+    InventoryAdapter(Context context, List<Inventory> objects, int layout) {
+        super(context, objects, layout);
     }
 
     @Override
@@ -37,6 +36,6 @@ public abstract class InventoryAdapter extends ElementAdapter<Inventory> {
         viewHolder.inventoryCost = (TextView) convertView.findViewById(R.id.itemCost);
         viewHolder.inventoryAmount = (TextView) convertView.findViewById(R.id.itemAmount);
         viewHolder.image = (ImageView) convertView.findViewById(R.id.itemImage);
-        viewHolder.inventoryNumPicker = (NumberPicker) convertView.findViewById(R.id.itemNum);
+        //viewHolder.inventoryNumPicker = (NumberPicker) convertView.findViewById(R.id.itemNum);
     }
 }

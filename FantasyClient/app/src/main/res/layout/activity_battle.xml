@@ -12,35 +12,19 @@
         android:layout_weight="2"
         android:layout_height="0dp"
         android:baselineAligned="false">
-        <LinearLayout
-            android:id="@+id/monster_bar"
-            android:orientation="vertical"
-            android:layout_width="0dp"
+        <FrameLayout
+            android:id="@+id/monsterListLayout"
             android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            tools:ignore="NestedWeights">
-            <ListView
-                android:id="@+id/monster_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </ListView>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/soldier_bar"
-            android:orientation="vertical"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
-            android:baselineAligned="false"
             tools:ignore="NestedWeights">
-            <ListView
-                android:id="@+id/soldier_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </ListView>
-
-        </LinearLayout>
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/soldierListLayout"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+        </FrameLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -50,6 +34,7 @@
         android:layout_weight="1"
         android:layout_height="0dp"
         android:baselineAligned="false">
+
         <LinearLayout
             android:id="@+id/action_bar"
             android:orientation="vertical"
@@ -94,48 +79,20 @@
             </FrameLayout>
 
         </LinearLayout>
-        <LinearLayout
-            android:id="@+id/attribute_bar"
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            tools:ignore="NestedWeights">
-            <FrameLayout
-                android:id="@+id/attribute_bar1"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/attribute_bar2"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-            </FrameLayout>
-            <FrameLayout
-                android:id="@+id/attribute_bar3"
-                android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-            </FrameLayout>
 
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/sequence_bar"
-            android:orientation="vertical"
+        <FrameLayout
+            android:id="@+id/skillListLayout"
+            android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_weight="0.5"
-            android:layout_height="match_parent"
-            android:baselineAligned="false"
-            tools:ignore="NestedWeights">
-            <ListView
-                android:id="@+id/sequence_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </ListView>
-        </LinearLayout>
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/battleSequenceLayout"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+        </FrameLayout>
     </LinearLayout>
 
 </LinearLayout>

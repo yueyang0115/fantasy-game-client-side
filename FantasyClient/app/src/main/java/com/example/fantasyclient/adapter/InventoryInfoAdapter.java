@@ -3,13 +3,13 @@ package com.example.fantasyclient.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.view.View;
+import android.util.Log;
 
+import com.example.fantasyclient.R;
 import com.example.fantasyclient.adapter.viewholder.BaseViewHolder;
 import com.example.fantasyclient.adapter.viewholder.InventoryViewHolder;
 import com.example.fantasyclient.model.Inventory;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 public class InventoryInfoAdapter extends InventoryAdapter {
 
     public InventoryInfoAdapter(Context context, List<Inventory> objects) {
-        super(context, objects);
+        super(context, objects, R.layout.element_inventory);
         TAG = "InventoryInfoAdapter";
     }
 
@@ -36,8 +36,8 @@ public class InventoryInfoAdapter extends InventoryAdapter {
             jsonObject = new JSONObject(inventory.getDBItem().getItem_properties());
             name = jsonObject.getString("name");
             cost = jsonObject.getInt("cost");
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(TAG,"Json object deserialization fails");
         }
         // cast BaseViewHolder to InventoryViewHolder
         final InventoryViewHolder viewHolder = (InventoryViewHolder)baseViewHolder;
@@ -45,8 +45,7 @@ public class InventoryInfoAdapter extends InventoryAdapter {
         viewHolder.baseText.setText("Name:" + name);
         viewHolder.inventoryCost.setText("Cost: " + cost);
         viewHolder.inventoryAmount.setText("Amount: " + inventory.getAmount());
-        viewHolder.inventoryNumPicker.setVisibility(View.GONE);
         // add frame to selected image
-        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(name)}, highlightedPosition);
+        setImageByPosition(viewHolder.image, position, new Drawable[]{getDrawableByName(name)});
     }
 }

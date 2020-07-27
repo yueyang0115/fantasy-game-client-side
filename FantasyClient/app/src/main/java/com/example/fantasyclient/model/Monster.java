@@ -1,10 +1,22 @@
 package com.example.fantasyclient.model;
 
+import java.util.List;
+import java.util.Set;
+
 public class Monster extends Unit{
 
     private WorldCoord coord;
 
     private boolean needUpdate;
+
+    public Monster() {
+    }
+
+    public Monster(String type, String name, int hp, int atk, int speed, Experience experience, WorldCoord coord, boolean needUpdate, Set<Skill> skills) {
+        super(type, name, hp, atk, speed, experience, skills);
+        this.coord = coord;
+        this.needUpdate = needUpdate;
+    }
 
     public WorldCoord getCoord() {
         return coord;

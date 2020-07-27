@@ -1,6 +1,8 @@
 package com.example.fantasyclient.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Unit implements Serializable {
 
@@ -10,16 +12,22 @@ public class Unit implements Serializable {
     private int hp;
     private int atk;
     private int speed;
+    private Experience experience = new Experience();
+    //private List<UnitEquipment> equipments = new ArrayList<>();
+    private DBItem weapon;
+    private Set<Skill> skills = new HashSet<>();
 
     public Unit(){
     }
 
-    public Unit(String type, String name, int hp, int atk, int speed){
+    public Unit(String type, String name, int hp, int atk, int speed, Experience experience, Set<Skill> skills){
         this.type = type;
         this.name = name;
         this.hp = hp;
         this.atk = atk;
         this.speed = speed;
+        this.experience = new Experience(experience.getExperience(),experience.getLevel(),experience.getSkillPoint());
+        this.skills = skills;
     }
 
     public Unit(Unit unit){
@@ -33,6 +41,8 @@ public class Unit implements Serializable {
         this.hp = unit.getHp();
         this.atk = unit.getAtk();
         this.speed = unit.getSpeed();
+        this.experience = new Experience(unit.getExperience().getExperience(),unit.getExperience().getLevel(),unit.getExperience().getSkillPoint());
+        this.skills = unit.getSkills();
     }
 
     public int getId() {
@@ -82,6 +92,22 @@ public class Unit implements Serializable {
     public void setSpeed(int speed) {
         this.speed = speed;
     }
+
+    public Experience getExperience() { return experience; }
+
+    public void setExperience(Experience experience) { this.experience = experience; }
+
+    public DBItem getWeapon() {
+        return weapon;
+    }
+
+    public void setWeapon(DBItem weapon) {
+        this.weapon = weapon;
+    }
+
+    public Set<Skill> getSkills() { return skills; }
+
+    public void setSkills(Set<Skill> skills) { this.skills = skills; }
 
     @Override
     public boolean equals(Object e) {

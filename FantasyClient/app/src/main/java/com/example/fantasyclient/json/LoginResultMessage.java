@@ -1,6 +1,8 @@
 package com.example.fantasyclient.json;
 
-public class LoginResultMessage {
+import java.io.Serializable;
+
+public class LoginResultMessage implements Serializable {
     private int wid;
     private int id;
     private String error_msg;

@@ -17,11 +17,14 @@ public class WorldCoord implements Serializable{
     }
 
     public WorldCoord(WorldCoord coord){
+        setByCoord(coord);
+    }
+
+    public void setByCoord(WorldCoord coord){
         this.wid = coord.wid;
         this.x = coord.getX();
         this.y = coord.getY();
     }
-
 
     public int getWid() {
         return wid;

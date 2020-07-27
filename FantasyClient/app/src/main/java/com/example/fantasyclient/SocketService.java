@@ -11,9 +11,9 @@ import com.example.fantasyclient.helper.MessageReceiver;
 import com.example.fantasyclient.helper.MessageSender;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
-import com.example.fantasyclient.thread.Communicator;
-import com.example.fantasyclient.thread.ConnectThread;
+import com.example.fantasyclient.helper.Communicator;
 
+import java.io.IOException;
 import java.net.Socket;
 
 /**
@@ -72,17 +72,26 @@ public class SocketService extends Service implements BidirectionalMessageQueue<
 
     @Override
     public void initCommunicator(){
-        (new ConnectThread(this)).start();
-        while(communicator==null){}
+        new Thread(() -> {
+            try {
+                Socket socket = new Socket(SocketService.SERVER_IP, SocketService.TCP_PORT);
+                communicator = new Communicator<>(socket, new MessagesS2C());
+                Log.d("Connection", "Succeed");
+            } catch (IOException e) {
+                Log.e("Connection", "Error", e);
+            }
+        }).start();
         new Thread(){
             @Override
             public void run() {
+                while(communicator==null){}
                 sender.sendLoop(communicator);
             }
         }.start();
         new Thread(){
             @Override
             public void run() {
+                while(communicator==null){}
                 receiver.recvLoop(communicator);
             }
         }.start();

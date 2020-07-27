@@ -3,8 +3,6 @@ package com.example.fantasyclient;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,6 +10,7 @@ import android.widget.TextView;
 import com.example.fantasyclient.adapter.InventoryPickerAdapter;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.model.Inventory;
@@ -37,11 +36,6 @@ public class ShopActivity extends BaseActivity {
     InventoryPickerAdapter shopAdapter, inventoryAdapter;
     ListView shopListView, inventoryListView;
 
-    //Cached messages passed by other activities
-    ShopResultMessage shopResultMessage;
-    InventoryResultMessage inventoryResultMessage;
-    WorldCoord currCoord;
-
     final static String TAG = "ShopActivity";
 
     @Override
@@ -52,7 +46,7 @@ public class ShopActivity extends BaseActivity {
         initView();
         doBindService();
         getExtra();
-        setOnClickListener();
+        setListener();
     }
 
     @Override
@@ -79,42 +73,33 @@ public class ShopActivity extends BaseActivity {
     @Override
     protected void getExtra(){
         Intent intent = getIntent();
-        shopResultMessage = (ShopResultMessage) intent.getSerializableExtra("ShopResultMessage");
-        assert shopResultMessage != null;
-        inventoryResultMessage = shopResultMessage.getInventoryResultMessage();
-        checkShopResult(shopResultMessage);
         currCoord = (WorldCoord) intent.getSerializableExtra("ShopCoord");
+        currMessage = (MessagesS2C) intent.getSerializableExtra("CurrentMessage");
+        assert currMessage != null;
+        checkShopResult(currMessage.getShopResultMessage());
+        checkInventoryResult(currMessage.getInventoryResultMessage());
     }
 
     @Override
-    protected void setOnClickListener(){
-        btn_buy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //send Shop request
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,shopAdapter.getItemMap(),"buy")));
-                handleRecvMessage(socketService.dequeue());
-                shopAdapter.clearMap();
-            }
+    protected void setListener(){
+        btn_buy.setOnClickListener(v -> {
+            //send Shop request
+            socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,shopAdapter.getSelectedItems(),"buy")));
+            handleRecvMessage(socketService.dequeue());
+            shopAdapter.clearMap();
         });
-        btn_sell.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,inventoryAdapter.getItemMap(),"sell")));
-                handleRecvMessage(socketService.dequeue());
-                inventoryAdapter.clearMap();
-            }
+        btn_sell.setOnClickListener(v -> {
+            socketService.enqueue(new MessagesC2S(new ShopRequestMessage(currCoord,inventoryAdapter.getSelectedItems(),"sell")));
+            handleRecvMessage(socketService.dequeue());
+            inventoryAdapter.clearMap();
         });
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //clear queue before change activities
-                socketService.clearQueue();
-                doUnbindService();
-                Intent intent = new Intent();
-                setResult(RESULT_CANCELED,intent);
-                finish();
-            }
+        btn_cancel.setOnClickListener(v -> {
+            //clear queue before change activities
+            socketService.clearQueue();
+            doUnbindService();
+            Intent intent = new Intent();
+            setResult(RESULT_CANCELED,intent);
+            finish();
         });
     }
 
@@ -128,15 +113,8 @@ public class ShopActivity extends BaseActivity {
     protected void checkShopResult(final ShopResultMessage m) {
         if (m.getResult().equals("valid")) {
             //action is valid, updateUI
-            Log.d(TAG,"checkShopResult");
             shopInventoryList = m.getItems();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateAdapter(shopAdapter,shopInventoryList);
-                }
-            });
-            checkInventoryResult(m.getInventoryResultMessage());
+            runOnUiThread(() -> updateAdapter(shopAdapter,shopInventoryList));
         }
         else{
             //action is invalid, show error message
@@ -149,12 +127,7 @@ public class ShopActivity extends BaseActivity {
         if (m.getResult().equals("valid")) {
             //action is valid, update UI
             inventoryItemList = m.getItems();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updateAdapter(inventoryAdapter,inventoryItemList);
-                }
-            });
+            runOnUiThread(() -> updateAdapter(inventoryAdapter,inventoryItemList));
             text_money.setText(Integer.toString(m.getMoney()));
         }
         else{

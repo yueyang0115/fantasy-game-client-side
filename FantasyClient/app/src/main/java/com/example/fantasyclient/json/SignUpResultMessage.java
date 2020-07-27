@@ -1,6 +1,8 @@
 package com.example.fantasyclient.json;
 
-public class SignUpResultMessage {
+import java.io.Serializable;
+
+public class SignUpResultMessage implements Serializable {
     private String error_msg;
     private String status;
 

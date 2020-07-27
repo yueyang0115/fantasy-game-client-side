@@ -4,21 +4,22 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 
-import com.example.fantasyclient.adapter.UnitImageAdapter;
-import com.example.fantasyclient.adapter.UnitInfoAdapter;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.fantasyclient.fragment.SkillListFragment;
+import com.example.fantasyclient.fragment.UnitListFragment;
 import com.example.fantasyclient.json.AttributeRequestMessage;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleRequestMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.InventoryRequestMessage;
 import com.example.fantasyclient.json.MessagesC2S;
+import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.model.BattleAction;
 import com.example.fantasyclient.model.BattleInitInfo;
+import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
 import com.example.fantasyclient.model.WorldCoord;
 
@@ -30,31 +31,29 @@ import java.util.List;
  * This is a template activity related to user accounts
  */
 @SuppressLint("Registered")
-public class BattleActivity extends BaseActivity{
+public class BattleActivity extends BaseActivity implements UnitListFragment.UnitSelector, SkillListFragment.SkillSelector {
     Button attackBtn, itemBtn, escapeBtn;
     HashMap<Integer,Unit> unitMap = new HashMap<>();
-    List<Unit> soldierList = new ArrayList<>();
-    List<Unit> monsterList = new ArrayList<>();
-    List<Unit> seqList = new ArrayList<>();
+
     List<Integer> defeatedMonsters = new ArrayList<>();//List to store defeated monsters
-    Unit currSoldier, currMonster;//current attacker and attackee
-    UnitInfoAdapter soldierAdapter, monsterAdapter;
-    UnitImageAdapter seqAdapter;
-    ListView soldierListView, monsterListView, seqListView;
-    WorldCoord territoryCoord;
-    boolean ifStop = false;
+
+    String actionType = "normal";
+    UnitListFragment soldierListFragment, monsterListFragment, battleSequenceFragment;
+
     BattleResultMessage battleResultMessage;
     static final String TAG = "BattleActivity";
+    FragmentTransaction ft;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battle);
+
         findView();
         initView();
         doBindService();
         getExtra();
-        setOnClickListener();
+        setListener();
     }
 
     @Override
@@ -62,123 +61,42 @@ public class BattleActivity extends BaseActivity{
         attackBtn = findViewById(R.id.attack_btn);
         escapeBtn = findViewById(R.id.escape_btn);
         itemBtn = findViewById(R.id.item_btn);
-        soldierListView = findViewById(R.id.soldier_list);
-        monsterListView = findViewById(R.id.monster_list);
-        seqListView = findViewById(R.id.sequence_list);
-    }
 
-    @Override
-    protected void initView(){
-        soldierAdapter = new UnitInfoAdapter(this, soldierList);
-        soldierListView.setAdapter(soldierAdapter);
-        monsterAdapter = new UnitInfoAdapter(this, monsterList);
-        monsterListView.setAdapter(monsterAdapter);
-        seqAdapter = new UnitImageAdapter(this, seqList);
-        seqListView.setAdapter(seqAdapter);
     }
 
     @Override
     protected void getExtra(){
         Intent intent = getIntent();
-        battleResultMessage = (BattleResultMessage) intent.getSerializableExtra("BattleResultMessage");
-        assert battleResultMessage != null;
-        checkBattleResult(battleResultMessage);
-        territoryCoord = (WorldCoord) intent.getSerializableExtra("territoryCoord");
+        currCoord = (WorldCoord) intent.getSerializableExtra("territoryCoord");
+        currMessage = (MessagesS2C) intent.getSerializableExtra("CurrentMessage");
+        assert currMessage != null;
+        checkBattleResult(currMessage.getBattleResultMessage());
     }
 
     @Override
-    protected void setOnClickListener(){
-        attackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(monsterList.isEmpty() || soldierList.isEmpty()){
-                    Log.e(TAG,"Battle has already ends");
-                }
-                else{
-                    if(currMonster == null || currMonster.getHp() <= 0){
-                        currMonster = monsterList.get(0);
-                        selectMonster(0);
-                    }
-                    if(currSoldier == null || currSoldier.getHp() <= 0){
-                        currSoldier = soldierList.get(0);
-                        selectSoldier(0);
-                    }
-                    socketService.enqueue(new MessagesC2S(new BattleRequestMessage(territoryCoord,"attack",
-                            new BattleAction(new Unit(currSoldier),new Unit(currMonster),"normal"))));
-                    handleRecvMessage(socketService.dequeue());
-                }
-
+    protected void setListener(){
+        attackBtn.setOnClickListener(v -> {
+            if(monsterListFragment.isEmpty() || soldierListFragment.isEmpty()){
+                Log.e(TAG,"Battle has already ends");
             }
-        });
-
-        itemBtn.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                // TODO
-                socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
+            else{
+                socketService.enqueue(new MessagesC2S(new BattleRequestMessage(currCoord,"attack",
+                        new BattleAction(new Unit(soldierListFragment.getSelectedElement()),new Unit(monsterListFragment.getSelectedElement()),actionType))));
                 handleRecvMessage(socketService.dequeue());
             }
+
         });
 
-        escapeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                socketService.enqueue(new MessagesC2S(new BattleRequestMessage("escape")));
-                handleRecvMessage(socketService.dequeue());
-            }
+        itemBtn.setOnClickListener(v -> {
+            socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("list")));
+            handleRecvMessage(socketService.dequeue());
         });
 
-        soldierListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currSoldier = (Unit) parent.getItemAtPosition(position);
-                selectSoldier(position);
-            }
+        escapeBtn.setOnClickListener(v -> {
+            socketService.enqueue(new MessagesC2S(new BattleRequestMessage("escape")));
+            handleRecvMessage(socketService.dequeue());
         });
 
-        monsterListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                currMonster = (Unit) parent.getItemAtPosition(position);
-                selectMonster(position);
-            }
-        });
-    }
-
-    /**
-     * These two methods select specific unit in list and update UI to show it
-     * @param position selected position
-     */
-    private void selectSoldier(int position){
-        soldierAdapter.setHighlightedPosition(position);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateAdapter(soldierAdapter,soldierList);
-            }
-        });
-    }
-
-    private void selectMonster(int position){
-        monsterAdapter.setHighlightedPosition(position);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateAdapter(monsterAdapter,monsterList);
-            }
-        });
-    }
-
-    private void updateEntireUI(){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateAdapter(soldierAdapter,soldierList);
-                updateAdapter(monsterAdapter,monsterList);
-                updateAdapter(seqAdapter,seqList);
-            }
-        });
     }
 
     /**
@@ -189,46 +107,77 @@ public class BattleActivity extends BaseActivity{
     @SuppressLint("SetTextI18n")
     @Override
     protected void checkBattleResult(final BattleResultMessage m){
-        if(!m.getResult().equals("escaped")) {
-            BattleInitInfo initInfo = m.getBattleInitInfo();
-            if (initInfo != null) {
-                //At the start of battle, store initial units data into map
-                soldierList = new ArrayList<Unit>(initInfo.getSoldiers());
-                for (Unit u : soldierList) {
-                    unitMap.put(u.getId(), u);
+        battleResultMessage = m;
+        String battleResult = m.getResult();
+        switch (battleResult){
+            case "continue":
+                BattleInitInfo initInfo = m.getBattleInitInfo();
+                if (initInfo != null) {
+                    initListFragment(initInfo);
+                    //updateListFragment();
+                } else {
+                    //battle has already begun, handle received battle actions
+                    for (BattleAction action : m.getActions()) {
+                        handleBattleAction(action);
+                    }
                 }
-                monsterList = new ArrayList<Unit>(initInfo.getMonsters());
-                for (Unit u : monsterList) {
-                    unitMap.put(u.getId(), u);
-                }
-                seqList.clear();
-                for(Integer i : initInfo.getUnits()){
-                    seqList.add(new Unit(unitMap.get(i)));
-                }
-            } else {
-                //battle has already begun, handle received battle actions
-                for (BattleAction action : m.getActions()) {
-                    handleBattleAction(action);
-                }
-            }
-            updateEntireUI();
-            //after animations are done
-            //if battle ends, finish activity
-            if(!m.getResult().equals("continue")){
-                finishActivity(m.getResult());
-            }
-        }
-        else{
-            //escaped, finish activity
-            finishActivity(m.getResult());
+                //after animations are done
+                break;
+            case "lose":
+                prepareLaunchDeathWorld();
+                break;
+            case "win":
+            case "escaped":
+                prepareLaunchMainWorld();
+                break;
         }
     }
 
-    protected void finishActivity(String result){
+    private void initListFragment(BattleInitInfo initInfo){
+        List<Unit> soldierList = new ArrayList<>(initInfo.getSoldiers());
+        for (Unit u : soldierList) {
+            unitMap.put(u.getId(), u);
+        }
+        List<Unit> monsterList = new ArrayList<>(initInfo.getMonsters());
+        for (Unit u : monsterList) {
+            unitMap.put(u.getId(), u);
+        }
+        List<Unit> sequenceList = new ArrayList<>();
+        for(Integer i : initInfo.getUnits()){
+            sequenceList.add(new Unit(unitMap.get(i)));
+        }
+
+        ft = getSupportFragmentManager().beginTransaction();
+        if(soldierListFragment == null) {
+            soldierListFragment = new UnitListFragment(soldierList, this);
+            ft.replace(R.id.soldierListLayout, soldierListFragment);
+        }
+        if(monsterListFragment == null){
+            monsterListFragment = new UnitListFragment(monsterList, this);
+            ft.replace(R.id.monsterListLayout, monsterListFragment);
+        }
+        if(battleSequenceFragment == null){
+            battleSequenceFragment = new UnitListFragment(sequenceList, this);
+            ft.replace(R.id.battleSequenceLayout, battleSequenceFragment);
+        }
+        ft.commit();
+    }
+
+    /*private void updateListFragment(){
+        soldierListFragment.updateByList(soldierList);
+        monsterListFragment.updateByList(monsterList);
+        battleSequenceFragment.updateByList(sequenceList);
+    }*/
+
+    @Override
+    protected void finishActivity(){
+        finishActivityByResult(battleResultMessage.getResult());
+    }
+
+    protected void finishActivityByResult(String result){
         //clear queue before change activities
         socketService.clearQueue();
         doUnbindService();
-        ifStop = true;
         Intent intent = new Intent();
         switch (result) {
             case "escaped":
@@ -260,10 +209,11 @@ public class BattleActivity extends BaseActivity{
         unitMap.put(attacker.getId(),attacker);
         unitMap.put(attackee.getId(),attackee);
         //update sequence list
-        seqList.clear();
+        List<Unit> sequenceList = new ArrayList<>();
         for(Integer i : action.getUnits()){
-            seqList.add(new Unit(unitMap.get(i)));
+            sequenceList.add(new Unit(unitMap.get(i)));
         }
+        battleSequenceFragment.updateByList(sequenceList);
         //update soldier and monster list
         updateUnitInfo(attacker);
         updateUnitInfo(attackee);
@@ -282,23 +232,11 @@ public class BattleActivity extends BaseActivity{
      */
     protected void updateUnitInfo(Unit unit){
         if(unit.getType().equals("soldier")){
-            updateUnitList(unit,soldierList);
+            soldierListFragment.updateByElement(unit);
         }
         else if(unit.getType().equals("monster")){
-            updateUnitList(unit,monsterList);
-        }
-    }
-
-    protected void updateUnitList(Unit unit, List<Unit> unitList){
-        //find original index of this unit
-        int index = unitList.indexOf(unit);
-        //update its fields
-        unitList.get(index).setFields(unit);
-        //check if it dies in battle
-        if(unit.getHp() <= 0) {
-            unitList.remove(unit);
-            //if monsters are defeated, store in list and return back to main activity
-            if(unit.getType().equals("monster")) {
+            monsterListFragment.updateByElement(unit);
+            if(unit.getHp()<=0) {
                 defeatedMonsters.add(unit.getId());
             }
         }
@@ -327,12 +265,24 @@ public class BattleActivity extends BaseActivity{
 
     @Override
     protected void checkAttributeResult(AttributeResultMessage m){
-        soldierList = new ArrayList<Unit>(m.getSoldiers());
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                updateAdapter(soldierAdapter,soldierList);
-            }
-        });
+        super.checkAttributeResult(m);
+        soldierListFragment.updateByList(new ArrayList<>(m.getSoldiers()));
+    }
+
+    @Override
+    public void doWithSelectedSkill(Skill skill) {
+        actionType = skill.getName();
+    }
+
+    @Override
+    public void doWithSelectedUnit(Unit unit) {
+        if(unit.getType().equals("monster")){
+            //do nothing here if just select a monster
+        }
+        else if(unit.getType().equals("soldier")){
+            ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.skillListLayout, new SkillListFragment(new ArrayList<>(unit.getSkills()), unit, this));
+            ft.commit();
+        }
     }
 }

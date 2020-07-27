@@ -4,9 +4,10 @@ import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
 import com.example.fantasyclient.model.Territory;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PositionResultMessage {
+public class PositionResultMessage implements Serializable {
     private List<Territory> territoryArray;
     private List<Monster> monsterArray;
     private List<Building> buildingArray;

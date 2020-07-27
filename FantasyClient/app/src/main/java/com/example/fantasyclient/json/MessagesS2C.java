@@ -1,6 +1,8 @@
 package com.example.fantasyclient.json;
 
-public class MessagesS2C {
+import java.io.Serializable;
+
+public class MessagesS2C implements Serializable {
     private PositionResultMessage positionResultMessage;
     private LoginResultMessage loginResultMessage;
     private SignUpResultMessage signUpResultMessage;
@@ -9,6 +11,10 @@ public class MessagesS2C {
     private ShopResultMessage shopResultMessage;
     private InventoryResultMessage inventoryResultMessage;
     private BuildingResultMessage buildingResultMessage;
+    private LevelUpResultMessage levelUpResultMessage;
+    private ReviveResultMessage reviveResultMessage;
+    private RedirectMessage redirectMessage;
+    //constructors
 
     public MessagesS2C(){
     }
@@ -44,6 +50,22 @@ public class MessagesS2C {
     public MessagesS2C(BuildingResultMessage buildingResultMessage){
         this.buildingResultMessage = buildingResultMessage;
     }
+
+    public MessagesS2C(LevelUpResultMessage levelUpResultMessage) {
+        this.levelUpResultMessage = levelUpResultMessage;
+    }
+
+    public MessagesS2C(ReviveResultMessage reviveResultMessage) {
+        this.reviveResultMessage = reviveResultMessage;
+    }
+
+    public MessagesS2C(RedirectMessage redirectMessage) {
+        this.redirectMessage = redirectMessage;
+    }
+
+
+
+    //Getters and setters
 
     public PositionResultMessage getPositionResultMessage() {
         return positionResultMessage;
@@ -107,5 +129,29 @@ public class MessagesS2C {
 
     public void setBuildingResultMessage(BuildingResultMessage buildingResultMessage) {
         this.buildingResultMessage = buildingResultMessage;
+    }
+
+    public ReviveResultMessage getReviveResultMessage() {
+        return reviveResultMessage;
+    }
+
+    public void setReviveResultMessage(ReviveResultMessage reviveResultMessage) {
+        this.reviveResultMessage = reviveResultMessage;
+    }
+
+    public LevelUpResultMessage getLevelUpResultMessage() {
+        return levelUpResultMessage;
+    }
+
+    public void setLevelUpResultMessage(LevelUpResultMessage levelUpResultMessage) {
+        this.levelUpResultMessage = levelUpResultMessage;
+    }
+
+    public RedirectMessage getRedirectMessage() {
+        return redirectMessage;
+    }
+
+    public void setRedirectMessage(RedirectMessage redirectMessage) {
+        this.redirectMessage = redirectMessage;
     }
 }

@@ -1,7 +1,6 @@
 package com.example.fantasyclient;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -10,17 +9,27 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.fragment.app.FragmentActivity;
+
 import com.example.fantasyclient.adapter.HighlightAdapter;
+import com.example.fantasyclient.fragment.ActivityWithService;
+import com.example.fantasyclient.fragment.ServiceFunction;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
+import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
+import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
+import com.example.fantasyclient.json.RedirectMessage;
+import com.example.fantasyclient.json.ReviveResultMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
+import com.example.fantasyclient.model.WorldCoord;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -29,7 +38,7 @@ import java.util.List;
  * 2.Redirect to other activities
  */
 @SuppressLint("Registered")
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends FragmentActivity implements ActivityWithService {
 
     SocketService socketService;
     boolean mIsBound;
@@ -41,7 +50,18 @@ public class BaseActivity extends Activity {
     static final int BATTLE = 2;//request code for battle
     static final int SHOP = 3;//request code for Shop
     static final int INVENTORY = 4;//request code for inventory
-    static final int CENTER = 17;//center of the map
+    static final int SOLDIER_DETAIL = 5;//request code for soldier detail
+
+    //Cached messages
+    protected MessagesS2C currMessage = new MessagesS2C();
+    //Current coordinate
+    protected WorldCoord currCoord = new WorldCoord(0,0);
+
+    @Override
+    public void doServiceFunction(ServiceFunction sf){
+        sf.doServiceFunction(socketService);
+        handleRecvMessage(socketService.dequeue());
+    }
 
     /**
      * find and init required common views, which may be overrode
@@ -51,7 +71,7 @@ public class BaseActivity extends Activity {
     /**
      * set required listeners, which may be overrode
      */
-    protected void setOnClickListener(){ }
+    protected void setListener(){ }
 
     /**
      * get extra information passed by calling activity
@@ -72,6 +92,41 @@ public class BaseActivity extends Activity {
         Intent intent = new Intent(this, UserLoginActivity.class);
         startActivity(intent);
     }
+
+    protected void launchMenu(){
+        socketService.clearQueue();
+        Intent intent = new Intent(this, MenuActivity.class);
+        intent.putExtra("CurrentMessage", (Serializable) currMessage);
+        startActivity(intent);
+    }
+
+    protected void launchBattle(){
+        socketService.clearQueue();
+        Intent intent = new Intent(this,BattleActivity.class);
+        intent.putExtra("CurrentMessage", (Serializable) currMessage);
+        intent.putExtra("territoryCoord", currCoord);
+        startActivityForResult(intent,BATTLE);
+    }
+
+    protected void launchShop(){
+        socketService.clearQueue();
+        Intent intent = new Intent(this, ShopActivity.class);
+        intent.putExtra("CurrentMessage", (Serializable) currMessage);
+        intent.putExtra("ShopCoord", currCoord);
+        startActivityForResult(intent, SHOP);
+    }
+
+    protected void prepareLaunchMainWorld(){
+        socketService.enqueue(new MessagesC2S(new RedirectMessage("mainWorld")));
+        handleRecvMessage(socketService.dequeue());
+    }
+
+    protected void prepareLaunchDeathWorld(){
+        socketService.enqueue(new MessagesC2S(new RedirectMessage("deathWorld")));
+        handleRecvMessage(socketService.dequeue());
+    }
+
+    protected void finishActivity(){}
 
     /**
      * This is the only interface to handle received message(MessageS2C) from server
@@ -108,6 +163,15 @@ public class BaseActivity extends Activity {
             if (m.getBuildingResultMessage() != null){
                 checkBuildingResult(m.getBuildingResultMessage());
             }
+            if (m.getLevelUpResultMessage() != null) {
+                checkLevelUpResult(m.getLevelUpResultMessage());
+            }
+            if (m.getReviveResultMessage() != null) {
+                checkReviveResult(m.getReviveResultMessage());
+            }
+            if (m.getRedirectMessage() != null){
+                checkRedirectResult(m.getRedirectMessage());
+            }
         }
     }
 
@@ -131,30 +195,75 @@ public class BaseActivity extends Activity {
         }
     }
 
-    protected void checkPositionResult(PositionResultMessage m){}
-
-    protected void checkBattleResult(BattleResultMessage m){}
-
-    protected void checkAttributeResult(AttributeResultMessage m){}
-
-    protected void checkShopResult(ShopResultMessage m){}
+    /**
+     * This method is called after a MessageS2C with ShopResultMessage is received from server
+     * It happens in MainActivity only if players try to enter shops and send "list"
+     * After InventoryResultMessage is also received, ShopActivity will be launched
+     * @param m: received ShopResultMessage
+     */
+    protected void checkShopResult(final ShopResultMessage m){
+        currMessage.setShopResultMessage(m);
+    }
 
     /**
      * This method is called after a MessageS2C with InventoryResultMessage is received from server
      * After ShopResultMessage is also received, ShopActivity will be launched
      * @param m: received ShopResultMessage
      */
-    protected void checkInventoryResult(InventoryResultMessage m){
-        if (m.getResult().equals("valid")) {
-            Intent intent = new Intent(this, InventoryActivity.class);
-            intent.putExtra("InventoryResultMessage", m);
-            //clear queue before change activities
-            socketService.clearQueue();
-            startActivityForResult(intent, INVENTORY);
-        }
+    protected void checkInventoryResult(final InventoryResultMessage m){
+        currMessage.setInventoryResultMessage(m);
+    }
+
+    /**
+     * This method is called after a MessageS2C with BattleResultMessage is received from server
+     * It happens in MainActivity only if players try to battle with monsters and send "start"
+     * After permission from server, BattleActivity will be launched
+     * @param m: received BattleResultMessage
+     */
+    protected void checkBattleResult(final BattleResultMessage m){
+        currMessage.setBattleResultMessage(m);
+    }
+
+    protected void checkPositionResult(PositionResultMessage m){}
+
+    protected void checkAttributeResult(AttributeResultMessage m){
+        currMessage.setAttributeResultMessage(m);
     }
 
     protected void checkBuildingResult(BuildingResultMessage m){}
+
+    protected void checkLevelUpResult(LevelUpResultMessage m){
+        currMessage.setLevelUpResultMessage(m);
+    }
+
+    protected void checkReviveResult(ReviveResultMessage m){}
+
+    protected void checkRedirectResult(RedirectMessage m){
+        //clear queue before change activities
+        socketService.clearQueue();
+        switch (m.getDestination()){
+            case "BATTLE":
+                launchBattle();
+                break;
+            case "SHOP":
+                launchShop();
+                break;
+            /*case "inventory":
+                launchInventory();
+                break;*/
+            /*case "levelup":
+                launchSoldierDetail();
+                break;*/
+            case "MENU":
+                launchMenu();
+                break;
+            case "mainWorld":
+            case "deathWorld":
+                finishActivity();
+                break;
+            default:
+        }
+    }
 
     /**
      * This method updates target adapter to show updated data

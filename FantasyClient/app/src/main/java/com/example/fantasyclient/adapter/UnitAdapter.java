@@ -3,6 +3,7 @@ package com.example.fantasyclient.adapter;
 import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.fantasyclient.R;
@@ -19,7 +20,7 @@ public abstract class UnitAdapter extends ElementAdapter<Unit> {
 
     //initialize the unit layout
     UnitAdapter(Context context, List<Unit> objects) {
-        super(context, objects, R.layout.unit_layout);
+        super(context, objects, R.layout.element_unit);
     }
 
     @Override
@@ -33,9 +34,11 @@ public abstract class UnitAdapter extends ElementAdapter<Unit> {
         // Lookup view for data population
         UnitViewHolder viewHolder = (UnitViewHolder) baseViewHolder;
         viewHolder.baseText = (TextView) convertView.findViewById(R.id.unitID);
+        viewHolder.unitLevel = (TextView) convertView.findViewById(R.id.unitLevel);
         viewHolder.unitHp = (TextView) convertView.findViewById(R.id.unitHp);
         viewHolder.unitAtk = (TextView) convertView.findViewById(R.id.unitAtk);
         viewHolder.unitSpeed = (TextView) convertView.findViewById(R.id.unitSpeed);
-        viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImg);
+        viewHolder.unitExpBar = (ProgressBar) convertView.findViewById(R.id.unitExpBar);
+        viewHolder.image = (ImageView) convertView.findViewById(R.id.unitImage);
     }
 }
