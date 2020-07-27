@@ -2,28 +2,18 @@ package com.example.fantasyclient.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessagesC2S {
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private LoginRequestMessage loginRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private SignUpRequestMessage signUpRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private PositionRequestMessage positionRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BattleRequestMessage battleRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private AttributeRequestMessage attributeRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private ShopRequestMessage shopRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private InventoryRequestMessage inventoryRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BuildingRequestMessage buildingRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private LevelUpRequestMessage levelUpRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private ReviveRequestMessage reviveRequestMessage;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private RedirectMessage redirectMessage;
 
     //constructors

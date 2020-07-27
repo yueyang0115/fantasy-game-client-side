@@ -1,7 +1,10 @@
 package com.example.fantasyclient.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SignUpResultMessage implements Serializable {
     private String error_msg;
     private String status;

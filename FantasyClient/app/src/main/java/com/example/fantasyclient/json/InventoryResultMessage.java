@@ -1,11 +1,13 @@
 package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Inventory;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventoryResultMessage implements Serializable {
 
     private List<Inventory> items = new ArrayList<>(); //all items of player

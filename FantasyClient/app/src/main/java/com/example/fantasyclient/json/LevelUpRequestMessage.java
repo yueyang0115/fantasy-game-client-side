@@ -3,10 +3,10 @@ package com.example.fantasyclient.json;
 import com.example.fantasyclient.model.Skill;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LevelUpRequestMessage {
     private String action; // "start" "choose"
     private int unitID; // id of the unit which wants to be leveled up
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Skill skill; // the skill that wants to be added/updated for the unit
 
     public LevelUpRequestMessage(){}

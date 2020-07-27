@@ -2,9 +2,11 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Set;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LevelUpResultMessage {
     private String result; // "success" "fail"
     private Set<Skill> availableSkills; // available skills that can be added/updated

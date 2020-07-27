@@ -1,7 +1,10 @@
 package com.example.fantasyclient.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessagesS2C implements Serializable {
     private PositionResultMessage positionResultMessage;
     private LoginResultMessage loginResultMessage;

@@ -1,10 +1,12 @@
 package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Building;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BuildingResultMessage implements Serializable {
 
     private List<Building> buildingList;

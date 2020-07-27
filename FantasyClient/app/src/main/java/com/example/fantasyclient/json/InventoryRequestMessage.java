@@ -2,12 +2,11 @@ package com.example.fantasyclient.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventoryRequestMessage {
 
     private String action;//"list" "use" "drop"
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private int inventoryID;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private int unitID;
 
     public InventoryRequestMessage() {
