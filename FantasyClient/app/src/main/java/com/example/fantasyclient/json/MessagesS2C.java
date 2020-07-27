@@ -11,9 +11,9 @@ public class MessagesS2C implements Serializable {
     private ShopResultMessage shopResultMessage;
     private InventoryResultMessage inventoryResultMessage;
     private BuildingResultMessage buildingResultMessage;
-    private RedirectMessage redirectMessage;
     private LevelUpResultMessage levelUpResultMessage;
-
+    private ReviveResultMessage reviveResultMessage;
+    private RedirectMessage redirectMessage;
     //constructors
 
     public MessagesS2C(){
@@ -51,13 +51,19 @@ public class MessagesS2C implements Serializable {
         this.buildingResultMessage = buildingResultMessage;
     }
 
+    public MessagesS2C(LevelUpResultMessage levelUpResultMessage) {
+        this.levelUpResultMessage = levelUpResultMessage;
+    }
+
+    public MessagesS2C(ReviveResultMessage reviveResultMessage) {
+        this.reviveResultMessage = reviveResultMessage;
+    }
+
     public MessagesS2C(RedirectMessage redirectMessage) {
         this.redirectMessage = redirectMessage;
     }
 
-    public MessagesS2C(LevelUpResultMessage levelUpResultMessage) {
-        this.levelUpResultMessage = levelUpResultMessage;
-    }
+
 
     //Getters and setters
 
@@ -125,12 +131,12 @@ public class MessagesS2C implements Serializable {
         this.buildingResultMessage = buildingResultMessage;
     }
 
-    public RedirectMessage getRedirectMessage() {
-        return redirectMessage;
+    public ReviveResultMessage getReviveResultMessage() {
+        return reviveResultMessage;
     }
 
-    public void setRedirectMessage(RedirectMessage redirectMessage) {
-        this.redirectMessage = redirectMessage;
+    public void setReviveResultMessage(ReviveResultMessage reviveResultMessage) {
+        this.reviveResultMessage = reviveResultMessage;
     }
 
     public LevelUpResultMessage getLevelUpResultMessage() {
@@ -139,5 +145,13 @@ public class MessagesS2C implements Serializable {
 
     public void setLevelUpResultMessage(LevelUpResultMessage levelUpResultMessage) {
         this.levelUpResultMessage = levelUpResultMessage;
+    }
+
+    public RedirectMessage getRedirectMessage() {
+        return redirectMessage;
+    }
+
+    public void setRedirectMessage(RedirectMessage redirectMessage) {
+        this.redirectMessage = redirectMessage;
     }
 }

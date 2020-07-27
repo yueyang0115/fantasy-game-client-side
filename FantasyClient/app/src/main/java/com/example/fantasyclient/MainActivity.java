@@ -28,6 +28,8 @@ import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.PositionRequestMessage;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.RedirectMessage;
+import com.example.fantasyclient.json.ReviveRequestMessage;
+import com.example.fantasyclient.json.ReviveResultMessage;
 import com.example.fantasyclient.json.ShopRequestMessage;
 import com.example.fantasyclient.model.Building;
 import com.example.fantasyclient.model.Monster;
@@ -152,6 +154,11 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
         messagesC2S.setShopRequestMessage(new ShopRequestMessage(currCoord, "list"));
         messagesC2S.setRedirectMessage(new RedirectMessage("SHOP"));
         socketService.enqueue(messagesC2S);
+    }
+
+    @Override
+    public void onMapCastleSelected() {
+        socketService.enqueue(new MessagesC2S(new ReviveRequestMessage("revive")));
     }
 
     @Override
@@ -345,6 +352,13 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
         dialog.show();
     }
 
+    @Override
+    protected void checkReviveResult(ReviveResultMessage m) {
+        if(m.getResult().equals("success")){
+            map.setLiveMode();
+        }
+    }
+
     /**
      * This method is called after "startActivityForResult" is finished
      * It handles different results returned from another activity based on:
@@ -373,7 +387,6 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
                 else if(resultCode == RESULT_LOSE){
                     map.setDeathMode();
                 }
-
                 break;
             case SHOP:
                 //check the result of purchase

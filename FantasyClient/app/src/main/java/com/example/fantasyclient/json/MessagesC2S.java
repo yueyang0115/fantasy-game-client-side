@@ -10,6 +10,7 @@ public class MessagesC2S {
     private InventoryRequestMessage inventoryRequestMessage;
     private BuildingRequestMessage buildingRequestMessage;
     private LevelUpRequestMessage levelUpRequestMessage;
+    private ReviveRequestMessage reviveRequestMessage;
 
     private RedirectMessage redirectMessage;
 
@@ -51,6 +52,10 @@ public class MessagesC2S {
 
     public MessagesC2S(LevelUpRequestMessage levelUpRequestMessage) {
         this.levelUpRequestMessage = levelUpRequestMessage;
+    }
+
+    public MessagesC2S(ReviveRequestMessage reviveRequestMessage) {
+        this.reviveRequestMessage = reviveRequestMessage;
     }
 
     public MessagesC2S(RedirectMessage redirectMessage) {
@@ -129,6 +134,14 @@ public class MessagesC2S {
 
     public void setLevelUpRequestMessage(LevelUpRequestMessage levelUpRequestMessage) {
         this.levelUpRequestMessage = levelUpRequestMessage;
+    }
+
+    public ReviveRequestMessage getReviveRequestMessage() {
+        return reviveRequestMessage;
+    }
+
+    public void setReviveRequestMessage(ReviveRequestMessage reviveRequestMessage) {
+        this.reviveRequestMessage = reviveRequestMessage;
     }
 
     public RedirectMessage getRedirectMessage() {

@@ -24,6 +24,7 @@ import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.json.PositionResultMessage;
 import com.example.fantasyclient.json.RedirectMessage;
+import com.example.fantasyclient.json.ReviveResultMessage;
 import com.example.fantasyclient.json.ShopResultMessage;
 import com.example.fantasyclient.json.SignUpResultMessage;
 import com.example.fantasyclient.model.WorldCoord;
@@ -162,11 +163,14 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
             if (m.getBuildingResultMessage() != null){
                 checkBuildingResult(m.getBuildingResultMessage());
             }
-            if (m.getRedirectMessage() != null){
-                checkRedirectResult(m.getRedirectMessage());
-            }
             if (m.getLevelUpResultMessage() != null) {
                 checkLevelUpResult(m.getLevelUpResultMessage());
+            }
+            if (m.getReviveResultMessage() != null) {
+                checkReviveResult(m.getReviveResultMessage());
+            }
+            if (m.getRedirectMessage() != null){
+                checkRedirectResult(m.getRedirectMessage());
             }
         }
     }
@@ -226,6 +230,14 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
         currMessage.setAttributeResultMessage(m);
     }
 
+    protected void checkBuildingResult(BuildingResultMessage m){}
+
+    protected void checkLevelUpResult(LevelUpResultMessage m){
+        currMessage.setLevelUpResultMessage(m);
+    }
+
+    protected void checkReviveResult(ReviveResultMessage m){}
+
     protected void checkRedirectResult(RedirectMessage m){
         //clear queue before change activities
         socketService.clearQueue();
@@ -251,12 +263,6 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
                 break;
             default:
         }
-    }
-
-    protected void checkBuildingResult(BuildingResultMessage m){}
-
-    protected void checkLevelUpResult(LevelUpResultMessage m){
-        currMessage.setLevelUpResultMessage(m);
     }
 
     /**

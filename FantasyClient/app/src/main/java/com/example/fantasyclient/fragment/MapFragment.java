@@ -45,6 +45,13 @@ public class MapFragment extends Fragment {
     //activity which contains this fragment
     private OnMapListener listener;
 
+    private MODE mapMode = MODE.LIVE;
+
+    private enum MODE{
+        LIVE,
+        DEATH,
+    }
+
     public MapFragment(WorldCoord currCoord) {
         this.currCoord = currCoord;
     }
@@ -65,6 +72,7 @@ public class MapFragment extends Fragment {
         void onMapBuildingUpgrade();
         void onMapUnitSelected();
         void onMapShopSelected();
+        void onMapCastleSelected();
         void onMapTerritorySelected(Territory territory);
         void onMapUpdate();
     }
@@ -314,19 +322,31 @@ public class MapFragment extends Fragment {
         //check if click on the center territory
         if(position==territoryAdapter.getCenter()) {
             //check if current territory has monsters
-            if(unitAdapter.checkCacheByCoords(currCoord)){
-                listener.onMapUnitSelected();
-                return;
-            }
-            //check if current territory has buildings
-            else if(buildingAdapter.checkCacheByCoords(currCoord)){
-                switch (buildingAdapter.getItem(position).getName()) {
-                    case "shop":
-                    case "super_shop":
-                        listener.onMapShopSelected();
-                        break;
+            if(mapMode.equals(MODE.LIVE)) {
+                if (unitAdapter.checkCacheByCoords(currCoord)) {
+                    listener.onMapUnitSelected();
+                    return;
                 }
-                return;
+                //check if current territory has buildings
+                else if (buildingAdapter.checkCacheByCoords(currCoord)) {
+                    switch (buildingAdapter.getItem(position).getName()) {
+                        case "shop":
+                        case "super_shop":
+                            listener.onMapShopSelected();
+                            break;
+                    }
+                    return;
+                }
+            }
+            else if (mapMode.equals(MODE.DEATH)) {
+                if (buildingAdapter.checkCacheByCoords(currCoord)) {
+                    switch (buildingAdapter.getItem(position).getName()) {
+                        case "castle":
+                            listener.onMapCastleSelected();
+                            break;
+                    }
+                    return;
+                }
             }
         }
         listener.onMapTerritorySelected(territoryAdapter.getItem(position));
@@ -340,15 +360,16 @@ public class MapFragment extends Fragment {
         //check if click on the center territory
         if(position==territoryAdapter.getCenter()){
             //check if current territory has monsters
-            if(unitAdapter.checkCacheByCoords(currCoord)){
-                listener.onMapUnitSelected();
-            }
-            //check if current territory has buildings
-            else if(buildingAdapter.checkCacheByCoords(currCoord)){
-                listener.onMapBuildingUpgrade();
-            }
-            else{
-                listener.onMapBuildingCreate();
+            if(mapMode.equals(MODE.LIVE)) {
+                if (unitAdapter.checkCacheByCoords(currCoord)) {
+                    listener.onMapUnitSelected();
+                }
+                //check if current territory has buildings
+                else if (buildingAdapter.checkCacheByCoords(currCoord)) {
+                    listener.onMapBuildingUpgrade();
+                } else {
+                    listener.onMapBuildingCreate();
+                }
             }
         }
     }
@@ -367,9 +388,14 @@ public class MapFragment extends Fragment {
     }
 
     public void setDeathMode(){
-        clearAdapterCache();
+        /*clearAdapterCache();
         territoryAdapter.updateQueryByMapSize();
-        updateMapLayers();
+        updateMapLayers();*/
+        mapMode = MODE.DEATH;
+    }
+
+    public void setLiveMode(){
+        mapMode = MODE.LIVE;
     }
 
     protected void clearAdapterCache(){
