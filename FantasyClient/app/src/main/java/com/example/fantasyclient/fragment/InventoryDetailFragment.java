@@ -71,7 +71,7 @@ public class InventoryDetailFragment extends ElementDetailFragment<Inventory> im
     @Override
     protected void setListener(){
         buttonUse.setOnClickListener(v -> {
-            activityListener.doServiceFunction((SocketService socketService)->{
+            activityListener.doWithServiceFunction((SocketService socketService)->{
                 socketService.enqueue(new MessagesC2S(new InventoryRequestMessage("use", list.get(0).getId(), targetUnit.getId())));
             });
         });

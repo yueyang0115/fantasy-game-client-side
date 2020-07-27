@@ -1,5 +1,6 @@
 package com.example.fantasyclient.fragment;
 
 public interface ActivityWithService {
-    void doServiceFunction(ServiceFunction sf);
+    void doWithServiceFunction(ServiceFunction sf);
+    void doWithCommonFunction(CommonFunction cf);
 }

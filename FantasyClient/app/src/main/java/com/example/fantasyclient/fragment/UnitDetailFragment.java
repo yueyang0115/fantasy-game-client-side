@@ -64,7 +64,7 @@ public class UnitDetailFragment extends ElementDetailFragment<Unit> implements S
     @Override
     protected void setListener(){
         buttonLearn.setOnClickListener(v
-                -> activityListener.doServiceFunction((SocketService socketService)
+                -> activityListener.doWithServiceFunction((SocketService socketService)
                 -> socketService.enqueue(new MessagesC2S(new LevelUpRequestMessage("start", list.get(0).getId())))));
     }
 
