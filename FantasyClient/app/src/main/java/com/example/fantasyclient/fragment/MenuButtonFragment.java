@@ -11,13 +11,14 @@ import com.example.fantasyclient.R;
 
 public class MenuButtonFragment extends BaseFragment {
 
-    Button inventoryButton, soldierButton, friendButton;
+    Button inventoryButton, soldierButton, friendButton, applyFriendButton;
     MenuButtonListener menuButtonListener;
 
     public interface MenuButtonListener{
         void doWithInventoryButton();
         void doWithSoldierButton();
         void doWithFriendButton();
+        void doWithAddFriendButton();
     }
 
     @Override
@@ -45,6 +46,7 @@ public class MenuButtonFragment extends BaseFragment {
         inventoryButton = (Button) v.findViewById(R.id.inventoryButton);
         soldierButton = (Button) v.findViewById(R.id.soldierButton);
         friendButton = (Button) v.findViewById(R.id.friendButton);
+        applyFriendButton = (Button) v.findViewById(R.id.applyFriendButton);
     }
 
     @Override
@@ -52,5 +54,6 @@ public class MenuButtonFragment extends BaseFragment {
         inventoryButton.setOnClickListener(v -> menuButtonListener.doWithInventoryButton());
         soldierButton.setOnClickListener(v -> menuButtonListener.doWithSoldierButton());
         friendButton.setOnClickListener(v -> menuButtonListener.doWithFriendButton());
+        applyFriendButton.setOnClickListener(v -> menuButtonListener.doWithAddFriendButton());
     }
 }

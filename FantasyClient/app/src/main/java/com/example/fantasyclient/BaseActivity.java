@@ -18,6 +18,7 @@ import com.example.fantasyclient.fragment.ServiceFunction;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
+import com.example.fantasyclient.json.FriendResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
@@ -175,6 +176,9 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
             if (m.getReviveResultMessage() != null) {
                 checkReviveResult(m.getReviveResultMessage());
             }
+            if (m.getFriendResultMessage() != null) {
+                checkFriendResult(m.getFriendResultMessage());
+            }
             if (m.getRedirectMessage() != null){
                 checkRedirectResult(m.getRedirectMessage());
             }
@@ -243,6 +247,8 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
     }
 
     protected void checkReviveResult(ReviveResultMessage m){}
+
+    protected void checkFriendResult(FriendResultMessage m){}
 
     protected void checkRedirectResult(RedirectMessage m){
         //clear queue before change activities

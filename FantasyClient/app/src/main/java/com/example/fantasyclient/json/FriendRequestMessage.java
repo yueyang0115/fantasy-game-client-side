@@ -8,7 +8,7 @@ public class FriendRequestMessage {
         search, apply;
     }
 
-    String userName;
+    String username;
     ActionType action;
     int id;
 
@@ -20,8 +20,8 @@ public class FriendRequestMessage {
         this.id = id;
     }
 
-    public FriendRequestMessage(String userName, ActionType action) {
-        this.userName = userName;
+    public FriendRequestMessage(String username, ActionType action) {
+        this.username = username;
         this.action = action;
     }
 
@@ -33,12 +33,12 @@ public class FriendRequestMessage {
         this.action = action;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getId() {

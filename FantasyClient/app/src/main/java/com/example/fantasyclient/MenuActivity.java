@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,6 +18,8 @@ import com.example.fantasyclient.fragment.PlayerInfoDetailFragment;
 import com.example.fantasyclient.fragment.PlayerInfoListFragment;
 import com.example.fantasyclient.fragment.UnitDetailFragment;
 import com.example.fantasyclient.fragment.UnitListFragment;
+import com.example.fantasyclient.json.FriendRequestMessage;
+import com.example.fantasyclient.json.FriendResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpRequestMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
@@ -38,6 +41,7 @@ public class MenuActivity extends BaseActivity implements PlayerInfoListFragment
     FragmentTransaction ft;
     UnitListFragment unitListFragment;
     InventoryListFragment inventoryListFragment;
+    PlayerInfoListFragment playerInfoListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +105,15 @@ public class MenuActivity extends BaseActivity implements PlayerInfoListFragment
     protected void checkInventoryResult(InventoryResultMessage m){
         inventoryListFragment.updateByList(m.getItems());
         doWithSelectedInventory(m.getItems().get(0));
+    }
+
+    @Override
+    protected void checkFriendResult(FriendResultMessage m){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        playerInfoListFragment = new PlayerInfoListFragment(m.getPlayerInfoList(), this);
+        ft.replace(R.id.elementListLayout, playerInfoListFragment);
+        removeDetailFragment(ft);
+        ft.commit();
     }
 
     @Override
@@ -169,6 +182,30 @@ public class MenuActivity extends BaseActivity implements PlayerInfoListFragment
 
     @Override
     public void doWithFriendButton() {
+    }
+
+    @Override
+    public void doWithAddFriendButton() {
+        setUpAddFriendButton();
+    }
+
+    private void setUpAddFriendButton(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final EditText edittext = new EditText(this);
+        alert.setMessage("Enter Username");
+        alert.setTitle("Find a friend by username");
+        alert.setView(edittext);
+        alert.setPositiveButton("Search", (dialog, whichButton) -> {
+            String username = edittext.getText().toString();
+            socketService.enqueue(new MessagesC2S(new FriendRequestMessage(username, FriendRequestMessage.ActionType.search)));
+            handleRecvMessage(socketService.dequeue());
+            dialog.dismiss();
+        });
+
+        alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
+            dialog.dismiss();
+        });
+        alert.show();
     }
 
     @Override
