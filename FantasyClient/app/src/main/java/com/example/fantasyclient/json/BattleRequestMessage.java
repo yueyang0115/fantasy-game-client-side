@@ -2,11 +2,13 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.BattleAction;
 import com.example.fantasyclient.model.WorldCoord;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class BattleRequestMessage {
 
     private WorldCoord territoryCoord;
     private String action;//"attack","escape","start"
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private BattleAction battleAction; //include attackerID, attackeeID, action("normal, magical")
 
     public BattleRequestMessage() {

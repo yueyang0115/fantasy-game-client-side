@@ -23,7 +23,7 @@ public class MessagesC2S {
     private LevelUpRequestMessage levelUpRequestMessage;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ReviveRequestMessage reviveRequestMessage;
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private RedirectMessage redirectMessage;
 
     //constructors
