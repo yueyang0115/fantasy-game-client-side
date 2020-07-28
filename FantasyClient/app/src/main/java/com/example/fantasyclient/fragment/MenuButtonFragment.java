@@ -11,12 +11,14 @@ import com.example.fantasyclient.R;
 
 public class MenuButtonFragment extends BaseFragment {
 
-    Button inventoryButton, soldierButton;
+    Button inventoryButton, soldierButton, friendButton, applyFriendButton;
     MenuButtonListener menuButtonListener;
 
     public interface MenuButtonListener{
         void doWithInventoryButton();
         void doWithSoldierButton();
+        void doWithFriendButton();
+        void doWithAddFriendButton();
     }
 
     @Override
@@ -33,7 +35,7 @@ public class MenuButtonFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_menu, container, false);
+        return inflater.inflate(R.layout.fragment_menu_button, container, false);
     }
 
     @Override
@@ -43,11 +45,15 @@ public class MenuButtonFragment extends BaseFragment {
     protected void initView(View v) {
         inventoryButton = (Button) v.findViewById(R.id.inventoryButton);
         soldierButton = (Button) v.findViewById(R.id.soldierButton);
+        friendButton = (Button) v.findViewById(R.id.friendButton);
+        applyFriendButton = (Button) v.findViewById(R.id.applyFriendButton);
     }
 
     @Override
     protected void setListener() {
         inventoryButton.setOnClickListener(v -> menuButtonListener.doWithInventoryButton());
         soldierButton.setOnClickListener(v -> menuButtonListener.doWithSoldierButton());
+        friendButton.setOnClickListener(v -> menuButtonListener.doWithFriendButton());
+        applyFriendButton.setOnClickListener(v -> menuButtonListener.doWithAddFriendButton());
     }
 }

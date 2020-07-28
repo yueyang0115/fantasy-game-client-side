@@ -2,9 +2,11 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.Inventory;
 import com.example.fantasyclient.model.WorldCoord;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShopRequestMessage {
     private WorldCoord coord;
     private List<Inventory> selectedItems;//Map<inventoryID, amount to buy>

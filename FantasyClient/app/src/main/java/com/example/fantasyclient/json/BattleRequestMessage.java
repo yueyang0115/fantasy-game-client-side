@@ -2,7 +2,9 @@ package com.example.fantasyclient.json;
 
 import com.example.fantasyclient.model.BattleAction;
 import com.example.fantasyclient.model.WorldCoord;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BattleRequestMessage {
 
     private WorldCoord territoryCoord;

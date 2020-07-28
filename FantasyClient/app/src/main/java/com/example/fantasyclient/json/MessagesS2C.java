@@ -1,7 +1,10 @@
 package com.example.fantasyclient.json;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MessagesS2C implements Serializable {
     private PositionResultMessage positionResultMessage;
     private LoginResultMessage loginResultMessage;
@@ -13,6 +16,7 @@ public class MessagesS2C implements Serializable {
     private BuildingResultMessage buildingResultMessage;
     private LevelUpResultMessage levelUpResultMessage;
     private ReviveResultMessage reviveResultMessage;
+    private FriendResultMessage friendResultMessage;
     private RedirectMessage redirectMessage;
     //constructors
 
@@ -57,6 +61,10 @@ public class MessagesS2C implements Serializable {
 
     public MessagesS2C(ReviveResultMessage reviveResultMessage) {
         this.reviveResultMessage = reviveResultMessage;
+    }
+
+    public MessagesS2C(FriendResultMessage friendResultMessage) {
+        this.friendResultMessage = friendResultMessage;
     }
 
     public MessagesS2C(RedirectMessage redirectMessage) {
@@ -145,6 +153,14 @@ public class MessagesS2C implements Serializable {
 
     public void setLevelUpResultMessage(LevelUpResultMessage levelUpResultMessage) {
         this.levelUpResultMessage = levelUpResultMessage;
+    }
+
+    public FriendResultMessage getFriendResultMessage() {
+        return friendResultMessage;
+    }
+
+    public void setFriendResultMessage(FriendResultMessage friendResultMessage) {
+        this.friendResultMessage = friendResultMessage;
     }
 
     public RedirectMessage getRedirectMessage() {

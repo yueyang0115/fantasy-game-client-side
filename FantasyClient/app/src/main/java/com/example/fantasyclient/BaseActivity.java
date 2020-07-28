@@ -13,10 +13,12 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.fantasyclient.adapter.HighlightAdapter;
 import com.example.fantasyclient.fragment.ActivityWithService;
+import com.example.fantasyclient.fragment.CommonFunction;
 import com.example.fantasyclient.fragment.ServiceFunction;
 import com.example.fantasyclient.json.AttributeResultMessage;
 import com.example.fantasyclient.json.BattleResultMessage;
 import com.example.fantasyclient.json.BuildingResultMessage;
+import com.example.fantasyclient.json.FriendResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.LoginResultMessage;
@@ -58,9 +60,14 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
     protected WorldCoord currCoord = new WorldCoord(0,0);
 
     @Override
-    public void doServiceFunction(ServiceFunction sf){
+    public void doWithServiceFunction(ServiceFunction sf){
         sf.doServiceFunction(socketService);
         handleRecvMessage(socketService.dequeue());
+    }
+
+    @Override
+    public void doWithCommonFunction(CommonFunction cf){
+        cf.doCommonFunction(this);
     }
 
     /**
@@ -169,6 +176,9 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
             if (m.getReviveResultMessage() != null) {
                 checkReviveResult(m.getReviveResultMessage());
             }
+            if (m.getFriendResultMessage() != null) {
+                checkFriendResult(m.getFriendResultMessage());
+            }
             if (m.getRedirectMessage() != null){
                 checkRedirectResult(m.getRedirectMessage());
             }
@@ -238,6 +248,8 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
 
     protected void checkReviveResult(ReviveResultMessage m){}
 
+    protected void checkFriendResult(FriendResultMessage m){}
+
     protected void checkRedirectResult(RedirectMessage m){
         //clear queue before change activities
         socketService.clearQueue();
@@ -259,7 +271,10 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
                 break;
             case "mainWorld":
             case "deathWorld":
-                finishActivity();
+                //finish activity if in other activity
+                if(!(this instanceof MainActivity)) {
+                    finishActivity();
+                }
                 break;
             default:
         }
@@ -277,12 +292,7 @@ public abstract class BaseActivity extends FragmentActivity implements ActivityW
     }
 
     public void toastAlert(final String msg) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(BaseActivity.this, msg, Toast.LENGTH_SHORT).show();
-            }
-        });
+        runOnUiThread(() -> Toast.makeText(BaseActivity.this, msg, Toast.LENGTH_SHORT).show());
     }
 
     /**

@@ -356,6 +356,7 @@ public class MainActivity extends BaseActivity implements MapFragment.OnMapListe
     protected void checkReviveResult(ReviveResultMessage m) {
         if(m.getResult().equals("success")){
             map.setLiveMode();
+            socketService.enqueue(new MessagesC2S(new RedirectMessage("mainWorld")));
         }
     }
 

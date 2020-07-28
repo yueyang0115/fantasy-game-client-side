@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -13,21 +14,26 @@ import com.example.fantasyclient.adapter.SkillInfoAdapter;
 import com.example.fantasyclient.fragment.InventoryDetailFragment;
 import com.example.fantasyclient.fragment.InventoryListFragment;
 import com.example.fantasyclient.fragment.MenuButtonFragment;
+import com.example.fantasyclient.fragment.PlayerInfoDetailFragment;
+import com.example.fantasyclient.fragment.PlayerInfoListFragment;
 import com.example.fantasyclient.fragment.UnitDetailFragment;
 import com.example.fantasyclient.fragment.UnitListFragment;
+import com.example.fantasyclient.json.FriendRequestMessage;
+import com.example.fantasyclient.json.FriendResultMessage;
 import com.example.fantasyclient.json.InventoryResultMessage;
 import com.example.fantasyclient.json.LevelUpRequestMessage;
 import com.example.fantasyclient.json.LevelUpResultMessage;
 import com.example.fantasyclient.json.MessagesC2S;
 import com.example.fantasyclient.json.MessagesS2C;
 import com.example.fantasyclient.model.Inventory;
+import com.example.fantasyclient.model.PlayerInfo;
 import com.example.fantasyclient.model.Skill;
 import com.example.fantasyclient.model.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MenuActivity extends BaseActivity implements InventoryListFragment.InventorySelector, UnitListFragment.UnitSelector, MenuButtonFragment.MenuButtonListener {
+public class MenuActivity extends BaseActivity implements PlayerInfoListFragment.PlayerSelector, InventoryListFragment.InventorySelector, UnitListFragment.UnitSelector, MenuButtonFragment.MenuButtonListener {
 
     //final constant
     static final String TAG = "MenuActivity";//tag for log
@@ -35,6 +41,7 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     FragmentTransaction ft;
     UnitListFragment unitListFragment;
     InventoryListFragment inventoryListFragment;
+    PlayerInfoListFragment playerInfoListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +105,15 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     protected void checkInventoryResult(InventoryResultMessage m){
         inventoryListFragment.updateByList(m.getItems());
         doWithSelectedInventory(m.getItems().get(0));
+    }
+
+    @Override
+    protected void checkFriendResult(FriendResultMessage m){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        playerInfoListFragment = new PlayerInfoListFragment(m.getPlayerInfoList(), this);
+        ft.replace(R.id.elementListLayout, playerInfoListFragment);
+        removeDetailFragment(ft);
+        ft.commit();
     }
 
     @Override
@@ -165,6 +181,34 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
     }
 
     @Override
+    public void doWithFriendButton() {
+    }
+
+    @Override
+    public void doWithAddFriendButton() {
+        setUpAddFriendButton();
+    }
+
+    private void setUpAddFriendButton(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final EditText edittext = new EditText(this);
+        alert.setMessage("Enter Username");
+        alert.setTitle("Find a friend by username");
+        alert.setView(edittext);
+        alert.setPositiveButton("Search", (dialog, whichButton) -> {
+            String username = edittext.getText().toString();
+            socketService.enqueue(new MessagesC2S(new FriendRequestMessage(username, FriendRequestMessage.ActionType.search)));
+            handleRecvMessage(socketService.dequeue());
+            dialog.dismiss();
+        });
+
+        alert.setNegativeButton("Cancel", (dialog, whichButton) -> {
+            dialog.dismiss();
+        });
+        alert.show();
+    }
+
+    @Override
     public void doWithSelectedInventory(Inventory inventory) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         removeDetailFragment(ft);
@@ -185,5 +229,13 @@ public class MenuActivity extends BaseActivity implements InventoryListFragment.
         if(currDetailFragment!=null) {
             ft.remove(currDetailFragment);
         }
+    }
+
+    @Override
+    public void doWithSelectedPlayer(PlayerInfo playerInfo) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        removeDetailFragment(ft);
+        ft.replace(R.id.elementDetailLayout, new PlayerInfoDetailFragment(playerInfo));
+        ft.commit();
     }
 }
